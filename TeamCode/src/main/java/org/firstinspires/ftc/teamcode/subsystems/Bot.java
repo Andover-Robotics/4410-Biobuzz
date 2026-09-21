@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.bylazar.telemetry.JoinedTelemetry;
 import com.bylazar.telemetry.PanelsTelemetry;
+import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Scheduler;
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -12,6 +14,12 @@ public class Bot {
     public final HardwareMap hardwareMap;
     public final Telemetry telemetry;
     public final Intake intake;
+
+    public static Pose pose;
+
+    public static Pose targetPose;
+
+    public static Follower follower;
 
     public Bot(OpMode opMode) {
         hardwareMap = opMode.hardwareMap;
@@ -25,4 +33,8 @@ public class Bot {
     public void schedulePeriodic() {
         Scheduler.schedule();
     }
+    public static double clamp(double v, double lo, double hi) {
+        return Math.max(lo, Math.min(hi, v));
+    }
+
 }
