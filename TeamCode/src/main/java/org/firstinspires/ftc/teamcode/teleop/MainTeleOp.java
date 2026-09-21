@@ -14,8 +14,7 @@ public class MainTeleOp extends BotOpMode {
 
     @Override
     public void start() {
-        Scheduler.schedule(bot.nectarIntake.store());
-        Scheduler.schedule(bot.pollenIntake.store());
+        Scheduler.schedule(bot.intake.store());
     }
 
     @Override

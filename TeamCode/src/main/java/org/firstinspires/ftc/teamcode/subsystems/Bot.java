@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Bot {
     public final HardwareMap hardwareMap;
     public final Telemetry telemetry;
-    public final Intake pollenIntake;
+    public final Intake intake;
 
     public Bot(OpMode opMode) {
         hardwareMap = opMode.hardwareMap;
@@ -19,7 +19,7 @@ public class Bot {
                 opMode.telemetry,
                 PanelsTelemetry.INSTANCE.getFtcTelemetry()
         );
-        pollenIntake = new Intake(this, "intake");
+        intake = new Intake(this, "intake");
     }
 
     public void schedulePeriodic() {
