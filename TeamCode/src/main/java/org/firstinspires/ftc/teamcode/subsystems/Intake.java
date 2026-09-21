@@ -4,7 +4,6 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.commands.Commands;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 @Configurable
 public class Intake {
@@ -12,10 +11,10 @@ public class Intake {
     public static double OUT_POWER = -1.0;
     public static double STORE_POWER = 1.0;
 
-    private final DcMotorEx motor;
+    private final DcMotor motor;
 
     public Intake(Bot bot, String name) {
-        motor = bot.hardwareMap.get(DcMotorEx.class, name);
+        motor = bot.hardwareMap.get(DcMotor.class, name);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 

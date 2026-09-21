@@ -12,7 +12,6 @@ public class Bot {
     public final HardwareMap hardwareMap;
     public final Telemetry telemetry;
     public final Intake pollenIntake;
-    public final Intake nectarIntake;
 
     public Bot(OpMode opMode) {
         hardwareMap = opMode.hardwareMap;
@@ -20,8 +19,7 @@ public class Bot {
                 opMode.telemetry,
                 PanelsTelemetry.INSTANCE.getFtcTelemetry()
         );
-        pollenIntake = new Intake(this, "pollen");
-        nectarIntake = new Intake(this, "nectar");
+        pollenIntake = new Intake(this, "intake");
     }
 
     public void schedulePeriodic() {
