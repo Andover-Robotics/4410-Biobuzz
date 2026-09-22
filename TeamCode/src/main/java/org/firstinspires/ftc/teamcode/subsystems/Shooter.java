@@ -34,8 +34,7 @@ public class Shooter {
         controller.setTolerance(toleranceRPM);
     }
 
-    public void setTargetVel(int rpm){
-        controller.setSetPoint(rpm);
+    public void setTargetVel(double rpm){
         targetRPM = rpm;
     }
 
@@ -49,8 +48,8 @@ public class Shooter {
     public void periodic(){
 
         double velocity = rightEnc ? (motor.getVelocity() * 60) / ticksPerRev : (motor2.getVelocity()*60)/ticksPerRev;//tpm -> -> *60 /28 ticks per rev = rev/min
-        setTargetVel(1);//replace with interpolator logic
-        double pid = controller.calculate(velocity);
+        setTargetVel(targetRPM);//replace with interpolator logic
+        double pid = controller.calculate(velocity,targetRPM);
         double ff = targetRPM*f;
         double power = Bot.clamp(pid+ff,0,1);
         setPower(power);
