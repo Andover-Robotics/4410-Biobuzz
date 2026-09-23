@@ -14,8 +14,8 @@ public class Intake {
 
     private final MotorEx motor;
 
-    public Intake(Bot bot, String name) {
-        motor = new MotorEx(bot.hardwareMap, name);
+    public Intake(MotorEx motor) {
+        this.motor = motor;
         motor.setRunMode(Motor.RunMode.RawPower);
     }
 

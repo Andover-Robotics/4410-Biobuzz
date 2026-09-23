@@ -38,10 +38,10 @@ public class Turret {
     private double targetPositionDegrees;
     private double adjustableDegrees;
 
-    public Turret(Bot bot, String servoName1, String servoName2) {
-        follower = bot.follower;
-        servo1 = new ServoEx(bot.hardwareMap, servoName1);
-        servo2 = new ServoEx(bot.hardwareMap, servoName2);
+    public Turret(Follower follower, ServoEx servo1, ServoEx servo2) {
+        this.follower = follower;
+        this.servo1 = servo1;
+        this.servo2 = servo2;
     }
 
     public void periodic() {

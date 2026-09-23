@@ -8,6 +8,8 @@ import com.pedropathing.ivy.commands.Commands;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
+import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
@@ -31,9 +33,14 @@ public class Bot {
         );
         follower = Constants.create(hardwareMap);
         voltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
-        intake = new Intake(this, "intake");
-        turret = new Turret(this, "turret1", "turret2");
-        outtake = new Shooter(this, "outtake1", "outtake2");
+        intake = new Intake(new MotorEx(hardwareMap, "intake"));
+        turret = new Turret(follower,
+                new ServoEx(hardwareMap, "turret1"),
+                new ServoEx(hardwareMap, "turret2"));
+        outtake = new Shooter(
+                new MotorEx(hardwareMap, "outtake1"),
+                new MotorEx(hardwareMap, "outtake2"),
+                voltageSensor);
     }
 
     public void schedulePeriodic() {

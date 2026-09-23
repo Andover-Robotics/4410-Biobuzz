@@ -7,6 +7,7 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 import com.seattlesolvers.solverslib.util.InterpLUT;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
@@ -29,7 +30,7 @@ public class Shooter {
     private static final InterpLUT VELOCITY_LOOKUP_TABLE = new InterpLUT()
             .createLUT();
 
-    private final Bot bot;
+    private final VoltageSensor voltageSensor;
     private final MotorEx motor1;
     private final MotorEx motor2;
     private final PIDFController controller;
@@ -46,12 +47,12 @@ public class Shooter {
     private double currentDrawOne;
     private double currentDrawTwo;
 
-    public Shooter(Bot bot, String motor1Name, String motor2Name) {
-        this.bot = bot;
-        motor1 = new MotorEx(bot.hardwareMap, motor1Name);
-        motor2 = new MotorEx(bot.hardwareMap, motor2Name);
-        motor1.setRunMode(Motor.RunMode.RawPower);
-        motor2.setRunMode(Motor.RunMode.RawPower);
+    public Shooter(MotorEx motor1, MotorEx motor2, VoltageSensor voltageSensor) {
+        this.voltageSensor = voltageSensor;
+        this.motor1 = motor1;
+        this.motor2 = motor2;
+        this.motor1.setRunMode(Motor.RunMode.RawPower);
+        this.motor2.setRunMode(Motor.RunMode.RawPower);
 
         controller = new PIDFController(kP, kI, kD, kF);
         controller.integrationControl.setIntegrationBounds(-windupRange, windupRange);
@@ -71,7 +72,7 @@ public class Shooter {
         controller.setPIDF(kP, kI, kD, kF);
         controller.integrationControl.setIntegrationBounds(-windupRange, windupRange);
         double outputVolts = controller.calculate(realVelocity, targetVelocity);
-        setPower(outputVolts / bot.voltageSensor.getVoltage());
+        setPower(outputVolts / voltageSensor.getVoltage());
     }
 
     private double requestedVelocity() {
