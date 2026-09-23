@@ -4,22 +4,24 @@ import com.bylazar.telemetry.JoinedTelemetry;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Scheduler;
-import com.pedropathing.math.Pose;
+import com.pedropathing.ivy.commands.Commands;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 public class Bot {
     public final HardwareMap hardwareMap;
     public final Telemetry telemetry;
     public final Intake intake;
+    public final Turret turret;
+    public final Shooter outtake;
 
-    public static Pose pose;
+    public final VoltageSensor voltageSensor;
 
-    public static Pose targetPose;
-
-    public static Follower follower;
+    public final Follower follower;
 
     public Bot(OpMode opMode) {
         hardwareMap = opMode.hardwareMap;
@@ -27,14 +29,19 @@ public class Bot {
                 opMode.telemetry,
                 PanelsTelemetry.INSTANCE.getFtcTelemetry()
         );
+        follower = Constants.create(hardwareMap);
+        voltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
         intake = new Intake(this, "intake");
+        turret = new Turret(this, "turret1", "turret2");
+        outtake = new Shooter(this, "outtake1", "outtake2");
     }
 
     public void schedulePeriodic() {
-        Scheduler.schedule();
+        Scheduler.schedule(Commands.infinite(() -> {
+            follower.update();
+            turret.periodic();
+            outtake.setDistanceToGoal(turret.getDistanceToGoal());
+            outtake.periodic();
+        }));
     }
-    public static double clamp(double v, double lo, double hi) {
-        return Math.max(lo, Math.min(hi, v));
-    }
-
 }

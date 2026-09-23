@@ -3,24 +3,25 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.commands.Commands;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.seattlesolvers.solverslib.hardware.motors.Motor;
+import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 
 @Configurable
 public class Intake {
-    public static double IN_POWER = 1.0;
-    public static double OUT_POWER = -1.0;
-    public static double STORE_POWER = 1.0;
+    public static double inPower = 1.0;
+    public static double outPower = -1.0;
+    public static double storePower = 1.0;
 
-    private final DcMotor motor;
+    private final MotorEx motor;
 
     public Intake(Bot bot, String name) {
-        motor = bot.hardwareMap.get(DcMotor.class, name);
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor = new MotorEx(bot.hardwareMap, name);
+        motor.setRunMode(Motor.RunMode.RawPower);
     }
 
-    public void setPower(double power) { motor.setPower(power); }
+    public void setPower(double power) { motor.set(power); }
 
-    public Command in() { return Commands.instant(() -> setPower(IN_POWER)).requiring(motor); }
-    public Command out() { return Commands.instant(() -> setPower(OUT_POWER)).requiring(motor); }
-    public Command store() { return Commands.instant(() -> setPower(STORE_POWER)).requiring(motor); }
+    public Command in() { return Commands.instant(() -> setPower(inPower)).requiring(motor); }
+    public Command out() { return Commands.instant(() -> setPower(outPower)).requiring(motor); }
+    public Command store() { return Commands.instant(() -> setPower(storePower)).requiring(motor); }
 }
