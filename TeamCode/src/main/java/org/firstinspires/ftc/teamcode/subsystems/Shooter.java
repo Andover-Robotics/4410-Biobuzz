@@ -28,6 +28,8 @@ public class Shooter {
     private static final double ENCODER_RPM_PER_TICK_PER_SECOND = 60.0 / 28.0;
 
     private static final InterpLUT VELOCITY_LOOKUP_TABLE = new InterpLUT()
+            .add(0,0)
+            .add(1,0)
             .createLUT();
 
     private final VoltageSensor voltageSensor;

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.bylazar.telemetry.JoinedTelemetry;
+import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -9,12 +11,12 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 @TeleOp(name = "Shooter Test", group = "Test")
 public class ShooterTest extends OpMode {
-    private static final double STEP_RPM = 25;
-
+    private static final double STEP_RPM = 50;
     private Shooter shooter;
 
     @Override
     public void init() {
+        telemetry = new JoinedTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
         VoltageSensor voltageSensor = hardwareMap.voltageSensor.iterator().next();
         shooter = new Shooter(
                 new MotorEx(hardwareMap, "outtake1"),
@@ -22,7 +24,7 @@ public class ShooterTest extends OpMode {
                 voltageSensor);
         Shooter.manual = true;
         Shooter.manualVelocity = 0;
-        telemetry.addLine("D-pad up/down: +/-25 RPM");
+        telemetry.addLine("D-pad up/down: +/-50 RPM");
         telemetry.update();
     }
 
