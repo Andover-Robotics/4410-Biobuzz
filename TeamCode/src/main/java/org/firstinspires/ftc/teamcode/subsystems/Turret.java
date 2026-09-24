@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.bylazar.configurables.annotations.Configurable;
+import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.pedropathing.math.Vector2D;
@@ -8,7 +8,7 @@ import com.pedropathing.math.Velocity;
 import com.pedropathing.utils.Angle;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
-@Configurable
+@Config
 public class Turret {
     public static double targetX = 0;
     public static double targetY = 0;

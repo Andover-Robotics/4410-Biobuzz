@@ -10,6 +10,7 @@ public class BotOpMode extends OpMode {
     public void init() {
         Scheduler.reset();
         bot = new Bot(this);
+        telemetry = bot.telemetry;
 
         bot.schedulePeriodic();
     }

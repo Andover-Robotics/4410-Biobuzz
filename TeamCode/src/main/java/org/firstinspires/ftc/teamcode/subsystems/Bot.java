@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.bylazar.telemetry.JoinedTelemetry;
-import com.bylazar.telemetry.PanelsTelemetry;
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.ivy.commands.Commands;
@@ -27,10 +27,9 @@ public class Bot {
 
     public Bot(OpMode opMode) {
         hardwareMap = opMode.hardwareMap;
-        telemetry = new JoinedTelemetry(
+        telemetry = new MultipleTelemetry(
                 opMode.telemetry,
-                PanelsTelemetry.INSTANCE.getFtcTelemetry()
-        );
+                FtcDashboard.getInstance().getTelemetry());
         follower = Constants.create(hardwareMap);
         voltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
         intake = new Intake(new MotorEx(hardwareMap, "intake"));

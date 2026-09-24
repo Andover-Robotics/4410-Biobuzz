@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.bylazar.telemetry.JoinedTelemetry;
-import com.bylazar.telemetry.PanelsTelemetry;
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -16,7 +16,9 @@ public class ShooterTest extends OpMode {
 
     @Override
     public void init() {
-        telemetry = new JoinedTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
+        telemetry = new MultipleTelemetry(
+                telemetry,
+                FtcDashboard.getInstance().getTelemetry());
         VoltageSensor voltageSensor = hardwareMap.voltageSensor.iterator().next();
         shooter = new Shooter(
                 new MotorEx(hardwareMap, "outtake1"),

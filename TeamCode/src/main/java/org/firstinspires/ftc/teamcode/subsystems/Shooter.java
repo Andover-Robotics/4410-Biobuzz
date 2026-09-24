@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.bylazar.configurables.annotations.Configurable;
+import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.commands.Commands;
 import com.seattlesolvers.solverslib.controller.PIDFController;
@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
-@Configurable
+@Config
 public class Shooter {
     public static double kP = 0;
     public static double kI = 0;
@@ -28,8 +28,8 @@ public class Shooter {
     private static final double ENCODER_RPM_PER_TICK_PER_SECOND = 60.0 / 28.0;
 
     private static final InterpLUT VELOCITY_LOOKUP_TABLE = new InterpLUT()
-            .add(0,0)
-            .add(1,0)
+            .add(0, 0)
+            .add(1, 0)
             .createLUT();
 
     private final VoltageSensor voltageSensor;
