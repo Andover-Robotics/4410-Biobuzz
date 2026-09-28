@@ -13,10 +13,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 @Config
 public class Shooter {
-    public static double kP = 0;
+    public static double kP = 0.02;
     public static double kI = 0;
     public static double kD = 0;
-    public static double kF = 0;
+    public static double kF = 0.003;
     public static double windupRange = 0;
 
     public static double velocityTolerance = 100;
