@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.teleop.test;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.teamcode.subsystems.sensors.BB;
@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.util.ColorUtils;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Optional;
 
 @TeleOp(name = "Ramp Sensor Test", group = "Test")
 public class RampSensorTest extends OpMode {
@@ -43,9 +42,9 @@ public class RampSensorTest extends OpMode {
                 hardwareMap.get(DigitalChannel.class, "topBB"),
                 departedSize -> queue.pollFirst());
         color = new Color(
-                hardwareMap.get(ColorSensor.class, "color"),
+                hardwareMap.get(RevColorSensorV3.class, "color"),
                 hardwareMap.get(DigitalChannel.class, "bottomBBBottom"),
-                Optional.of(hardwareMap.get(DigitalChannel.class, "bottomBBTop")),
+                hardwareMap.get(DigitalChannel.class, "bottomBBTop"),
                 (size, detectedColor) -> queue.addLast(new BallReading(size, detectedColor)));
     }
 

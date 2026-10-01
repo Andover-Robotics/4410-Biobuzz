@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.sensors;
 
-import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.teamcode.util.ColorUtils;
@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.util.ColorUtils;
 import java.util.Optional;
 
 public class Color {
-    private final ColorSensor colorSensor;
+    private final RevColorSensorV3 colorSensor;
     private final BB breakBeam;
 
     private final OnEnter onEnter;
@@ -21,15 +21,11 @@ public class Color {
         void onEnter(BB.Ball size, ColorUtils.Color color);
     }
 
-    public Color(ColorSensor colorSensor, DigitalChannel bottomChannel, OnEnter onEnter) {
-        this(colorSensor, bottomChannel, Optional.empty(), onEnter);
-    }
-
-    public Color(ColorSensor colorSensor, DigitalChannel bottomChannel,
-                 Optional<DigitalChannel> topChannel, OnEnter onEnter) {
+    public Color(RevColorSensorV3 colorSensor, DigitalChannel bottomChannel,
+                 DigitalChannel topChannel, OnEnter onEnter) {
         this.colorSensor = colorSensor;
         this.onEnter = onEnter;
-        this.breakBeam = new BB(bottomChannel, topChannel, this::reportBall);
+        this.breakBeam = new BB(bottomChannel, Optional.of(topChannel), this::reportBall);
     }
 
     private void readColor() {

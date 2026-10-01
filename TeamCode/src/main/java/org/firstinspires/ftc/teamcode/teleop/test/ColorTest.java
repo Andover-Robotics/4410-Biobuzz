@@ -2,16 +2,14 @@ package org.firstinspires.ftc.teamcode.teleop.test;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.teamcode.subsystems.sensors.BB;
 import org.firstinspires.ftc.teamcode.subsystems.sensors.Color;
 import org.firstinspires.ftc.teamcode.util.ColorUtils;
-
-import java.util.Optional;
 
 @TeleOp(name = "Color Test", group = "Test")
 public class ColorTest extends OpMode {
@@ -27,9 +25,9 @@ public class ColorTest extends OpMode {
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry());
         color = new Color(
-                hardwareMap.get(ColorSensor.class, "color"),
+                hardwareMap.get(RevColorSensorV3.class, "color"),
                 hardwareMap.get(DigitalChannel.class, "bottomBB"),
-                Optional.of(hardwareMap.get(DigitalChannel.class, "topBB")),
+                hardwareMap.get(DigitalChannel.class, "topBB"),
                 (size, detectedColor) -> {
                     lastEnteredSize = size;
                     lastEnteredColor = detectedColor;
