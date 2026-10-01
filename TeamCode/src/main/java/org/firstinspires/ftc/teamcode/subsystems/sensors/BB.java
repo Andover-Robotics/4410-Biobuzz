@@ -9,8 +9,8 @@ import java.util.Optional;
 
 @Config
 public class BB {
-    public static double BLOCKED_DEBOUNCE_MS = 20;
-    public static double CLEAR_DEBOUNCE_MS = 100;
+    public static double blockedDebounceMs = 20;
+    public static double clearDebounceMs = 100;
 
     private final DigitalChannel bottomChannel;
     private final Optional<DigitalChannel> topChannel;
@@ -53,9 +53,9 @@ public class BB {
     private void readBeams() {
         bottomRawBroken = !bottomChannel.getState();
         boolean topRawBroken = topChannel.map(channel -> !channel.getState()).orElse(false);
-        bottomDebouncer.periodic(bottomRawBroken, BLOCKED_DEBOUNCE_MS, CLEAR_DEBOUNCE_MS);
+        bottomDebouncer.periodic(bottomRawBroken, blockedDebounceMs, clearDebounceMs);
         topChannel.ifPresent(channel -> topDebouncer.periodic(
-                topRawBroken, BLOCKED_DEBOUNCE_MS, CLEAR_DEBOUNCE_MS));
+                topRawBroken, blockedDebounceMs, clearDebounceMs));
 
         boolean bottomBroken = bottomDebouncer.getState();
         boolean topBroken = topDebouncer.getState();
