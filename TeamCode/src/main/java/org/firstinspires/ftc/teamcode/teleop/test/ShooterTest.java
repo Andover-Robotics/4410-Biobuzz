@@ -6,12 +6,13 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
+import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 @TeleOp(name = "Shooter Test", group = "Test")
 public class ShooterTest extends OpMode {
-    private static final double STEP_RPM = 50;
+    public static double STEP_RPM = 50;
     private Shooter shooter;
 
     @Override
@@ -23,10 +24,11 @@ public class ShooterTest extends OpMode {
         shooter = new Shooter(
                 new MotorEx(hardwareMap, "outtake1"),
                 new MotorEx(hardwareMap, "outtake2"),
+                new ServoEx(hardwareMap, "outtakeServo"),
                 voltageSensor);
         Shooter.manual = true;
         Shooter.manualVelocity = 0;
-        telemetry.addLine("D-pad up/down: +/-50 RPM");
+        telemetry.addData("Step RPM", STEP_RPM);
         telemetry.update();
     }
 
@@ -44,6 +46,11 @@ public class ShooterTest extends OpMode {
             Shooter.manualVelocity -= STEP_RPM;
         }
         Shooter.manualVelocity = Math.max(0, Shooter.manualVelocity);
+
+        if (gamepad1.aWasPressed()) {
+            shooter.setSize(shooter.getSize() == Shooter.Size.NECTAR
+                    ? Shooter.Size.POLLEN : Shooter.Size.NECTAR);
+        }
 
         shooter.periodic();
 

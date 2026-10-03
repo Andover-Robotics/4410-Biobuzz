@@ -5,12 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
+
 @Config
 public class TurretTest extends OpMode {
     private Turret turret;
     public static double testAngle = 0;
-
-
 
     @Override
     public void init(){
@@ -25,6 +24,12 @@ public class TurretTest extends OpMode {
     @Override
     public void loop() {
         Turret.manualPositionDegrees = testAngle;
+        turret.periodic();
+    }
+
+    @Override
+    public void stop() {
+        Turret.manual = false;
         turret.periodic();
     }
 }

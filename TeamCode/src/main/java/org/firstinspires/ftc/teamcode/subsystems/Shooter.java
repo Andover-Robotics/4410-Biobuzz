@@ -6,6 +6,7 @@ import com.pedropathing.ivy.commands.Commands;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
+import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
@@ -13,7 +14,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 @Config
 public class Shooter {
-    public static double kP = 0.02;
+    public static double nectarKP = 0.02;
+    public static double pollenKP = 0.02;
     public static double kI = 0;
     public static double kD = 0;
     public static double kF = 0.003;
@@ -27,14 +29,30 @@ public class Shooter {
 
     private static final double ENCODER_RPM_PER_TICK_PER_SECOND = 60.0 / 28.0;
 
-    private static final InterpLUT VELOCITY_LOOKUP_TABLE = new InterpLUT()
+    public enum Size {
+        NECTAR,
+        POLLEN
+    }
+
+    public static double NECTAR_SERVO_POSITION = 0.00;
+    public static double POLLEN_SERVO_POSITION = 0.00;
+
+    private Size size = Size.NECTAR;
+
+    private static final InterpLUT NECTAR_VELOCITY_LOOKUP_TABLE = new InterpLUT()
             .add(0, 0)
             .add(1, 0)
             .createLUT();
 
-    private final VoltageSensor voltageSensor;
+    private static final InterpLUT POLLEN_VELOCITY_LOOKUP_TABLE = new InterpLUT()
+            .add(0, 0)
+            .add(1, 0)
+            .createLUT();
+
     private final MotorEx motor1;
     private final MotorEx motor2;
+    private final ServoEx servo;
+    private final VoltageSensor voltageSensor;
     private final PIDFController controller;
 
     private boolean enabled;
@@ -49,18 +67,28 @@ public class Shooter {
     private double currentDrawOne;
     private double currentDrawTwo;
 
-    public Shooter(MotorEx motor1, MotorEx motor2, VoltageSensor voltageSensor) {
-        this.voltageSensor = voltageSensor;
+    public Shooter(MotorEx motor1, MotorEx motor2, ServoEx servo, VoltageSensor voltageSensor) {
         this.motor1 = motor1;
         this.motor2 = motor2;
+        this.servo = servo;
+        this.voltageSensor = voltageSensor;
         this.motor1.setRunMode(Motor.RunMode.RawPower);
         this.motor2.setRunMode(Motor.RunMode.RawPower);
 
-        controller = new PIDFController(kP, kI, kD, kF);
+        controller = new PIDFController(nectarKP, kI, kD, kF);
         controller.integrationControl.setIntegrationBounds(-windupRange, windupRange);
     }
 
     public void periodic() {
+        switch (size) {
+            case NECTAR:
+                this.servo.set(NECTAR_SERVO_POSITION);
+                break;
+            case POLLEN:
+                this.servo.set(POLLEN_SERVO_POSITION);
+                break;
+        }
+
         targetVelocity = requestedVelocity();
         updateMotorData();
         updateTolerance();
@@ -71,14 +99,25 @@ public class Shooter {
             return;
         }
 
-        controller.setPIDF(kP, kI, kD, kF);
+        controller.setPIDF(size == Size.NECTAR ? nectarKP : pollenKP, kI, kD, kF);
         controller.integrationControl.setIntegrationBounds(-windupRange, windupRange);
         double outputVolts = controller.calculate(realVelocity, targetVelocity);
         setPower(outputVolts / voltageSensor.getVoltage());
     }
 
     private double requestedVelocity() {
-        return manual ? manualVelocity : VELOCITY_LOOKUP_TABLE.get(distanceToGoal);
+        if (manual) {
+            return manualVelocity;
+        }
+
+        switch (size) {
+            case NECTAR:
+                return NECTAR_VELOCITY_LOOKUP_TABLE.get(distanceToGoal);
+            case POLLEN:
+                return POLLEN_VELOCITY_LOOKUP_TABLE.get(distanceToGoal);
+        }
+
+        throw new IllegalStateException();
     }
 
     private void updateMotorData() {
@@ -170,5 +209,13 @@ public class Shooter {
 
     public boolean isUsingPrimaryEncoder() {
         return usingPrimaryEncoder;
+    }
+
+    public Size getSize() {
+        return size;
+    }
+
+    public void setSize(Size size) {
+        this.size = size;
     }
 }

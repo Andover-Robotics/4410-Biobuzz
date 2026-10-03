@@ -39,6 +39,7 @@ public class Bot {
         outtake = new Shooter(
                 new MotorEx(hardwareMap, "outtake1"),
                 new MotorEx(hardwareMap, "outtake2"),
+                new ServoEx(hardwareMap, "outtakeServo"),
                 voltageSensor);
     }
 
