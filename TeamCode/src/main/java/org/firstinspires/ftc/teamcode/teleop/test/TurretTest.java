@@ -11,8 +11,10 @@ public class TurretTest extends OpMode {
     public static double testAngle = 0;
 
 
+
     @Override
     public void init(){
+        Turret.manual = true;
         turret = new Turret(
                 null,
                 new ServoEx(hardwareMap, "turret1"),
@@ -22,7 +24,6 @@ public class TurretTest extends OpMode {
 
     @Override
     public void loop() {
-        Turret.manual = true;
         Turret.manualPositionDegrees = testAngle;
         turret.periodic();
     }
