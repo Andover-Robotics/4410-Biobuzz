@@ -45,6 +45,7 @@ public class ColorUtils {
         }
 
         public boolean compareHSV(float[] other) {
+            update();
             return ColorUtils.compareHSV(color, other);
         }
 
