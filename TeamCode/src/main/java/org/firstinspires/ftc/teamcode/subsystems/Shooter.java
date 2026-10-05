@@ -77,6 +77,9 @@ public class Shooter {
 
         controller = new PIDFController(nectarKP, kI, kD, kF);
         controller.integrationControl.setIntegrationBounds(-windupRange, windupRange);
+
+        NECTAR_VELOCITY_LOOKUP_TABLE.createLUT();
+        POLLEN_VELOCITY_LOOKUP_TABLE.createLUT();
     }
 
     public void periodic() {
@@ -193,6 +196,14 @@ public class Shooter {
 
     public double getRealVelocity() {
         return realVelocity;
+    }
+
+    private double getCurrentDrawOne() {
+        return currentDrawOne;
+    }
+
+    private double getCurrentDrawTwo() {
+        return currentDrawTwo;
     }
 
     public boolean inTolerance() {
