@@ -24,4 +24,8 @@ public class Intake {
     public Command in() { return Commands.instant(() -> setPower(inPower)).requiring(motor); }
     public Command out() { return Commands.instant(() -> setPower(outPower)).requiring(motor); }
     public Command store() { return Commands.instant(() -> setPower(storePower)).requiring(motor); }
+
+    public boolean isOut() {
+        return motor.getRawPower() < 0;
+    }
 }
