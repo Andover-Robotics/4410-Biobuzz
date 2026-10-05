@@ -20,7 +20,7 @@ import java.util.Deque;
 public class RampSensorTest extends OpMode {
     private Intake intake;
     private Color color;
-    private BB topBeam;
+    private BB topBB;
 
     private final Deque<BallReading> queue = new ArrayDeque<>();
 
@@ -42,7 +42,7 @@ public class RampSensorTest extends OpMode {
         telemetry = new MultipleTelemetry(
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry());
-        topBeam = new BB(
+        topBB = new BB(
                 hardwareMap.get(DigitalChannel.class, "topBB"),
                 departedSize -> {
                     if (!intake.isOut()) {
@@ -84,13 +84,13 @@ public class RampSensorTest extends OpMode {
         }
 
         color.periodic();
-        topBeam.periodic();
+        topBB.periodic();
 
         telemetry.addData("Intake reversing", intake.isOut());
         telemetry.addData("Bottom color", color.getColor());
         float[] hsvValues = color.getHsvValues();
         telemetry.addData("Bottom HSV", "%.1f, %.3f, %.3f", hsvValues[0], hsvValues[1], hsvValues[2]);
-        telemetry.addData("Top blocked", topBeam.isBroken());
+        telemetry.addData("Top blocked", topBB.isBroken());
         telemetry.addData("Ramp", formatRampQueue());
         telemetry.update();
     }

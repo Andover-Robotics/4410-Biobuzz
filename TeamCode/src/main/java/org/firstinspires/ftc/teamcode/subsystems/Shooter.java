@@ -11,6 +11,7 @@ import com.seattlesolvers.solverslib.util.InterpLUT;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
 
 @Config
 public class Shooter {
@@ -22,7 +23,7 @@ public class Shooter {
     public static double windupRange = 0;
 
     public static double velocityTolerance = 100;
-    public static double inToleranceTimeSeconds = 0.150;
+    public static double inToleranceTimeMS = 150;
 
     public static boolean manual = false;
     public static double manualVelocity = 0;
@@ -54,13 +55,12 @@ public class Shooter {
     private final ServoEx servo;
     private final VoltageSensor voltageSensor;
     private final PIDFController controller;
+    private final BooleanDebouncer toleranceDebouncer = new BooleanDebouncer();
 
     private boolean enabled;
-    private boolean inTolerance;
     private boolean usingPrimaryEncoder = true;
     private boolean shooterMotorDisconnected;
 
-    private long toleranceStartNanos = -1;
     private double targetVelocity;
     private double distanceToGoal;
     private double realVelocity;
@@ -150,17 +150,7 @@ public class Shooter {
         boolean currentlyInTolerance = enabled
                 && Math.abs(targetVelocity - realVelocity) < velocityTolerance;
 
-        if (!currentlyInTolerance) {
-            toleranceStartNanos = -1;
-            inTolerance = false;
-            return;
-        }
-
-        if (toleranceStartNanos < 0) {
-            toleranceStartNanos = System.nanoTime();
-        }
-        inTolerance = (System.nanoTime() - toleranceStartNanos) / 1e9
-                >= inToleranceTimeSeconds;
+        toleranceDebouncer.periodic(currentlyInTolerance, inToleranceTimeMS, 0);
     }
 
     private void setPower(double power) {
@@ -178,8 +168,7 @@ public class Shooter {
 
     public void disable() {
         enabled = false;
-        inTolerance = false;
-        toleranceStartNanos = -1;
+        toleranceDebouncer.periodic(false, 0, 0);
     }
 
     public Command enableCommand() {
@@ -207,7 +196,7 @@ public class Shooter {
     }
 
     public boolean inTolerance() {
-        return inTolerance;
+        return toleranceDebouncer.getState();
     }
 
     public boolean isEnabled() {
