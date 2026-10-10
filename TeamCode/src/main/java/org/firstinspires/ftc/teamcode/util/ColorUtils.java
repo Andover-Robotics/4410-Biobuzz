@@ -19,15 +19,18 @@ public class ColorUtils {
     public static float[] nectarBlueColor = new float[] { 0, 0, 0 };
 
     public enum Color {
-        POLLEN(pollenColor),
-        NECTAR_RED(nectarRedColor),
-        NECTAR_BLUE(nectarBlueColor),
-        NONE(new float[] { -999, -999, -999 });
+        // https://www.gobilda.com/rgb-indicator-light-pwm-controlled/
+        POLLEN(pollenColor, 0.384f),
+        NECTAR_RED(nectarRedColor, 0.280f),
+        NECTAR_BLUE(nectarBlueColor, 0.611f),
+        NONE(new float[] { -999, -999, -999 }, 0.000f);
 
         private float[] color;
+        private float floodlightColor;
 
-        Color(float[] colors) {
+        Color(float[] colors, float floodlightColor) {
             this.color = colors;
+            this.floodlightColor = floodlightColor;
         }
 
         public void update() {
@@ -57,6 +60,10 @@ public class ColorUtils {
             }
 
             return Color.NONE;
+        }
+
+        public float getFloodlightColor() {
+            return floodlightColor;
         }
     }
 }
