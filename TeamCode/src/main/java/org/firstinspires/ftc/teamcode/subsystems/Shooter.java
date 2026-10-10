@@ -23,12 +23,10 @@ public class Shooter {
     public static double windupRange = 0;
 
     public static double velocityTolerance = 100;
-    public static double inToleranceTimeMS = 150;
+    public static double inToleranceTimeMs = 150;
 
     public static boolean manual = false;
     public static double manualVelocity = 0;
-
-    private static final double ENCODER_RPM_PER_TICK_PER_SECOND = 60.0 / 28.0;
 
     public enum Size {
         NECTAR,
@@ -124,8 +122,8 @@ public class Shooter {
     }
 
     private void updateMotorData() {
-        double primaryVelocity = motor1.getVelocity() * ENCODER_RPM_PER_TICK_PER_SECOND;
-        double backupVelocity = motor2.getVelocity() * ENCODER_RPM_PER_TICK_PER_SECOND;
+        double primaryVelocity = motor1.getVelocity() / motor1.getCPR() * 60;
+        double backupVelocity = motor2.getVelocity() / motor2.getCPR() * 60;
         realVelocity = usingPrimaryEncoder ? primaryVelocity : backupVelocity;
 
         currentDrawOne = motor1.getCurrent(CurrentUnit.AMPS);
@@ -150,7 +148,7 @@ public class Shooter {
         boolean currentlyInTolerance = enabled
                 && Math.abs(targetVelocity - realVelocity) < velocityTolerance;
 
-        toleranceDebouncer.periodic(currentlyInTolerance, inToleranceTimeMS, 0);
+        toleranceDebouncer.periodic(currentlyInTolerance, inToleranceTimeMs, 0);
     }
 
     private void setPower(double power) {

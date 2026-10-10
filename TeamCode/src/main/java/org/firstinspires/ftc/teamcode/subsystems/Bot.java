@@ -8,6 +8,7 @@ import com.pedropathing.ivy.commands.Commands;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
@@ -32,13 +33,13 @@ public class Bot {
                 FtcDashboard.getInstance().getTelemetry());
         follower = Constants.create(hardwareMap);
         voltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
-        intake = new Intake(new MotorEx(hardwareMap, "intake"));
+        intake = new Intake(new MotorEx(hardwareMap, "intake", Motor.GoBILDA.RPM_1150));
         turret = new Turret(follower,
                 new ServoEx(hardwareMap, "turret1"),
                 new ServoEx(hardwareMap, "turret2"));
         outtake = new Shooter(
-                new MotorEx(hardwareMap, "outtake1"),
-                new MotorEx(hardwareMap, "outtake2"),
+                new MotorEx(hardwareMap, "outtake1", Motor.GoBILDA.BARE),
+                new MotorEx(hardwareMap, "outtake2", Motor.GoBILDA.BARE),
                 new ServoEx(hardwareMap, "outtakeServo"),
                 voltageSensor);
     }

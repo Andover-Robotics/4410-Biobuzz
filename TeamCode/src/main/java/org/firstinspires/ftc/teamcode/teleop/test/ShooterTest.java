@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
@@ -13,7 +14,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 @TeleOp(name = "Shooter Test", group = "Test")
 public class ShooterTest extends OpMode {
     public static double STEP_RPM = 50;
-    private Shooter shooter;
+    private Shooter outtake;
 
     @Override
     public void init() {
@@ -21,9 +22,9 @@ public class ShooterTest extends OpMode {
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry());
         VoltageSensor voltageSensor = hardwareMap.voltageSensor.iterator().next();
-        shooter = new Shooter(
-                new MotorEx(hardwareMap, "outtake1"),
-                new MotorEx(hardwareMap, "outtake2"),
+        outtake = new Shooter(
+                new MotorEx(hardwareMap, "outtake1", Motor.GoBILDA.BARE),
+                new MotorEx(hardwareMap, "outtake2", Motor.GoBILDA.BARE),
                 new ServoEx(hardwareMap, "outtakeServo"),
                 voltageSensor);
         Shooter.manual = true;
@@ -34,7 +35,7 @@ public class ShooterTest extends OpMode {
 
     @Override
     public void start() {
-        shooter.enable();
+        outtake.enable();
     }
 
     @Override
@@ -48,22 +49,22 @@ public class ShooterTest extends OpMode {
         Shooter.manualVelocity = Math.max(0, Shooter.manualVelocity);
 
         if (gamepad1.aWasPressed()) {
-            shooter.setSize(shooter.getSize() == Shooter.Size.NECTAR
+            outtake.setSize(outtake.getSize() == Shooter.Size.NECTAR
                     ? Shooter.Size.POLLEN : Shooter.Size.NECTAR);
         }
 
-        shooter.periodic();
+        outtake.periodic();
 
-        telemetry.addData("Target RPM", shooter.getTargetVelocity());
-        telemetry.addData("Actual RPM", shooter.getRealVelocity());
-        telemetry.addData("At speed", shooter.inTolerance());
+        telemetry.addData("Target RPM", outtake.getTargetVelocity());
+        telemetry.addData("Actual RPM", outtake.getRealVelocity());
+        telemetry.addData("At speed", outtake.inTolerance());
         telemetry.update();
     }
 
     @Override
     public void stop() {
-        shooter.disable();
-        shooter.periodic();
+        outtake.disable();
+        outtake.periodic();
         Shooter.manual = false;
     }
 }
