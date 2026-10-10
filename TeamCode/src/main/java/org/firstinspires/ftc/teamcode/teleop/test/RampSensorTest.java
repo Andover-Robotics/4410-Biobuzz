@@ -45,7 +45,7 @@ public class RampSensorTest extends OpMode {
         topBB = new BB(
                 hardwareMap.get(DigitalChannel.class, "topBB"),
                 departedSize -> {
-                    if (!intake.isOut()) {
+                    if (!intake.isOut() && !queue.isEmpty()) {
                         queue.pollFirst();
                     }
                 });
@@ -85,6 +85,11 @@ public class RampSensorTest extends OpMode {
 
         color.periodic();
         topBB.periodic();
+        intake.periodic();
+
+        if (intake.isEmpty()) {
+            queue.clear();
+        }
 
         telemetry.addData("Intake reversing", intake.isOut());
         telemetry.addData("Bottom color", color.getColor());
