@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop.test;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -12,6 +13,7 @@ import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 @TeleOp(name = "Shooter Test", group = "Test")
+@Config
 public class ShooterTest extends OpMode {
     public static double STEP_RPM = 50;
     private Shooter outtake;

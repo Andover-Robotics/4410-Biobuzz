@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop.util;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -9,8 +10,9 @@ import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 import java.util.Map;
 
 @TeleOp(name = "Simple Servo Tester", group = "Test")
+@Config
 public class SimpleServoTester extends OpMode {
-    private static final double STEP_POSITION = 0.02;
+    public static double STEP_POSITION = 0.01;
 
     private ServoEx servo;
     private String[] servoNames;
@@ -73,6 +75,8 @@ public class SimpleServoTester extends OpMode {
         if (decreasePosition) {
             position -= STEP_POSITION;
         }
+        position = Math.max(0, Math.min(position, 1));
+
         if (increasePosition || decreasePosition) {
             servo.set(position);
         }
