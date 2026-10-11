@@ -94,7 +94,7 @@ public class RampSensorTest extends OpMode {
         topBB.periodic();
         intake.periodic();
 
-        if (intake.isEmpty()) {
+        if (intake.isOut() && intake.isEmpty()) {
             queue.clear();
         }
 
