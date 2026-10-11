@@ -9,9 +9,9 @@ import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import java.util.Map;
 
-@TeleOp(name = "Simple Servo Tester", group = "Test")
+@TeleOp(name = "Simple Servo Test", group = "Util")
 @Config
-public class SimpleServoTester extends OpMode {
+public class SimpleServoTest extends OpMode {
     public static double STEP_POSITION = 0.01;
 
     private ServoEx servo;

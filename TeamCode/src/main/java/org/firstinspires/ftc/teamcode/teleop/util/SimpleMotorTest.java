@@ -10,8 +10,8 @@ import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 
 import java.util.Map;
 
-@TeleOp(name = "Simple Motor Tester", group = "Test")
-public class SimpleMotorTester extends OpMode {
+@TeleOp(name = "Simple Motor Test", group = "Util")
+public class SimpleMotorTest extends OpMode {
     private MotorEx motor;
     private String[] motorNames;
     private int selectedMotorIndex;
