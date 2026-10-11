@@ -42,11 +42,11 @@ public class SimpleServoTester extends OpMode {
 
     private void updateSelectionTelemetry() {
         if (servoNames.length == 0) {
-            telemetry.addLine("No servos found in hardware map.");
+            telemetry.addLine("No servos found in hardware map");
         } else {
             telemetry.addData("Selected servo", servoNames[selectedServoIndex]);
-            telemetry.addLine("Press X to select the next servo.");
-            telemetry.addLine("Press Start when ready to test.");
+            telemetry.addLine("Press X to select the next servo");
+            telemetry.addLine("Press Start when ready to test");
         }
         telemetry.update();
     }
@@ -81,7 +81,7 @@ public class SimpleServoTester extends OpMode {
             servo.set(position);
         }
 
-        telemetry.addLine("D-pad Up/Down: increase/decrease position.");
+        telemetry.addLine("D-pad Up/Down: increase/decrease position");
         telemetry.addData("Servo", servoNames[selectedServoIndex]);
         telemetry.addData("Step position", STEP_POSITION);
         telemetry.addData("Position", "%.4f", servo.getRawPosition());

@@ -40,11 +40,11 @@ public class SimpleMotorTester extends OpMode {
 
     private void updateSelectionTelemetry() {
         if (motorNames.length == 0) {
-            telemetry.addLine("No motors found in hardware map.");
+            telemetry.addLine("No motors found in hardware map");
         } else {
             telemetry.addData("Selected motor", motorNames[selectedMotorIndex]);
-            telemetry.addLine("Press X to select the next motor.");
-            telemetry.addLine("Press Start when ready to test.");
+            telemetry.addLine("Press X to select the next motor");
+            telemetry.addLine("Press Start when ready to test");
         }
         telemetry.update();
     }
@@ -70,7 +70,7 @@ public class SimpleMotorTester extends OpMode {
         double power = -gamepad1.left_stick_y;
         motor.set(power);
 
-        telemetry.addLine("Left stick Y: motor power.");
+        telemetry.addLine("Left stick Y: motor power");
         telemetry.addData("Motor", motorNames[selectedMotorIndex]);
         telemetry.addData("Power", "%.2f", power);
         telemetry.addData("Encoder position", motor.getCurrentPosition());
