@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.commands.Commands;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
-import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
+import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
@@ -21,20 +21,20 @@ public class Intake {
     public static double minEmptyVelocity = 900;
     public static double inEmptyTimeMs = 150;
 
-    private final MotorEx motor;
+    private final MotorGroup motors;
     private final ServoEx gate;
     private final BooleanDebouncer emptyDebouncer = new BooleanDebouncer();
 
     private double realVelocity;
 
-    public Intake(MotorEx motor, ServoEx gate) {
-        this.motor = motor;
+    public Intake(MotorGroup motors, ServoEx gate) {
+        this.motors = motors;
         this.gate = gate;
-        motor.setRunMode(Motor.RunMode.RawPower);
+        motors.setRunMode(Motor.RunMode.RawPower);
     }
 
     public void setPower(double power) {
-        motor.set(power);
+        motors.set(power);
     }
 
     public void setGatePosition(double position) {
@@ -42,15 +42,15 @@ public class Intake {
     }
 
     public Command in() {
-        return Commands.instant(() -> setPower(inPower)).requiring(motor);
+        return Commands.instant(() -> setPower(inPower)).requiring(motors);
     }
 
     public Command out() {
-        return Commands.instant(() -> setPower(outPower)).requiring(motor);
+        return Commands.instant(() -> setPower(outPower)).requiring(motors);
     }
 
     public Command store() {
-        return Commands.instant(() -> setPower(storePower)).requiring(motor);
+        return Commands.instant(() -> setPower(storePower)).requiring(motors);
     }
 
     public Command openGate() {
@@ -62,7 +62,7 @@ public class Intake {
     }
 
     public void periodic() {
-        realVelocity = motor.getVelocity() / motor.getCPR() * 60;
+        realVelocity = motors.getVelocity() / motors.getCPR() * 60;
 
         updateTolerance();
     }
@@ -82,7 +82,7 @@ public class Intake {
     }
 
     public boolean isOut() {
-        return motor.getRawPower() < 0;
+        return motors.getRawPower() < 0;
     }
 
     public boolean isEmpty() {

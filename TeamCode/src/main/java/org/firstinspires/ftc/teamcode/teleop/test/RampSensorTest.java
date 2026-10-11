@@ -6,7 +6,9 @@ import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
+import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
@@ -39,7 +41,9 @@ public class RampSensorTest extends OpMode {
     public void init() {
         queue.clear();
         intake = new Intake(
-                new MotorEx(hardwareMap, "intake"),
+                new MotorGroup(
+                        new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150),
+                        new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150)),
                 new ServoEx(hardwareMap, "gate"));
 
         telemetry = new MultipleTelemetry(
