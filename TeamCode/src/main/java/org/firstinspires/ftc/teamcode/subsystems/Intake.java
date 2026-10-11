@@ -68,7 +68,7 @@ public class Intake {
     }
 
     public void updateTolerance() {
-        if (!isOut()) {
+        if (!isIn() && !isOut()) {
             return;
         }
 
@@ -79,6 +79,10 @@ public class Intake {
 
     private double getRealVelocity() {
         return realVelocity;
+    }
+
+    public boolean isIn() {
+        return motors.getRawPower() > 0;
     }
 
     public boolean isOut() {
