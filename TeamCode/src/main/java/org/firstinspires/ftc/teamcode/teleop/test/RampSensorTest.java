@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
+import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.sensors.BB;
@@ -37,7 +38,9 @@ public class RampSensorTest extends OpMode {
     @Override
     public void init() {
         queue.clear();
-        intake = new Intake(new MotorEx(hardwareMap, "intake"));
+        intake = new Intake(
+                new MotorEx(hardwareMap, "intake"),
+                new ServoEx(hardwareMap, "gate"));
 
         telemetry = new MultipleTelemetry(
                 telemetry,
