@@ -33,7 +33,9 @@ public class Bot {
                 FtcDashboard.getInstance().getTelemetry());
         follower = Constants.create(hardwareMap);
         voltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
-        intake = new Intake(new MotorEx(hardwareMap, "intake", Motor.GoBILDA.RPM_1150));
+        intake = new Intake(
+                new MotorEx(hardwareMap, "intake", Motor.GoBILDA.RPM_1150),
+                new ServoEx(hardwareMap, "gate"));
         turret = new Turret(follower,
                 new ServoEx(hardwareMap, "turret1"),
                 new ServoEx(hardwareMap, "turret2"));
