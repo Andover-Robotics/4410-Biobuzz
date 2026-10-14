@@ -31,7 +31,6 @@ public class TurretTest extends OpMode {
 
     @Override
     public void stop() {
-        turret.periodic();
         Turret.manual = false;
     }
 }

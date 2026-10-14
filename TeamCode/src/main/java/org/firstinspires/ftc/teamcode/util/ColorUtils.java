@@ -11,7 +11,7 @@ public class ColorUtils {
         float deltaR = a[0] - b[0];
         float deltaG = a[1] - b[1];
         float deltaB = a[2] - b[2];
-        return Math.sqrt(deltaR * deltaR + deltaB * deltaB + deltaG * deltaG) < distanceTolerance;
+        return Math.sqrt(deltaR * deltaR + deltaG * deltaG + deltaB * deltaB) < distanceTolerance;
     }
 
     public static float[] pollenColor = new float[] { 0, 0, 0 };
