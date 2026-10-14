@@ -5,13 +5,13 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class ColorUtils {
-    public static float hTolerance = 0;
-    public static float sTolerance = 0;
-    public static float vTolerance = 0;
+    public static float distanceTolerance = 5;
 
-    public static boolean compareHSV(float[] a, float[] b) {
-        return Math.abs(a[0] - b[0]) <= hTolerance && Math.abs(a[1] - b[1]) <= sTolerance
-                && Math.abs(a[2] - b[2]) <= vTolerance;
+    public static boolean rgbMatches(float[] a, float[] b) {
+        float deltaR = a[0] - b[0];
+        float deltaG = a[1] - b[1];
+        float deltaB = a[2] - b[2];
+        return Math.sqrt(deltaR * deltaR + deltaB * deltaB + deltaG * deltaG) < distanceTolerance;
     }
 
     public static float[] pollenColor = new float[] { 0, 0, 0 };
@@ -33,7 +33,7 @@ public class ColorUtils {
             this.floodlightColor = floodlightColor;
         }
 
-        public void update() {
+        private void update() {
             switch (this) {
                 case POLLEN:
                     color = pollenColor;
@@ -47,19 +47,23 @@ public class ColorUtils {
             }
         }
 
-        public boolean compareHSV(float[] other) {
+        public boolean rgbMatches(float[] other) {
             update();
-            return ColorUtils.compareHSV(color, other);
+            return ColorUtils.rgbMatches(color, other);
         }
 
         public static Color match(float[] color) {
             for (Color c : Color.values()) {
-                if (c.compareHSV(color)) {
+                if (c.rgbMatches(color)) {
                     return c;
                 }
             }
 
             return Color.NONE;
+        }
+
+        public float[] getColor() {
+            return color;
         }
 
         public float getFloodlightColor() {

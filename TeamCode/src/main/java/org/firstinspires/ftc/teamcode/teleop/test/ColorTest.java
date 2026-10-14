@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.sensors.BB;
 import org.firstinspires.ftc.teamcode.subsystems.sensors.Color;
 import org.firstinspires.ftc.teamcode.util.ColorUtils;
@@ -24,10 +25,11 @@ public class ColorTest extends OpMode {
         telemetry = new MultipleTelemetry(
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry());
+        telemetry.setDisplayFormat(Telemetry.DisplayFormat.HTML);
         color = new Color(
-                hardwareMap.get(RevColorSensorV3.class, "color"),
-                hardwareMap.get(DigitalChannel.class, "bottomBB"),
-                hardwareMap.get(DigitalChannel.class, "topBB"),
+                hardwareMap.get(RevColorSensorV3.class, "color1"),
+                hardwareMap.get(DigitalChannel.class, "bottomBBBottom"),
+                hardwareMap.get(DigitalChannel.class, "topBBBottom"),
                 (size, detectedColor) -> {
                     lastEnteredSize = size;
                     lastEnteredColor = detectedColor;
@@ -38,13 +40,19 @@ public class ColorTest extends OpMode {
     public void loop() {
         color.periodic();
 
-        float[] hsvValues = color.getHsvValues();
+        float[] rgbValues = color.getRgbValues();
+        int r = Math.round(rgbValues[0]);
+        int g = Math.round(rgbValues[1]);
+        int b = Math.round(rgbValues[2]);
 
-        telemetry.addData("HSV", "%.1f, %.3f, %.3f", hsvValues[0], hsvValues[1], hsvValues[2]);
-        telemetry.addData("Raw color match", ColorUtils.Color.match(hsvValues));
-        telemetry.addData("Beam broken (filtered)", color.isBroken());
-        telemetry.addData("Color match (current)", color.getColor());
-        telemetry.addData("Last entry", "%s (%s)", lastEnteredSize, lastEnteredColor);
+        telemetry.addData("RGB",
+                "<font color='#%02X%02X%02X'>%d %d %d</font>",
+                r, g, b, r, g, b);
+        telemetry.addData("Distance", color.getDistance());
+        telemetry.addData("Color match", ColorUtils.Color.match(rgbValues));
+        telemetry.addData("Color broken", color.isBroken());
+        telemetry.addData("Current color match", color.getColor());
+        telemetry.addData("Last entry", "%s %s", lastEnteredSize, lastEnteredColor);
         telemetry.update();
     }
 }

@@ -9,8 +9,8 @@ import java.util.Optional;
 
 @Config
 public class BB {
-    public static double blockedDebounceMs = 20;
-    public static double clearDebounceMs = 100;
+    public static double blockedDebounceMs = 10;
+    public static double clearDebounceMs = 10;
 
     private final DigitalChannel bottomChannel;
     private final Optional<DigitalChannel> topChannel;
@@ -19,8 +19,6 @@ public class BB {
     private final BooleanDebouncer bottomDebouncer = new BooleanDebouncer();
     private final BooleanDebouncer topDebouncer = new BooleanDebouncer();
 
-    private boolean broken;
-    private boolean bottomRawBroken;
     private boolean sawBottom;
     private boolean sawTop;
 
@@ -47,11 +45,11 @@ public class BB {
         this.topChannel.ifPresent(channel -> channel.setMode(DigitalChannel.Mode.INPUT));
 
         this.onLeave = onLeave;
-        readBeams();
+        read();
     }
 
-    private void readBeams() {
-        bottomRawBroken = !bottomChannel.getState();
+    private void read() {
+        boolean bottomRawBroken = !bottomChannel.getState();
         boolean topRawBroken = topChannel.map(channel -> !channel.getState()).orElse(false);
         bottomDebouncer.periodic(bottomRawBroken, blockedDebounceMs, clearDebounceMs);
         topChannel.ifPresent(channel -> topDebouncer.periodic(
@@ -59,40 +57,43 @@ public class BB {
 
         boolean bottomBroken = bottomDebouncer.getState();
         boolean topBroken = topDebouncer.getState();
-        broken = bottomBroken || topBroken || (broken && (bottomRawBroken || topRawBroken));
 
-        if (broken) {
+        if (bottomBroken) {
             sawBottom |= bottomBroken;
             sawTop |= topBroken;
         }
     }
 
+    private Ball getBallSize() {
+        if (!sawBottom) {
+            return Ball.NONE;
+        } else if (!topChannel.isPresent()) {
+            return Ball.BALL;
+        } else if (sawTop) {
+            return Ball.NECTAR;
+        } else {
+            return Ball.POLLEN;
+        }
+    }
+
     public void periodic() {
-        boolean wasBroken = broken;
-        readBeams();
+        boolean wasBroken = getBottomState();
+        read();
+        boolean broken = getBottomState();
 
         if (wasBroken && !broken) {
-            Ball size;
-            if (!sawBottom) {
-                size = Ball.NONE;
-            } else if (!topChannel.isPresent()) {
-                size = Ball.BALL;
-            } else if (sawTop) {
-                size = Ball.NECTAR;
-            } else {
-                size = Ball.POLLEN;
-            }
+            Ball size = getBallSize();
             sawBottom = false;
             sawTop = false;
             onLeave.onLeave(size);
         }
     }
 
-    public boolean isBroken() {
-        return broken;
+    public boolean getBottomState() {
+        return bottomDebouncer.getState();
     }
 
-    public boolean shouldUpdateColor() {
-        return bottomDebouncer.getState() && bottomRawBroken;
+    public boolean getTopState() {
+        return topDebouncer.getState();
     }
 }
