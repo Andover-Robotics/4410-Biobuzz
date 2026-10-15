@@ -6,6 +6,7 @@ import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
+import org.firstinspires.ftc.teamcode.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.util.ColorUtils;
 
 import java.util.Optional;
@@ -53,8 +54,15 @@ public class Color {
             case POLLEN:
                 return ColorUtils.Color.POLLEN;
             case NECTAR:
-                return color == ColorUtils.Color.NECTAR_RED || color == ColorUtils.Color.NECTAR_BLUE
-                        ? color : ColorUtils.Color.NONE;
+                if (color == ColorUtils.Color.NECTAR_RED || color == ColorUtils.Color.NECTAR_BLUE) {
+                    return color;
+                } else if (Bot.allianceColor == Bot.AllianceColor.RED) {
+                    return ColorUtils.Color.NECTAR_BLUE;
+                } else if (Bot.allianceColor == Bot.AllianceColor.BLUE) {
+                    return ColorUtils.Color.NECTAR_BLUE;
+                } else {
+                    return ColorUtils.Color.NONE;
+                }
             case BALL:
                 return color;
             default:
