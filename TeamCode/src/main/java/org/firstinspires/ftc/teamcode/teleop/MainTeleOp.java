@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.BotOpMode;
@@ -14,7 +13,7 @@ public class MainTeleOp extends BotOpMode {
 
     @Override
     public void start() {
-        Scheduler.schedule(bot.intake.store());
+
     }
 
     @Override

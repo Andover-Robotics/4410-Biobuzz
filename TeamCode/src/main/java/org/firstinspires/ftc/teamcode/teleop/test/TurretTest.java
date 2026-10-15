@@ -13,7 +13,7 @@ public class TurretTest extends OpMode {
     private Turret turret;
 
     @Override
-    public void init(){
+    public void init() {
         Turret.manual = true;
         Turret.angles = new double[] {0, 1};
         Turret.servoPositions = new double[] {0, 1};

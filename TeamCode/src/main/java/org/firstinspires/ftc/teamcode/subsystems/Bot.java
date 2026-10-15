@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
-import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -19,13 +18,12 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 public class Bot {
     public final HardwareMap hardwareMap;
     public final Telemetry telemetry;
+
+    public final Follower follower;
+    private final VoltageSensor voltageSensor;
     public final Intake intake;
     public final Turret turret;
     public final Shooter outtake;
-
-    public final VoltageSensor voltageSensor;
-
-    public final Follower follower;
 
     public Bot(OpMode opMode) {
         hardwareMap = opMode.hardwareMap;
@@ -35,9 +33,8 @@ public class Bot {
         follower = Constants.create(hardwareMap);
         voltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
         intake = new Intake(
-                new MotorGroup(
-                        new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150),
-                        new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150)),
+                new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150),
+                new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150),
                 new ServoEx(hardwareMap, "gate"));
         turret = new Turret(follower,
                 new ServoEx(hardwareMap, "turret1"),
