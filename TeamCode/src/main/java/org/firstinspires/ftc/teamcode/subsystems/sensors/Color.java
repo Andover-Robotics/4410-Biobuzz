@@ -1,24 +1,26 @@
 package org.firstinspires.ftc.teamcode.subsystems.sensors;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.broadcom.BroadcomColorSensor;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.util.ColorUtils;
 
 import java.util.Optional;
 
+@Config
 public class Color {
-    public static double distanceToleranceMm = 10;
+    public static double rawOpticalTolerance = 100;
 
     private final RevColorSensorV3 colorSensor;
     private final BB breakBeam;
-
     private final OnEnter onEnter;
 
-    private double distance;
-    private final float[] rgbValues = new float[3];
+    private double rawOptical;
+    private final float[] hsvValues = new float[3];
+    private final float[] detectedHsvValues = new float[3];
 
     @FunctionalInterface
     public interface OnEnter {
@@ -28,32 +30,28 @@ public class Color {
     public Color(RevColorSensorV3 colorSensor, DigitalChannel bottomChannel,
                  DigitalChannel topChannel, OnEnter onEnter) {
         this.colorSensor = colorSensor;
+
+        BroadcomColorSensor.Parameters params = colorSensor.getParameters().clone();
+        params.lightSensorMeasRate = BroadcomColorSensor.LSMeasurementRate.R25ms;
+        params.proximityMeasRate = BroadcomColorSensor.PSMeasurementRate.R12_5ms;
+        colorSensor.initialize(params);
+
         this.onEnter = onEnter;
         this.breakBeam = new BB(bottomChannel, Optional.of(topChannel), this::onLeave);
         read();
     }
 
     private void read() {
-        NormalizedRGBA colors = colorSensor.getNormalizedColors();
-        float maxChannel = Math.max(colors.red, Math.max(colors.green, colors.blue));
-        if (maxChannel <= 0) {
-            rgbValues[0] = 0;
-            rgbValues[1] = 0;
-            rgbValues[2] = 0;
-            return;
-        }
-        rgbValues[0] = colors.red / maxChannel * 255;
-        rgbValues[1] = colors.green / maxChannel * 255;
-        rgbValues[2] = colors.blue / maxChannel * 255;
+        rawOptical = colorSensor.rawOptical();
 
-        distance = colorSensor.getDistance(DistanceUnit.MM);
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+        android.graphics.Color.colorToHSV(colors.toColor(), hsvValues);
     }
 
     private static ColorUtils.Color correctColor(BB.Ball size, ColorUtils.Color color) {
         switch (size) {
             case POLLEN:
-                return color == ColorUtils.Color.POLLEN
-                        ? color : ColorUtils.Color.NONE;
+                return ColorUtils.Color.POLLEN;
             case NECTAR:
                 return color == ColorUtils.Color.NECTAR_RED || color == ColorUtils.Color.NECTAR_BLUE
                         ? color : ColorUtils.Color.NONE;
@@ -65,29 +63,39 @@ public class Color {
     }
 
     private void onLeave(BB.Ball size) {
-        ColorUtils.Color color = getColor();
-        ColorUtils.Color correctedColor = correctColor(size, color);
+        ColorUtils.Color detectedColor = ColorUtils.Color.match(detectedHsvValues);
+        ColorUtils.Color correctedColor = correctColor(size, detectedColor);
         onEnter.onEnter(size, correctedColor);
     }
 
     public void periodic() {
-        breakBeam.periodic();
         read();
+        breakBeam.periodic();
+
+        if (isBroken()) {
+            detectedHsvValues[0] = hsvValues[0];
+            detectedHsvValues[1] = hsvValues[1];
+            detectedHsvValues[2] = hsvValues[2];
+        }
     }
 
     public ColorUtils.Color getColor() {
-        return isBroken() ? ColorUtils.Color.match(rgbValues) : ColorUtils.Color.NONE;
+        return isBroken() ? ColorUtils.Color.match(hsvValues) : ColorUtils.Color.NONE;
     }
 
-    public double getDistance() {
-        return distance;
+    public double getRawOptical() {
+        return rawOptical;
     }
 
-    public float[] getRgbValues() {
-        return rgbValues;
+    public float[] getHsvValues() {
+        return hsvValues;
+    }
+
+    public float[] getDetectedHsvValues() {
+        return detectedHsvValues;
     }
 
     public boolean isBroken() {
-        return breakBeam.getBottomState() && distance < distanceToleranceMm;
+        return breakBeam.getBottomState() && rawOptical > rawOpticalTolerance;
     }
 }

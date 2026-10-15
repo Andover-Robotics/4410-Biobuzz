@@ -5,13 +5,16 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class ColorUtils {
-    public static float distanceTolerance = 5;
+    public static float hTolerance = 0;
+    public static float sTolerance = 0;
+    public static float vTolerance = 0;
 
-    public static boolean rgbMatches(float[] a, float[] b) {
-        float deltaR = a[0] - b[0];
-        float deltaG = a[1] - b[1];
-        float deltaB = a[2] - b[2];
-        return Math.sqrt(deltaR * deltaR + deltaG * deltaG + deltaB * deltaB) < distanceTolerance;
+    public static boolean hsvMatches(float[] a, float[] b) {
+        float deltaH = Math.abs(a[0] - b[0]) % 360;
+        deltaH = Math.min(deltaH, 360 - deltaH);
+        float deltaS = Math.abs(a[1] - b[1]);
+        float deltaV = Math.abs(a[2] - b[2]);
+        return deltaH < hTolerance && deltaS < sTolerance && deltaV < vTolerance;
     }
 
     public static float[] pollenColor = new float[] { 0, 0, 0 };
@@ -47,14 +50,14 @@ public class ColorUtils {
             }
         }
 
-        public boolean rgbMatches(float[] other) {
+        public boolean hsvMatches(float[] other) {
             update();
-            return ColorUtils.rgbMatches(color, other);
+            return this != NONE && ColorUtils.hsvMatches(color, other);
         }
 
         public static Color match(float[] color) {
             for (Color c : Color.values()) {
-                if (c.rgbMatches(color)) {
+                if (c.hsvMatches(color)) {
                     return c;
                 }
             }
@@ -63,6 +66,7 @@ public class ColorUtils {
         }
 
         public float[] getColor() {
+            update();
             return color;
         }
 

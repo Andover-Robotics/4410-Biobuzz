@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @TeleOp(name = "BB Test", group = "Test")
 public class BBTest extends OpMode {
-    private BB bb;
+    private BB bottomBB;
     private Intake intake;
 
     private int objectsPassed = 0;
@@ -28,9 +28,9 @@ public class BBTest extends OpMode {
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry());
 
-        DigitalChannel topBB = hardwareMap.get(DigitalChannel.class, "topBBBottom");
-        DigitalChannel bottomBB = hardwareMap.get(DigitalChannel.class, "bottomBBBottom");
-        bb = new BB(topBB, Optional.of(bottomBB), size -> {
+        DigitalChannel bottomBBBottomDigital = hardwareMap.get(DigitalChannel.class, "bottomBBBottom");
+        DigitalChannel topBBBottomDigital = hardwareMap.get(DigitalChannel.class, "topBBBottom");
+        bottomBB = new BB(bottomBBBottomDigital, Optional.of(topBBBottomDigital), size -> {
             lastPassedSize = size;
             objectsPassed++;
         });
@@ -51,14 +51,14 @@ public class BBTest extends OpMode {
         } else if (gamepad1.right_bumper) {
             intake.outtake();
         } else {
-            intake.store();
+            intake.stop();
         }
 
-        bb.periodic();
+        bottomBB.periodic();
         intake.periodic();
 
-        telemetry.addData("Bottom BB", bb.getBottomState());
-        telemetry.addData("Top BB", bb.getTopState());
+        telemetry.addData("Bottom BB bottom", bottomBB.getBottomState());
+        telemetry.addData("Bottom BB top", bottomBB.getTopState());
         telemetry.addData("Objects passed", objectsPassed);
         telemetry.addData("Last passed size", lastPassedSize);
         telemetry.update();

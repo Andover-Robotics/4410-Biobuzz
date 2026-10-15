@@ -4,28 +4,26 @@ import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.teamcode.util.ColorUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Display {
     private final List<ServoEx> lights;
 
-    private List<ColorUtils.Color> colors;
+    private List<ColorUtils.Color> colors = List.of();
 
     public Display(List<ServoEx> lights) {
         this.lights = lights;
     }
 
     public void setColors(List<ColorUtils.Color> colors) {
-        this.colors = colors;
-
-        if (colors.size() != lights.size()) {
-            throw new IllegalStateException();
-        }
+        this.colors = new ArrayList<>(colors);
     }
 
     public void periodic() {
         for (int i = 0; i < lights.size(); i++) {
-            lights.get(i).set(colors.get(i).getFloodlightColor());
+            ColorUtils.Color color = i < colors.size() ? colors.get(i) : ColorUtils.Color.NONE;
+            lights.get(i).set(color.getFloodlightColor());
         }
     }
 }
