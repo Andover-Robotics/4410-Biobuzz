@@ -25,6 +25,14 @@ public class Bot {
     public final Turret turret;
     public final Shooter outtake;
 
+    public enum AllianceColor {
+        RED,
+        BLUE,
+        NONE
+    }
+
+    public static AllianceColor allianceColor = AllianceColor.RED;
+
     public Bot(OpMode opMode) {
         hardwareMap = opMode.hardwareMap;
         telemetry = new MultipleTelemetry(
