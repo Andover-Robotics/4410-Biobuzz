@@ -11,8 +11,9 @@ public class BotOpMode extends OpMode {
         Scheduler.reset();
         bot = new Bot(this);
         telemetry = bot.telemetry;
-
         bot.schedulePeriodic();
+        bot.intake.closeGate();
+        bot.intake.flowerUp();
     }
 
     @Override

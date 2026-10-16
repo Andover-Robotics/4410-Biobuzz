@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.commands.Commands;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
+import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
@@ -17,40 +18,51 @@ public class Intake {
 
     public static double gateOpenPosition = 0.290;
     public static double gateClosedPosition = 0.440;
+    public static double flowerUpPosition = 0;
+    public static double flowerDownPosition = 0;
 
     public static double minEmptyVelocity = 900;
     public static double inEmptyTimeMs = 150;
 
-    private final MotorGroup motors;
+    private final MotorEx motor1;
+    private final MotorEx motor2;
     private final ServoEx gate;
+    private final ServoEx flower;
     private final BooleanDebouncer emptyDebouncer = new BooleanDebouncer();
 
-    private double realVelocity;
+    private double realBottomVelocity, realTopVelocity;
 
-    public Intake(MotorGroup motors, ServoEx gate) {
-        this.motors = motors;
+    public Intake(MotorEx motor1, MotorEx motor2, ServoEx gate, ServoEx flower) {
+        this.motor1 = motor1;
+        this.motor2 = motor2;
         this.gate = gate;
-        motors.setRunMode(Motor.RunMode.RawPower);
+        this.flower = flower;
+        motor1.setRunMode(Motor.RunMode.RawPower);
+        motor2.setRunMode(Motor.RunMode.RawPower);
     }
 
     public void setPower(double power) {
-        motors.set(power);
+        motor1.set(power);
+        motor2.set(power);
     }
 
     public void setGatePosition(double position) {
         this.gate.set(position);
     }
+    public void setFlowerPosition(double position) {
+        this.flower.set(position);
+    }
 
     public Command in() {
-        return Commands.instant(() -> setPower(inPower)).requiring(motors);
+        return Commands.instant(() -> setPower(inPower)).requiring(motor1,motor2);
     }
 
     public Command out() {
-        return Commands.instant(() -> setPower(outPower)).requiring(motors);
+        return Commands.instant(() -> setPower(outPower)).requiring(motor1,motor2);
     }
 
     public Command store() {
-        return Commands.instant(() -> setPower(storePower)).requiring(motors);
+        return Commands.instant(() -> setPower(storePower)).requiring(motor1,motor2);
     }
 
     public Command openGate() {
@@ -61,9 +73,16 @@ public class Intake {
         return Commands.instant(() -> setGatePosition(gateClosedPosition)).requiring(gate);
     }
 
-    public void periodic() {
-        realVelocity = motors.getVelocity() / motors.getCPR() * 60;
+    public Command flowerUp() {
+        return Commands.instant(() -> setFlowerPosition(flowerUpPosition)).requiring(flower);
+    }
+    public Command flowerDown() {
+        return Commands.instant(() -> setFlowerPosition(flowerDownPosition)).requiring(flower);
+    }
 
+    public void periodic() {
+        realTopVelocity = motor1.getVelocity() / motor1.getCPR() * 60;
+        realBottomVelocity  = motor2.getVelocity() / motor2.getCPR() * 60;
         updateTolerance();
     }
 
@@ -72,21 +91,25 @@ public class Intake {
             return;
         }
 
-        boolean currentlyEmpty = Math.abs(realVelocity) > minEmptyVelocity;
+        boolean currentlyEmpty = Math.abs(realTopVelocity) > minEmptyVelocity;
 
         emptyDebouncer.periodic(currentlyEmpty, inEmptyTimeMs, 0);
     }
 
-    private double getRealVelocity() {
-        return realVelocity;
+    private double getRealBottomVelocity() {
+        return realBottomVelocity;
+    }
+
+    private double getRealTopVelocity() {
+        return realTopVelocity;
     }
 
     public boolean isIn() {
-        return motors.getRawPower() > 0;
+        return motor1.getRawPower() > 0;
     }
 
     public boolean isOut() {
-        return motors.getRawPower() < 0;
+        return motor1.getRawPower() < 0;
     }
 
     public boolean isEmpty() {
