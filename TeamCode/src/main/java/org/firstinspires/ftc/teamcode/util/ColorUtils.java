@@ -5,9 +5,9 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class ColorUtils {
-    public static float hTolerance = 0;
-    public static float sTolerance = 0;
-    public static float vTolerance = 0;
+    public static float hTolerance = 70f;
+    public static float sTolerance = 1f;
+    public static float vTolerance = 1f;
 
     public static boolean hsvMatches(float[] a, float[] b) {
         float deltaH = Math.abs(a[0] - b[0]) % 360;
@@ -17,19 +17,19 @@ public class ColorUtils {
         return deltaH < hTolerance && deltaS < sTolerance && deltaV < vTolerance;
     }
 
-    public static float[] pollenColor = new float[] { 0, 0, 0 };
-    public static float[] nectarRedColor = new float[] { 0, 0, 0 };
-    public static float[] nectarBlueColor = new float[] { 0, 0, 0 };
+    public static float[] pollenColor = new float[] { 100f, 0f, 01f };
+    public static float[] nectarRedColor = new float[] { 30f, 0f, 0f };
+    public static float[] nectarBlueColor = new float[] { 230f, 0f, 0f };
 
     public enum Color {
         // https://www.gobilda.com/rgb-indicator-light-pwm-controlled/
         POLLEN(pollenColor, 0.384f),
         NECTAR_RED(nectarRedColor, 0.280f),
         NECTAR_BLUE(nectarBlueColor, 0.611f),
-        NONE(new float[] { -999, -999, -999 }, 0.000f);
+        NONE(new float[] { -999, -999, -999 }, 1.000f);
 
         private float[] color;
-        private float floodlightColor;
+        private final float floodlightColor;
 
         Color(float[] colors, float floodlightColor) {
             this.color = colors;

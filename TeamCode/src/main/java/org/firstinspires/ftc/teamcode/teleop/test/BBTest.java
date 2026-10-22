@@ -32,7 +32,11 @@ public class BBTest extends OpMode {
         DigitalChannel topBBBottomDigital = hardwareMap.get(DigitalChannel.class, "topBBBottom");
         bottomBB = new BB(bottomBBBottomDigital, Optional.of(topBBBottomDigital), size -> {
             lastPassedSize = size;
-            objectsPassed++;
+            if (intake.getState() == Intake.State.OUTTAKE) {
+                objectsPassed--;
+            } else {
+                objectsPassed++;
+            }
         });
 
         MotorEx intake1 = new MotorEx(hardwareMap, "intake1", Motor.GoBILDA.RPM_1150);
@@ -47,7 +51,7 @@ public class BBTest extends OpMode {
     @Override
     public void loop() {
         if (gamepad1.left_bumper) {
-            intake.intake();
+            intake.intakeFull();
         } else if (gamepad1.right_bumper) {
             intake.outtake();
         } else {

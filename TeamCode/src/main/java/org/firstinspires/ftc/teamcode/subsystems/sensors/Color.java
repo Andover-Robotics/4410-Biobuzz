@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Config
 public class Color {
-    public static double rawOpticalTolerance = 100;
+    public static double rawOpticalTolerance = 300;
 
     private final RevColorSensorV3 colorSensor;
     private final BB breakBeam;
@@ -77,13 +77,19 @@ public class Color {
     }
 
     public void periodic() {
-        read();
+        periodic(true);
+    }
+
+    public void periodic(boolean sampleColor) {
         breakBeam.periodic();
 
-        if (isBroken()) {
-            detectedHsvValues[0] = hsvValues[0];
-            detectedHsvValues[1] = hsvValues[1];
-            detectedHsvValues[2] = hsvValues[2];
+        if (sampleColor) {
+            read();
+            if (isBroken()) {
+                detectedHsvValues[0] = hsvValues[0];
+                detectedHsvValues[1] = hsvValues[1];
+                detectedHsvValues[2] = hsvValues[2];
+            }
         }
     }
 

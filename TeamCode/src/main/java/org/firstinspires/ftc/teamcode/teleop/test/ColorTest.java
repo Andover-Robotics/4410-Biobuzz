@@ -56,7 +56,7 @@ public class ColorTest extends OpMode {
     @Override
     public void loop() {
         if (gamepad1.left_bumper) {
-            intake.intake();
+            intake.intakeFull();
         } else if (gamepad1.right_bumper) {
             intake.outtake();
         } else {

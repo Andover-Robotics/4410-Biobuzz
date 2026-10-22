@@ -41,7 +41,7 @@ public class Bot {
         follower = Constants.create(hardwareMap);
         voltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
         intake = new Intake(
-                new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150),
+                new MotorEx(hardwareMap, "intake1", Motor.GoBILDA.RPM_1150),
                 new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150),
                 new ServoEx(hardwareMap, "gate"));
         turret = new Turret(follower,

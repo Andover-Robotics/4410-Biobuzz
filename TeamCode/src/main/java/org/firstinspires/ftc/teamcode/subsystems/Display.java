@@ -5,12 +5,13 @@ import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 import org.firstinspires.ftc.teamcode.util.ColorUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Display {
     private final List<ServoEx> lights;
 
-    private List<ColorUtils.Color> colors = List.of();
+    private List<ColorUtils.Color> colors = Collections.emptyList();
 
     public Display(List<ServoEx> lights) {
         this.lights = lights;

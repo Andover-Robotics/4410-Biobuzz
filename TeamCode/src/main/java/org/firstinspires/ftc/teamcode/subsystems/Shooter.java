@@ -81,13 +81,10 @@ public class Shooter {
     }
 
     public void periodic() {
-        switch (size) {
-            case NECTAR:
-                this.servo.set(NECTAR_SERVO_POSITION);
-                break;
-            case POLLEN:
-                this.servo.set(POLLEN_SERVO_POSITION);
-                break;
+        if (size == Size.NECTAR) {
+            servo.set(NECTAR_SERVO_POSITION);
+        } else if (size == Size.POLLEN) {
+            servo.set(POLLEN_SERVO_POSITION);
         }
 
         targetVelocity = requestedVelocity();
@@ -111,11 +108,10 @@ public class Shooter {
             return manualVelocity;
         }
 
-        switch (size) {
-            case NECTAR:
-                return NECTAR_VELOCITY_LOOKUP_TABLE.get(distanceToGoal);
-            case POLLEN:
-                return POLLEN_VELOCITY_LOOKUP_TABLE.get(distanceToGoal);
+        if (size == Size.NECTAR) {
+            return NECTAR_VELOCITY_LOOKUP_TABLE.get(distanceToGoal);
+        } else if (size == Size.POLLEN) {
+            return POLLEN_VELOCITY_LOOKUP_TABLE.get(distanceToGoal);
         }
 
         throw new IllegalStateException();
