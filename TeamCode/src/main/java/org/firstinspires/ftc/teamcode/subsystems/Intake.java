@@ -5,8 +5,7 @@ import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
+import java.util.Optional;
 
 @Config
 public class Intake {
@@ -17,18 +16,9 @@ public class Intake {
     public static double gateOpenPosition = 0.290;
     public static double gateClosedPosition = 0.480;
 
-    public static double inStallTimeMs = 250;
-
-    public static double lowLowCurrent = 2300;
-    public static double lowHighCurrent = 2500;
-    public static double highLowCurrent = 3300;
-    public static double highHighCurrent = 10000;
-
     private final MotorEx topMotor;
     private final MotorEx bottomMotor;
     private final ServoEx gate;
-    private final BooleanDebouncer topStalledDebouncer = new BooleanDebouncer();
-    private final BooleanDebouncer bottomStalledDebouncer = new BooleanDebouncer();
 
     public enum State {
         INTAKE_FULL,
@@ -38,11 +28,9 @@ public class Intake {
         STOP
     }
 
-    private State state;
-    private State previousState;
+    private Optional<RampSensors> rampSensors = Optional.empty();
 
-    private double topCurrent;
-    private double bottomCurrent;
+    private State state;
 
     public boolean gateClosed = true;
 
@@ -108,47 +96,14 @@ public class Intake {
     }
 
     public void periodic() {
-        updateMotorData();
-        updateTolerance();
-        updateMotors();
-
-        previousState = state;
-    }
-
-    private void updateMotorData() {
-        topCurrent = topMotor.getCurrent(CurrentUnit.MILLIAMPS);
-        bottomCurrent = bottomMotor.getCurrent(CurrentUnit.MILLIAMPS);
-    }
-
-    public static boolean isCurrentlyStalled(double current) {
-        return (current > lowLowCurrent && current < lowHighCurrent)
-                || (current > highLowCurrent && current < highHighCurrent);
-    }
-
-    private void updateTolerance() {
-        if (state != previousState) {
-            topStalledDebouncer.periodic(false, inStallTimeMs, 0);
-            bottomStalledDebouncer.periodic(false, inStallTimeMs, 0);
-        }
-
-        if (state == State.INTAKE || state == State.INTAKE_FULL) {
-            boolean topCurrentlyStalled = topStalledDebouncer.getState() || isCurrentlyStalled(topCurrent);
-            boolean bottomCurrentlyStalled = bottomStalledDebouncer.getState() || isCurrentlyStalled(bottomCurrent);
-
-            topStalledDebouncer.periodic(topCurrentlyStalled, inStallTimeMs, 0);
-            bottomStalledDebouncer.periodic(bottomCurrentlyStalled, inStallTimeMs, 0);
-        }
-    }
-
-    private void updateMotors() {
         switch (state) {
             case INTAKE_FULL:
                 topMotor.set(inPower);
                 bottomMotor.set(inPower);
                 break;
             case INTAKE:
-                topMotor.set(topStalledDebouncer.getState() ? stallPower : inPower);
-                bottomMotor.set(bottomStalledDebouncer.getState() ? stallPower : inPower);
+                topMotor.set(getTopStalled() ? stallPower : inPower);
+                bottomMotor.set(getBottomStalled() ? stallPower : inPower);
                 break;
             case OUTTAKE:
                 topMotor.set(outPower);
@@ -165,23 +120,21 @@ public class Intake {
         }
     }
 
-    public boolean getTopStalled() {
-        return topStalledDebouncer.getState();
-    }
-
-    public boolean getBottomStalled() {
-        return bottomStalledDebouncer.getState();
-    }
-
-    public double getTopCurrent() {
-        return topCurrent;
-    }
-
-    public double getBottomCurrent() {
-        return bottomCurrent;
+    public void setRampSensors(RampSensors rampSensors) {
+        this.rampSensors = Optional.of(rampSensors);
     }
 
     public State getState() {
         return state;
+    }
+
+    public boolean getTopStalled() {
+        return rampSensors.map((rampSensors) -> rampSensors.getQueueSize() <= 2)
+                .orElse(false);
+    }
+
+    public boolean getBottomStalled() {
+        return rampSensors.map((rampSensors) -> rampSensors.getQueueSize() > 2)
+                .orElse(false);
     }
 }

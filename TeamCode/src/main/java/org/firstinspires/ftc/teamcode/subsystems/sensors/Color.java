@@ -34,7 +34,7 @@ public class Color {
 
         BroadcomColorSensor.Parameters params = colorSensor.getParameters().clone();
         params.lightSensorMeasRate = BroadcomColorSensor.LSMeasurementRate.R25ms;
-        params.proximityMeasRate = BroadcomColorSensor.PSMeasurementRate.R12_5ms;
+        params.proximityMeasRate = BroadcomColorSensor.PSMeasurementRate.R6_25ms;
         colorSensor.initialize(params);
 
         this.onEnter = onEnter;
