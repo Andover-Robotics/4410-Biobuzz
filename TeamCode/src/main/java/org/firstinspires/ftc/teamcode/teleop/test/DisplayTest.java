@@ -13,7 +13,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @TeleOp(name = "Display Test", group = "Test")
 public class DisplayTest extends LinearOpMode {
-    private List<ServoEx> servos;
     private Display display;
 
     public ColorUtils.Color randomColor() {
@@ -34,18 +33,16 @@ public class DisplayTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        servos = List.of(
+        display = new Display(List.of(
                 new ServoEx(hardwareMap, "display1"),
                 new ServoEx(hardwareMap, "display2"),
                 new ServoEx(hardwareMap, "display3"),
-                new ServoEx(hardwareMap, "display4"));
-
-        display = new Display(servos);
+                new ServoEx(hardwareMap, "display4")));
 
         waitForStart();
 
         while (opModeIsActive() && !isStopRequested()) {
-            display.setColors(randomColors(servos.size()));
+            display.setColors(randomColors(4));
             display.periodic();
 
             sleep(1000);

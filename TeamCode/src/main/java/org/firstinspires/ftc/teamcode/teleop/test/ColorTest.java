@@ -25,6 +25,12 @@ public class ColorTest extends OpMode {
 
     private Intake intake;
 
+    public void onEnter(BB.Ball size, ColorUtils.Color color) {
+        lastEnteredSize = size;
+        lastEnteredColor = color;
+        objectsPassed++;
+    }
+
     @Override
     public void init() {
         objectsPassed = 0;
@@ -38,11 +44,7 @@ public class ColorTest extends OpMode {
                 hardwareMap.get(RevColorSensorV3.class, "color1"),
                 hardwareMap.get(DigitalChannel.class, "bottomBBBottom"),
                 hardwareMap.get(DigitalChannel.class, "topBBBottom"),
-                (size, detectedColor) -> {
-                    objectsPassed++;
-                    lastEnteredSize = size;
-                    lastEnteredColor = detectedColor;
-                });
+                this::onEnter);
 
         MotorEx intake1 = new MotorEx(hardwareMap, "intake1", Motor.GoBILDA.RPM_1150);
         MotorEx intake2 = new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150);
@@ -79,10 +81,10 @@ public class ColorTest extends OpMode {
         telemetry.addData("V", hsvValues[2]);
         telemetry.addData("Detected HSV", "%.1f %.3f %.3f",
                 detectedHsvValues[0], detectedHsvValues[1], detectedHsvValues[2]);
-        telemetry.addData("Raw optical", color.getRawOptical());
         telemetry.addData("Color match", ColorUtils.Color.match(hsvValues));
-        telemetry.addData("Color broken", color.isBroken());
         telemetry.addData("Current color match", color.getColor());
+        telemetry.addData("Raw optical", color.getRawOptical());
+        telemetry.addData("Color broken", color.isBroken());
         telemetry.addData("Objects passed", objectsPassed);
         telemetry.addData("Last entry", "%s %s", lastEnteredSize, lastEnteredColor);
         telemetry.update();

@@ -14,9 +14,6 @@ public class TurretTest extends OpMode {
 
     @Override
     public void init() {
-        Turret.manual = true;
-        Turret.angles = new double[] {0, 1};
-        Turret.servoPositions = new double[] {0, 1};
         turret = new Turret(
                 null,
                 new ServoEx(hardwareMap, "turret1"),
@@ -25,7 +22,6 @@ public class TurretTest extends OpMode {
 
     @Override
     public void loop() {
-        Turret.manualPositionDegrees = gamepad1.left_stick_x * 0.5 + 0.5;
         turret.periodic();
     }
 

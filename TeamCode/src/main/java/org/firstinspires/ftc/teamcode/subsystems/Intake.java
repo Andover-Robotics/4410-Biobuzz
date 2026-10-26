@@ -5,6 +5,8 @@ import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
+import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
+
 import java.util.Optional;
 
 @Config
@@ -33,6 +35,10 @@ public class Intake {
     private State state;
 
     public boolean gateClosed = true;
+
+    public static double inStallTimeMs = 200;
+    public final BooleanDebouncer topDebouncer = new BooleanDebouncer();
+    public final BooleanDebouncer bottomDebouncer = new BooleanDebouncer();
 
     public Intake(MotorEx topMotor, MotorEx bottomMotor, ServoEx gate) {
         this.topMotor = topMotor;
@@ -96,14 +102,17 @@ public class Intake {
     }
 
     public void periodic() {
+        topDebouncer.periodic(isTopFull(), inStallTimeMs, 0);
+        bottomDebouncer.periodic(isBottomFull(), inStallTimeMs, 0);
+
         switch (state) {
             case INTAKE_FULL:
                 topMotor.set(inPower);
                 bottomMotor.set(inPower);
                 break;
             case INTAKE:
-                topMotor.set(getTopStalled() ? stallPower : inPower);
-                bottomMotor.set(getBottomStalled() ? stallPower : inPower);
+                topMotor.set(isTopStalled() ? stallPower : inPower);
+                bottomMotor.set(isBottomStalled() ? stallPower : inPower);
                 break;
             case OUTTAKE:
                 topMotor.set(outPower);
@@ -128,13 +137,21 @@ public class Intake {
         return state;
     }
 
-    public boolean getTopStalled() {
-        return rampSensors.map((rampSensors) -> rampSensors.getQueueSize() <= 2)
+    private boolean isTopFull() {
+        return rampSensors.map((rampSensors) -> rampSensors.getQueueSize() >= 2)
                 .orElse(false);
     }
 
-    public boolean getBottomStalled() {
-        return rampSensors.map((rampSensors) -> rampSensors.getQueueSize() > 2)
+    private boolean isBottomFull() {
+        return rampSensors.map((rampSensors) -> rampSensors.getQueueSize() == 4)
                 .orElse(false);
+    }
+
+    public boolean isTopStalled() {
+        return topDebouncer.getState();
+    }
+
+    public boolean isBottomStalled() {
+        return bottomDebouncer.getState();
     }
 }

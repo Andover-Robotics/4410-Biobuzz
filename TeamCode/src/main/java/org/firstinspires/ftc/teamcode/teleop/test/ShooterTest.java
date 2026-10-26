@@ -16,28 +16,31 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 @Config
 public class ShooterTest extends OpMode {
     public static double STEP_RPM = 50;
-    private Shooter outtake;
+    private Shooter shooter;
 
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry());
+
         VoltageSensor voltageSensor = hardwareMap.voltageSensor.iterator().next();
-        outtake = new Shooter(
+
+        shooter = new Shooter(
                 new MotorEx(hardwareMap, "shooter1", Motor.GoBILDA.BARE),
                 new MotorEx(hardwareMap, "shooter2", Motor.GoBILDA.BARE),
                 new ServoEx(hardwareMap, "shooterServo"),
                 voltageSensor);
         Shooter.manual = true;
         Shooter.manualVelocity = 0;
+
         telemetry.addData("Step RPM", STEP_RPM);
         telemetry.update();
     }
 
     @Override
     public void start() {
-        outtake.enable();
+        shooter.enable();
     }
 
     @Override
@@ -51,22 +54,22 @@ public class ShooterTest extends OpMode {
         Shooter.manualVelocity = Math.max(0, Shooter.manualVelocity);
 
         if (gamepad1.aWasPressed()) {
-            outtake.setSize(outtake.getSize() == Shooter.Size.NECTAR
+            shooter.setSize(shooter.getSize() == Shooter.Size.NECTAR
                     ? Shooter.Size.POLLEN : Shooter.Size.NECTAR);
         }
 
-        outtake.periodic();
+        shooter.periodic();
 
-        telemetry.addData("Target RPM", outtake.getTargetVelocity());
-        telemetry.addData("Actual RPM", outtake.getRealVelocity());
-        telemetry.addData("At speed", outtake.inTolerance());
+        telemetry.addData("Target RPM", shooter.getTargetVelocity());
+        telemetry.addData("Actual RPM", shooter.getRealVelocity());
+        telemetry.addData("At speed", shooter.inTolerance());
         telemetry.update();
     }
 
     @Override
     public void stop() {
-        outtake.disable();
-        outtake.periodic();
+        shooter.disable();
+        shooter.periodic();
         Shooter.manual = false;
     }
 }

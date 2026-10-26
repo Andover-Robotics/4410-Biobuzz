@@ -19,8 +19,17 @@ public class BBTest extends OpMode {
     private BB bottomBB;
     private Intake intake;
 
-    private int objectsPassed = 0;
-    private BB.Ball lastPassedSize = BB.Ball.NONE;
+    private int objectsEntered = 0;
+    private BB.Ball lastEnteredSize = BB.Ball.NONE;
+
+    public void onEnter(BB.Ball size) {
+        lastEnteredSize = size;
+        if (intake.getState() == Intake.State.OUTTAKE) {
+            objectsEntered--;
+        } else {
+            objectsEntered++;
+        }
+    }
 
     @Override
     public void init() {
@@ -28,16 +37,9 @@ public class BBTest extends OpMode {
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry());
 
-        DigitalChannel bottomBBBottomDigital = hardwareMap.get(DigitalChannel.class, "bottomBBBottom");
-        DigitalChannel topBBBottomDigital = hardwareMap.get(DigitalChannel.class, "topBBBottom");
-        bottomBB = new BB(bottomBBBottomDigital, Optional.of(topBBBottomDigital), size -> {
-            lastPassedSize = size;
-            if (intake.getState() == Intake.State.OUTTAKE) {
-                objectsPassed--;
-            } else {
-                objectsPassed++;
-            }
-        });
+        bottomBB = new BB(hardwareMap.get(DigitalChannel.class, "bottomBBBottom"),
+                Optional.of(hardwareMap.get(DigitalChannel.class, "topBBBottom")),
+                this::onEnter);
 
         MotorEx intake1 = new MotorEx(hardwareMap, "intake1", Motor.GoBILDA.RPM_1150);
         MotorEx intake2 = new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150);
@@ -63,8 +65,8 @@ public class BBTest extends OpMode {
 
         telemetry.addData("Bottom BB bottom", bottomBB.getBottomState());
         telemetry.addData("Bottom BB top", bottomBB.getTopState());
-        telemetry.addData("Objects passed", objectsPassed);
-        telemetry.addData("Last passed size", lastPassedSize);
+        telemetry.addData("Objects entered", objectsEntered);
+        telemetry.addData("Last entered size", lastEnteredSize);
         telemetry.update();
     }
 }

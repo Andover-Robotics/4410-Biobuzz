@@ -65,7 +65,7 @@ public class RampSensorTest extends OpMode {
     @Override
     public void loop() {
         if (gamepad1.left_bumper) {
-            intake.intakeFull();
+            intake.intake();
         } else if (gamepad1.right_bumper) {
             intake.outtake();
         } else {
@@ -86,6 +86,8 @@ public class RampSensorTest extends OpMode {
 
         telemetry.addData("Ramp", rampSensors);
         telemetry.addData("Length", rampSensors.getLength());
+        telemetry.addData("Top stalled", intake.isTopStalled());
+        telemetry.addData("Bottom stalled", intake.isBottomStalled());
         telemetry.update();
     }
 
