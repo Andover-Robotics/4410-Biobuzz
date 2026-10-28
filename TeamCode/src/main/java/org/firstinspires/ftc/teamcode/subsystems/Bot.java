@@ -70,7 +70,9 @@ public class Bot {
                 new MotorEx(hardwareMap, "outtake1", Motor.GoBILDA.BARE),
                 new MotorEx(hardwareMap, "outtake2", Motor.GoBILDA.BARE),
                 new ServoEx(hardwareMap, "outtakeServo"),
-                voltageSensor);
+                voltageSensor,
+                intake,
+                rampSensors);
     }
 
     public void schedulePeriodic() {

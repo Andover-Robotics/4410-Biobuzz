@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static com.pedropathing.ivy.groups.Groups.sequential;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.commands.Commands;
@@ -33,8 +35,10 @@ public class Shooter {
         POLLEN
     }
 
-    public static double NECTAR_SERVO_POSITION = 0.00;
-    public static double POLLEN_SERVO_POSITION = 0.00;
+    public static double nectarServoPosition = 0.00;
+    public static double pollenServoPosition = 0.00;
+
+    public static double shootAllPollenTime = 0.0;
 
     private Size size = Size.NECTAR;
 
@@ -53,6 +57,8 @@ public class Shooter {
     private final ServoEx servo;
     private final VoltageSensor voltageSensor;
     private final PIDFController controller;
+    private final Intake intake;
+    private final RampSensors rampSensors;
     private final BooleanDebouncer toleranceDebouncer = new BooleanDebouncer();
 
     private boolean enabled;
@@ -65,11 +71,15 @@ public class Shooter {
     private double currentDrawOne;
     private double currentDrawTwo;
 
-    public Shooter(MotorEx motor1, MotorEx motor2, ServoEx servo, VoltageSensor voltageSensor) {
+    public Shooter(MotorEx motor1, MotorEx motor2, ServoEx servo, VoltageSensor voltageSensor,
+                   Intake intake, RampSensors rampSensors) {
         this.motor1 = motor1;
         this.motor2 = motor2;
         this.servo = servo;
         this.voltageSensor = voltageSensor;
+        this.intake = intake;
+        this.rampSensors = rampSensors;
+
         this.motor1.setRunMode(Motor.RunMode.RawPower);
         this.motor2.setRunMode(Motor.RunMode.RawPower);
 
@@ -82,9 +92,9 @@ public class Shooter {
 
     public void periodic() {
         if (size == Size.NECTAR) {
-            servo.set(NECTAR_SERVO_POSITION);
+            servo.set(nectarServoPosition);
         } else if (size == Size.POLLEN) {
-            servo.set(POLLEN_SERVO_POSITION);
+            servo.set(pollenServoPosition);
         }
 
         targetVelocity = requestedVelocity();
@@ -211,5 +221,22 @@ public class Shooter {
 
     public void setSize(Size size) {
         this.size = size;
+    }
+
+    public Command shootAllPollen() {
+        return sequential(
+                Commands.instant(intake::intakeFull),
+                Commands.instant(this::enable),
+                Commands.waitUntil(this::inTolerance),
+                Commands.instant(intake::openGate),
+                Commands.waitMs(shootAllPollenTime).requiring(this),
+                Commands.instant(this::disable),
+                Commands.instant(intake::stop),
+                Commands.instant(() -> {
+                    for (int i = 0; i < rampSensors.getLength(); i++) {
+                        rampSensors.removeFromQueueShooting();
+                    }
+                })
+        );
     }
 }

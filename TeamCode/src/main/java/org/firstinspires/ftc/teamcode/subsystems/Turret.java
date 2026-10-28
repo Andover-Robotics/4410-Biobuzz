@@ -10,16 +10,24 @@ import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 @Config
 public class Turret {
-    public static double targetX = 0;
-    public static double targetY = 0;
-    public static double shooterOffsetX = 0;
+    private static final double HALF_FIELD = 70.5;
+
+    public static Pose frontTargetPoseRed = new Pose(HALF_FIELD - 12, HALF_FIELD + 12);
+    public static Pose backTargetPoseRed = new Pose(HALF_FIELD - 12, HALF_FIELD - 12);
+
+    public static Pose frontTargetPoseBlue = new Pose(HALF_FIELD + 12, HALF_FIELD + 12);
+    public static Pose backTargetPoseBlue = new Pose(HALF_FIELD + 12, HALF_FIELD - 12);
+
+    private Vector2D aimPoint;
+
+    public static double shooterOffsetX = -2.5;
     public static double shooterOffsetY = 0;
 
-    public static double lowLimitDegrees = -150;
-    public static double highLimitDegrees = 150;
+    public static double lowLimitDegrees = -135;
+    public static double highLimitDegrees = 135;
 
-    public static double[] angles = new double[] {0, 0};
-    public static double[] servoPositions = new double[] {0, 0};
+    public static double[] angles = new double[] {0, -90};
+    public static double[] servoPositions = new double[] {0.50, 0.21};
 
     public static boolean manual = false;
     public static double manualPositionDegrees = 0;
@@ -27,7 +35,7 @@ public class Turret {
     public static double G = 386.09;
     public static double heightDeltaInches = 0;
     public static double hoodAngle = 20;
-    public static boolean velocityCompensation = true;
+    public static boolean velocityCompensation = false;
 
     private final Follower follower;
     private final ServoEx servo1;
@@ -62,7 +70,9 @@ public class Turret {
         Vector2D robotPosition = robotPose.toVector2D();
         Vector2D shooterOffset = Vector2D.cartesian(shooterOffsetX, shooterOffsetY)
                 .rotate(robotPose.heading());
-        Vector2D delta = aimPoint().minus(robotPosition.plus(shooterOffset));
+
+        aimPoint = getAimPoint();
+        Vector2D delta = aimPoint.minus(robotPosition.plus(shooterOffset));
 
         if (velocityCompensation && robotVelocity.toVector2D().magnitude() > 0.1) {
             delta = applyVelocityCompensation(robotVelocity.toVector2D(), delta);
@@ -77,8 +87,23 @@ public class Turret {
         targetPositionDegrees = wrapAndClamp(targetRadians);
     }
 
-    private Vector2D aimPoint() {
-        return Vector2D.cartesian(targetX, targetY);
+    private static Pose getTargetPose(double y) {
+        if (Bot.allianceColor == Bot.AllianceColor.RED) {
+            if (y < HALF_FIELD) {
+                return backTargetPoseRed;
+            } else {
+                return frontTargetPoseRed;
+            }
+        } else if (Bot.allianceColor == Bot.AllianceColor.BLUE) {
+            if (y < HALF_FIELD) {
+                return backTargetPoseBlue;
+            } else {
+                return frontTargetPoseBlue;
+            }
+        } else {
+            Bot.allianceColor = Bot.AllianceColor.RED;
+            return getTargetPose(y);
+        }
     }
 
     private static Vector2D applyVelocityCompensation(
@@ -137,6 +162,10 @@ public class Turret {
 
     public double getAdjustable() {
         return adjustableDegrees;
+    }
+
+    public Vector2D getAimPoint() {
+        return aimPoint;
     }
 
     public void setAdjustable(double adjustableDegrees) {

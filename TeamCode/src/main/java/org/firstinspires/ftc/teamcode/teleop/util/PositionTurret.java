@@ -7,13 +7,13 @@ import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 
-@TeleOp(name = "Zero Turret", group = "Util")
+@TeleOp(name = "Position Turret", group = "Util")
 @Config
-public class ZeroTurret extends OpMode {
+public class PositionTurret extends OpMode {
     private Turret turret;
 
     @Override
-    public void init(){
+    public void init() {
         Turret.manual = true;
         Turret.angles = new double[] {0, 1};
         Turret.servoPositions = new double[] {0, 1};
@@ -25,8 +25,16 @@ public class ZeroTurret extends OpMode {
 
     @Override
     public void loop() {
-        Turret.manualPositionDegrees = 0;
+        if (gamepad1.dpadLeftWasPressed()) {
+            Turret.manualPositionDegrees -= 0.01;
+        } else if (gamepad1.dpadRightWasPressed()) {
+            Turret.manualPositionDegrees += 0.01;
+        }
+        Turret.manualPositionDegrees = Math.max(0, Math.min(Turret.manualPositionDegrees, 1));
         turret.periodic();
+
+        telemetry.addData("Position", Turret.manualPositionDegrees);
+        telemetry.update();
     }
 
     @Override

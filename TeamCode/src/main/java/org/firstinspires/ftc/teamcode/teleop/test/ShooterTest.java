@@ -30,7 +30,9 @@ public class ShooterTest extends OpMode {
                 new MotorEx(hardwareMap, "shooter1", Motor.GoBILDA.BARE),
                 new MotorEx(hardwareMap, "shooter2", Motor.GoBILDA.BARE),
                 new ServoEx(hardwareMap, "shooterServo"),
-                voltageSensor);
+                voltageSensor,
+                null,
+                null);
         Shooter.manual = true;
         Shooter.manualVelocity = 0;
 

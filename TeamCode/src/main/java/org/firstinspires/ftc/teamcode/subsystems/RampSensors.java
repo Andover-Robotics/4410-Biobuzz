@@ -44,7 +44,7 @@ public class RampSensors {
     private int length = 0;
     private boolean displayDirty = true;
 
-    private void addToQueue(BallReading ballReading) {
+    public void addToQueueIntaking(BallReading ballReading) {
         if (length >= maxPushLength) {
             return;
         }
@@ -60,11 +60,29 @@ public class RampSensors {
         displayDirty = true;
     }
 
-    private void removeFromQueue() {
+    public void removeFromQueueOuttaking() {
         BallReading ballReading;
 
         if (!queue.isEmpty()) {
             ballReading = queue.pollFirst();
+        } else {
+            return;
+        }
+
+        if (ballReading.getSize() == BB.Ball.NECTAR) {
+            length -= NECTAR_SIZE;
+        } else if (ballReading.getSize() == BB.Ball.POLLEN) {
+            length -= POLLEN_SIZE;
+        }
+
+        displayDirty = true;
+    }
+
+    public void removeFromQueueShooting() {
+        BallReading ballReading;
+
+        if (!queue.isEmpty()) {
+            ballReading = queue.pollLast();
         } else {
             return;
         }
@@ -87,12 +105,13 @@ public class RampSensors {
                 topChannel,
                 (size, color) -> {
                     if (intake.getState() == Intake.State.OUTTAKE) {
-                        removeFromQueue();
+                        removeFromQueueOuttaking();
                     } else if (intake.getState() == Intake.State.INTAKE
                             || intake.getState()  == Intake.State.INTAKE_FULL) {
-                        addToQueue(new BallReading(size, color));
+                        addToQueueIntaking(new BallReading(size, color));
                     }
                 });
+
         this.display = display;
     }
 
