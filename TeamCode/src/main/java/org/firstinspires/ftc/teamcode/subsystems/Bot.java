@@ -34,8 +34,7 @@ public class Bot {
 
     public enum AllianceColor {
         RED,
-        BLUE,
-        NONE
+        BLUE
     }
 
     public static AllianceColor allianceColor = AllianceColor.RED;

@@ -19,6 +19,7 @@ import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.subsystems.Display;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.RampSensors;
@@ -86,9 +87,6 @@ public class RampSensorTest extends OpMode {
                 follower,
                 new ServoEx(hardwareMap, "turret1"),
                 new ServoEx(hardwareMap, "turret2"));
-
-        // follower.setPose(new Pose(14.0 / 2, 13.75 / 2, Math.toRadians(0)));
-        follower.setPose(new Pose(14.0 / 2, 141.5 - 13.75 / 2, Math.toRadians(-90)));
     }
 
     @Override
@@ -118,6 +116,22 @@ public class RampSensorTest extends OpMode {
             Scheduler.schedule(shooter.shootAllPollen());
         }
 
+        if (gamepad1.bWasPressed()) {
+            if (Bot.allianceColor == Bot.AllianceColor.RED) {
+                Bot.allianceColor = Bot.AllianceColor.BLUE;
+            } else if (Bot.allianceColor == Bot.AllianceColor.BLUE) {
+                Bot.allianceColor = Bot.AllianceColor.RED;
+            }
+        }
+
+        if (gamepad1.xWasPressed()) {
+            if (Bot.allianceColor == Bot.AllianceColor.RED) {
+                follower.setPose(new Pose(14.0 / 2, 141.5 - 13.75 / 2, Math.toRadians(-90)));
+            } else if (Bot.allianceColor == Bot.AllianceColor.BLUE) {
+                follower.setPose(new Pose(141.5 - 14.0 / 2, 141.5 - 13.75 / 2, Math.toRadians(-90)));
+            }
+        }
+
         telemetry.addData("Ramp", rampSensors);
         telemetry.addData("Length", rampSensors.getLength());
         telemetry.addData("Top stalled", intake.isTopStalled());
@@ -127,19 +141,20 @@ public class RampSensorTest extends OpMode {
         telemetry.addData("Actual RPM", shooter.getRealVelocity());
         telemetry.addData("At speed", shooter.inTolerance());
 
-        Pose pose = follower.pose();
-        Vector2D aimPoint = turret.getAimPoint();
-        telemetry.addData("Pose", "%f %f %f",
-                pose.x(), pose.y(), Math.toDegrees(pose.heading()));
-        telemetry.addData("Aim Point", "%f %f", aimPoint.x(), aimPoint.y());
-
-        telemetry.update();
+        telemetry.addData("Alliance", Bot.allianceColor);
 
         follower.update();
         intake.periodic();
         rampSensors.periodic();
         shooter.periodic();
         turret.periodic();
+
+        Pose pose = follower.pose();
+        Vector2D aimPoint = turret.getAimPoint();
+        telemetry.addData("Pose", "%f %f %f",
+                pose.x(), pose.y(), Math.toDegrees(pose.heading()));
+        telemetry.addData("Aim Point", "%f %f", aimPoint.x(), aimPoint.y());
+        telemetry.update();
 
         Scheduler.execute();
     }

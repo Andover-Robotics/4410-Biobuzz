@@ -23,8 +23,8 @@ public class Turret {
     public static double shooterOffsetX = -2.5;
     public static double shooterOffsetY = 0;
 
-    public static double lowLimitDegrees = -135;
-    public static double highLimitDegrees = 135;
+    public static double lowLimitDegrees = -30;
+    public static double highLimitDegrees = 180;
 
     public static double[] angles = new double[] {0, -90};
     public static double[] servoPositions = new double[] {0.50, 0.21};
@@ -71,7 +71,7 @@ public class Turret {
         Vector2D shooterOffset = Vector2D.cartesian(shooterOffsetX, shooterOffsetY)
                 .rotate(robotPose.heading());
 
-        aimPoint = getAimPoint();
+        aimPoint = getAimPoint(robotPose.y()).toVector2D();
         Vector2D delta = aimPoint.minus(robotPosition.plus(shooterOffset));
 
         if (velocityCompensation && robotVelocity.toVector2D().magnitude() > 0.1) {
@@ -87,7 +87,7 @@ public class Turret {
         targetPositionDegrees = wrapAndClamp(targetRadians);
     }
 
-    private static Pose getTargetPose(double y) {
+    private static Pose getAimPoint(double y) {
         if (Bot.allianceColor == Bot.AllianceColor.RED) {
             if (y < HALF_FIELD) {
                 return backTargetPoseRed;
@@ -100,10 +100,9 @@ public class Turret {
             } else {
                 return frontTargetPoseBlue;
             }
-        } else {
-            Bot.allianceColor = Bot.AllianceColor.RED;
-            return getTargetPose(y);
         }
+
+        throw new IllegalStateException();
     }
 
     private static Vector2D applyVelocityCompensation(
