@@ -25,8 +25,8 @@ public class BB {
     private boolean sawTop;
 
     public enum Ball {
-        NECTAR(28),
-        POLLEN(36),
+        NECTAR(36),
+        POLLEN(28),
         BALL(0),
         NONE(0);
 
