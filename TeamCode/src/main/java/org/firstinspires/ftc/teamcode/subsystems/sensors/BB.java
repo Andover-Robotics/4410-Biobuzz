@@ -25,19 +25,22 @@ public class BB {
     private boolean sawTop;
 
     public enum Ball {
-        NECTAR,
-        POLLEN,
-        BALL,
-        NONE;
+        NECTAR(28),
+        POLLEN(36),
+        BALL(0),
+        NONE(0);
+
+        private int diameter;
+
+        Ball(int diameter) {
+            this.diameter = diameter;
+        }
 
         public int getDiameter() {
-            switch (this) {
-                case NECTAR:
-                    return 36;
-                case POLLEN:
-                    return 28;
-                default:
-                    throw new IllegalStateException();
+            if (diameter > 0) {
+                return diameter;
+            } else {
+                throw new IllegalStateException();
             }
         }
     }
