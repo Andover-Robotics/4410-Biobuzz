@@ -134,7 +134,7 @@ public class Intake {
 
     public void updateTelemetry() {
         telemetry.addData("Intake/State", state);
-        telemetry.addData("Intake/Gate", isGateClosed() ? "CLOSED" : "OPEN");
+        telemetry.addData("Intake/Gate", gateClosed ? "CLOSED" : "OPEN");
         telemetry.addData("Intake/Top stalled", isTopStalled());
         telemetry.addData("Intake/Bottom stalled", isBottomStalled());
     }

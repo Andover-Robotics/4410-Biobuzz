@@ -61,6 +61,7 @@ public class Shooter {
     private final PIDFController controller;
     private final Intake intake;
     private final RampSensors rampSensors;
+    private final Turret turret;
     private final BooleanDebouncer toleranceDebouncer = new BooleanDebouncer();
 
     private boolean enabled;
@@ -68,14 +69,13 @@ public class Shooter {
     private boolean shooterMotorDisconnected;
 
     private double targetVelocity;
-    private double distanceToGoal;
     private double realVelocity;
     private double currentDrawOne;
     private double currentDrawTwo;
 
     public Shooter(Telemetry telemetry, MotorEx motor1, MotorEx motor2,
                    ServoEx servo, VoltageSensor voltageSensor,
-                   Intake intake, RampSensors rampSensors) {
+                   Intake intake, RampSensors rampSensors, Turret turret) {
         this.telemetry = telemetry;
         this.motor1 = motor1;
         this.motor2 = motor2;
@@ -83,6 +83,7 @@ public class Shooter {
         this.voltageSensor = voltageSensor;
         this.intake = intake;
         this.rampSensors = rampSensors;
+        this.turret = turret;
 
         this.motor1.setRunMode(Motor.RunMode.RawPower);
         this.motor2.setRunMode(Motor.RunMode.RawPower);
@@ -118,21 +119,23 @@ public class Shooter {
     }
 
     public void updateTelemetry() {
-        telemetry.addData("Shooter/Enabled", isEnabled());
-        telemetry.addData("Shooter/Size", getSize());
-        telemetry.addData("Shooter/Target velocity", getTargetVelocity());
-        telemetry.addData("Shooter/Actual velocity", getRealVelocity());
+        telemetry.addData("Shooter/Enabled", enabled);
+        telemetry.addData("Shooter/Size", size);
+        telemetry.addData("Shooter/Target velocity", targetVelocity);
+        telemetry.addData("Shooter/Actual velocity", realVelocity);
         telemetry.addData("Shooter/At speed", inTolerance());
         telemetry.addData("Shooter/Motor 1 current", currentDrawOne);
         telemetry.addData("Shooter/Motor 2 current", currentDrawTwo);
-        telemetry.addData("Shooter/Encoder", isUsingPrimaryEncoder() ? "PRIMARY" : "BACKUP");
-        telemetry.addData("Shooter/Motor disconnect detected", isShooterMotorDisconnected());
+        telemetry.addData("Shooter/Encoder", usingPrimaryEncoder ? "PRIMARY" : "BACKUP");
+        telemetry.addData("Shooter/Motor disconnect detected", shooterMotorDisconnected);
     }
 
     private double requestedVelocity() {
         if (manual) {
             return manualVelocity;
         }
+
+        double distanceToGoal = turret.getDistanceToGoal();
 
         switch (size) {
             case NECTAR:
@@ -177,10 +180,6 @@ public class Shooter {
     private void setPower(double power) {
         motor1.set(power);
         motor2.set(power);
-    }
-
-    public void setDistanceToGoal(double distanceToGoal) {
-        this.distanceToGoal = distanceToGoal;
     }
 
     public void enable() {

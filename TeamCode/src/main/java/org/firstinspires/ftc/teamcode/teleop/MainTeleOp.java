@@ -33,7 +33,7 @@ public class MainTeleOp extends BotOpMode {
                 -gamepad1.right_stick_x * driveSpeed));
 
         if (gamepad2.dpadDownWasPressed()) {
-            Scheduler.schedule(bot.outtake.shootAllPollen());
+            Scheduler.schedule(bot.shooter.shootAllPollen());
         }
 
         if (gamepad1.rightStickButtonWasPressed()) {

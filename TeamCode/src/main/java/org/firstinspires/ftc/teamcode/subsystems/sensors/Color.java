@@ -103,7 +103,7 @@ public class Color {
         telemetry.addData("Color/HSV", Arrays.toString(hsvValues));
         telemetry.addData("Color/Captured HSV", Arrays.toString(detectedHsvValues));
         telemetry.addData("Color/Current match", getColor());
-        telemetry.addData("Color/Raw optical", getRawOptical());
+        telemetry.addData("Color/Raw optical", rawOptical);
         telemetry.addData("Color/Ball present", isBroken());
         breakBeam.updateTelemetry();
     }

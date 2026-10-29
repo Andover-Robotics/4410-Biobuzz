@@ -87,7 +87,7 @@ public class Limelight {
     }
 
     public void updateTelemetry() {
-        telemetry.addData("Limelight/Tip side", getTipSide());
+        telemetry.addData("Limelight/Tip side", tipSide);
     }
 
     public TipSide getTipSide() {

@@ -119,7 +119,7 @@ public class RampSensors {
 
     public void updateTelemetry() {
         telemetry.addData("Ramp/Queue (intake to shooter)", queue.isEmpty() ? "EMPTY" : toString());
-        telemetry.addData("Ramp/Ball count", getQueueSize());
+        telemetry.addData("Ramp/Ball count", queue.size());
         telemetry.addData("Ramp/Length", length);
         color.updateTelemetry();
     }

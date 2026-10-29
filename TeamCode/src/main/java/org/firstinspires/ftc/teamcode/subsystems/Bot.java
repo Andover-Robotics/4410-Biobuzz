@@ -31,7 +31,7 @@ public class Bot {
     public final Intake intake;
     public final RampSensors rampSensors;
     public final Turret turret;
-    public final Shooter outtake;
+    public final Shooter shooter;
 
     public enum AllianceColor {
         RED,
@@ -69,20 +69,21 @@ public class Bot {
         drive = new Mecanum(hardwareMap, Constants.driveConfig);
         drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        follower = Constants.create(hardwareMap);
+        turret = new Turret(telemetry, follower,
+                new ServoEx(hardwareMap, "turret1"),
+                new ServoEx(hardwareMap, "turret2"));
+
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
-        outtake = new Shooter(
+        shooter = new Shooter(
                 telemetry,
                 new MotorEx(hardwareMap, "shooter1", Motor.GoBILDA.BARE),
                 new MotorEx(hardwareMap, "shooter2", Motor.GoBILDA.BARE),
                 new ServoEx(hardwareMap, "shooterServo"),
                 voltageSensor,
                 intake,
-                rampSensors);
-
-        follower = Constants.create(hardwareMap);
-        turret = new Turret(telemetry, follower,
-                new ServoEx(hardwareMap, "turret1"),
-                new ServoEx(hardwareMap, "turret2"));
+                rampSensors,
+                turret);
     }
 
     public void schedulePeriodic() {
@@ -91,8 +92,8 @@ public class Bot {
             rampSensors.periodic();
             intake.periodic();
             turret.periodic();
-            outtake.setDistanceToGoal(turret.getDistanceToGoal());
-            outtake.periodic();
+            shooter.periodic();
+            
             updateTelemetry();
             telemetry.update();
         }));
@@ -109,6 +110,6 @@ public class Bot {
         rampSensors.updateTelemetry();
         display.updateTelemetry();
         turret.updateTelemetry();
-        outtake.updateTelemetry();
+        shooter.updateTelemetry();
     }
 }
