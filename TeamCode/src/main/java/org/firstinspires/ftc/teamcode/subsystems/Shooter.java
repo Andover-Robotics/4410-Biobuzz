@@ -12,6 +12,7 @@ import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
 
@@ -52,6 +53,7 @@ public class Shooter {
             .add(1, 0)
             .createLUT();
 
+    private final Telemetry telemetry;
     private final MotorEx motor1;
     private final MotorEx motor2;
     private final ServoEx servo;
@@ -71,8 +73,10 @@ public class Shooter {
     private double currentDrawOne;
     private double currentDrawTwo;
 
-    public Shooter(MotorEx motor1, MotorEx motor2, ServoEx servo, VoltageSensor voltageSensor,
+    public Shooter(Telemetry telemetry, MotorEx motor1, MotorEx motor2,
+                   ServoEx servo, VoltageSensor voltageSensor,
                    Intake intake, RampSensors rampSensors) {
+        this.telemetry = telemetry;
         this.motor1 = motor1;
         this.motor2 = motor2;
         this.servo = servo;
@@ -111,6 +115,18 @@ public class Shooter {
         controller.integrationControl.setIntegrationBounds(-windupRange, windupRange);
         double outputVolts = controller.calculate(realVelocity, targetVelocity);
         setPower(outputVolts / voltageSensor.getVoltage());
+    }
+
+    public void updateTelemetry() {
+        telemetry.addData("Shooter/Enabled", isEnabled());
+        telemetry.addData("Shooter/Size", getSize());
+        telemetry.addData("Shooter/Target velocity", getTargetVelocity());
+        telemetry.addData("Shooter/Actual velocity", getRealVelocity());
+        telemetry.addData("Shooter/At speed", inTolerance());
+        telemetry.addData("Shooter/Motor 1 current", currentDrawOne);
+        telemetry.addData("Shooter/Motor 2 current", currentDrawTwo);
+        telemetry.addData("Shooter/Encoder", isUsingPrimaryEncoder() ? "PRIMARY" : "BACKUP");
+        telemetry.addData("Shooter/Motor disconnect detected", isShooterMotorDisconnected());
     }
 
     private double requestedVelocity() {

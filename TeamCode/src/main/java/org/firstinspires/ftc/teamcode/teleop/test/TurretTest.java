@@ -20,6 +20,7 @@ public class TurretTest extends OpMode {
     public void init() {
         follower = Constants.create(hardwareMap);
         turret = new Turret(
+                telemetry,
                 follower,
                 new ServoEx(hardwareMap, "turret1"),
                 new ServoEx(hardwareMap, "turret2"));
@@ -31,10 +32,13 @@ public class TurretTest extends OpMode {
         follower.update();
         Pose pose = follower.pose();
 
-        telemetry.addData("Pose", "%f %f %f",
-                pose.x(), pose.y(), Math.toDegrees(pose.heading()));
+        telemetry.addData("Robot/X", pose.x());
+        telemetry.addData("Robot/Y", pose.y());
+        telemetry.addData("Robot/Heading", Math.toDegrees(pose.heading()));
 
         turret.periodic();
+        turret.updateTelemetry();
+        telemetry.update();
     }
 
     @Override

@@ -6,15 +6,18 @@ import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.util.ColorUtils;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 @Config
 public class Color {
     public static double rawOpticalTolerance = 300;
 
+    private final Telemetry telemetry;
     private final RevColorSensorV3 colorSensor;
     private final BB breakBeam;
     private final OnEnter onEnter;
@@ -28,8 +31,9 @@ public class Color {
         void onEnter(BB.Ball size, ColorUtils.Color color);
     }
 
-    public Color(RevColorSensorV3 colorSensor, DigitalChannel bottomChannel,
+    public Color(Telemetry telemetry, RevColorSensorV3 colorSensor, DigitalChannel bottomChannel,
                  DigitalChannel topChannel, OnEnter onEnter) {
+        this.telemetry = telemetry;
         this.colorSensor = colorSensor;
 
         BroadcomColorSensor.Parameters params = colorSensor.getParameters().clone();
@@ -38,7 +42,7 @@ public class Color {
         colorSensor.initialize(params);
 
         this.onEnter = onEnter;
-        this.breakBeam = new BB(bottomChannel, Optional.of(topChannel), this::onLeave);
+        this.breakBeam = new BB(telemetry, bottomChannel, Optional.of(topChannel), this::onLeave);
         read();
     }
 
@@ -91,6 +95,15 @@ public class Color {
                 detectedHsvValues[2] = hsvValues[2];
             }
         }
+    }
+
+    public void updateTelemetry() {
+        telemetry.addData("Color/HSV", Arrays.toString(hsvValues));
+        telemetry.addData("Color/Captured HSV", Arrays.toString(detectedHsvValues));
+        telemetry.addData("Color/Current match", getColor());
+        telemetry.addData("Color/Raw optical", getRawOptical());
+        telemetry.addData("Color/Ball present", isBroken());
+        breakBeam.updateTelemetry();
     }
 
     public ColorUtils.Color getColor() {

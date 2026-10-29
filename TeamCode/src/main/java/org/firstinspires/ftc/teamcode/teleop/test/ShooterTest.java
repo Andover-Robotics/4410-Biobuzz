@@ -27,6 +27,7 @@ public class ShooterTest extends OpMode {
         VoltageSensor voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         shooter = new Shooter(
+                telemetry,
                 new MotorEx(hardwareMap, "shooter1", Motor.GoBILDA.BARE),
                 new MotorEx(hardwareMap, "shooter2", Motor.GoBILDA.BARE),
                 new ServoEx(hardwareMap, "shooterServo"),
@@ -36,7 +37,7 @@ public class ShooterTest extends OpMode {
         Shooter.manual = true;
         Shooter.manualVelocity = 0;
 
-        telemetry.addData("Step RPM", STEP_RPM);
+        telemetry.addData("Shooter test/Velocity step", STEP_RPM);
         telemetry.update();
     }
 
@@ -62,9 +63,8 @@ public class ShooterTest extends OpMode {
 
         shooter.periodic();
 
-        telemetry.addData("Target RPM", shooter.getTargetVelocity());
-        telemetry.addData("Actual RPM", shooter.getRealVelocity());
-        telemetry.addData("At speed", shooter.inTolerance());
+        shooter.updateTelemetry();
+        telemetry.addData("Shooter test/Velocity step", STEP_RPM);
         telemetry.update();
     }
 

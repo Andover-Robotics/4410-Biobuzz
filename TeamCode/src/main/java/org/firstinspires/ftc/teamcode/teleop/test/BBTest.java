@@ -37,7 +37,7 @@ public class BBTest extends OpMode {
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry());
 
-        bottomBB = new BB(hardwareMap.get(DigitalChannel.class, "bottomBBBottom"),
+        bottomBB = new BB(telemetry, hardwareMap.get(DigitalChannel.class, "bottomBBBottom"),
                 Optional.of(hardwareMap.get(DigitalChannel.class, "topBBBottom")),
                 this::onEnter);
 
@@ -45,6 +45,7 @@ public class BBTest extends OpMode {
         MotorEx intake2 = new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150);
         intake2.setInverted(true);
         intake = new Intake(
+                telemetry,
                 intake1,
                 intake2,
                 new ServoEx(hardwareMap, "gate"));
@@ -63,10 +64,10 @@ public class BBTest extends OpMode {
         bottomBB.periodic();
         intake.periodic();
 
-        telemetry.addData("Bottom BB bottom", bottomBB.getBottomState());
-        telemetry.addData("Bottom BB top", bottomBB.getTopState());
-        telemetry.addData("Objects entered", objectsEntered);
-        telemetry.addData("Last entered size", lastEnteredSize);
+        bottomBB.updateTelemetry();
+        intake.updateTelemetry();
+        telemetry.addData("Break beam test/Net ball count", objectsEntered);
+        telemetry.addData("Break beam test/Last size", lastEnteredSize);
         telemetry.update();
     }
 }

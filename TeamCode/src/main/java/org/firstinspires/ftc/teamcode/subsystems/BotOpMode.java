@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -9,10 +11,13 @@ public class BotOpMode extends OpMode {
     @Override
     public void init() {
         Scheduler.reset();
-        bot = new Bot(this);
-        telemetry = bot.telemetry;
-        bot.schedulePeriodic();
+        telemetry = new MultipleTelemetry(
+                telemetry,
+                FtcDashboard.getInstance().getTelemetry());
+        bot = new Bot(hardwareMap, telemetry);
+        bot.intake.stop();
         bot.intake.closeGate();
+        bot.schedulePeriodic();
     }
 
     @Override
@@ -23,6 +28,5 @@ public class BotOpMode extends OpMode {
     @Override
     public void loop() {
         Scheduler.execute();
-        bot.telemetry.update();
     }
 }

@@ -10,7 +10,6 @@ import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.sensors.BB;
 import org.firstinspires.ftc.teamcode.subsystems.sensors.Color;
@@ -39,8 +38,8 @@ public class ColorTest extends OpMode {
         telemetry = new MultipleTelemetry(
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry());
-        telemetry.setDisplayFormat(Telemetry.DisplayFormat.HTML);
         color = new Color(
+                telemetry,
                 hardwareMap.get(RevColorSensorV3.class, "color1"),
                 hardwareMap.get(DigitalChannel.class, "bottomBBBottom"),
                 hardwareMap.get(DigitalChannel.class, "topBBBottom"),
@@ -50,6 +49,7 @@ public class ColorTest extends OpMode {
         MotorEx intake2 = new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150);
         intake2.setInverted(true);
         intake = new Intake(
+                telemetry,
                 intake1,
                 intake2,
                 new ServoEx(hardwareMap, "gate"));
@@ -68,25 +68,10 @@ public class ColorTest extends OpMode {
         color.periodic();
         intake.periodic();
 
-        float[] hsvValues = color.getHsvValues();
-        float[] detectedHsvValues = color.getDetectedHsvValues();
-
-        int colorValue = android.graphics.Color.HSVToColor(hsvValues) & 0xFFFFFF;
-
-        telemetry.addData("HSV",
-                "<font color='#%06X'>%.1f %.3f %.3f</font>",
-                colorValue, hsvValues[0], hsvValues[1], hsvValues[2]);
-        telemetry.addData("H", hsvValues[0]);
-        telemetry.addData("S", hsvValues[1]);
-        telemetry.addData("V", hsvValues[2]);
-        telemetry.addData("Detected HSV", "%.1f %.3f %.3f",
-                detectedHsvValues[0], detectedHsvValues[1], detectedHsvValues[2]);
-        telemetry.addData("Color match", ColorUtils.Color.match(hsvValues));
-        telemetry.addData("Current color match", color.getColor());
-        telemetry.addData("Raw optical", color.getRawOptical());
-        telemetry.addData("Color broken", color.isBroken());
-        telemetry.addData("Objects passed", objectsPassed);
-        telemetry.addData("Last entry", "%s %s", lastEnteredSize, lastEnteredColor);
+        color.updateTelemetry();
+        intake.updateTelemetry();
+        telemetry.addData("Color test/Balls passed", objectsPassed);
+        telemetry.addData("Color test/Last entry", "%s %s", lastEnteredSize, lastEnteredColor);
         telemetry.update();
     }
 }

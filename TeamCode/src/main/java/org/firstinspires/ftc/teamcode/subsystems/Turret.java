@@ -8,6 +8,8 @@ import com.pedropathing.math.Velocity;
 import com.pedropathing.utils.Angle;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 @Config
 public class Turret {
     private static final double HALF_FIELD = 70.5;
@@ -37,6 +39,7 @@ public class Turret {
     public static double hoodAngle = 20;
     public static boolean velocityCompensation = false;
 
+    private final Telemetry telemetry;
     private final Follower follower;
     private final ServoEx servo1;
     private final ServoEx servo2;
@@ -46,7 +49,8 @@ public class Turret {
     private double targetPositionDegrees;
     private double adjustableDegrees;
 
-    public Turret(Follower follower, ServoEx servo1, ServoEx servo2) {
+    public Turret(Telemetry telemetry, Follower follower, ServoEx servo1, ServoEx servo2) {
+        this.telemetry = telemetry;
         this.follower = follower;
         this.servo1 = servo1;
         this.servo2 = servo2;
@@ -57,6 +61,16 @@ public class Turret {
         double servoPosition = angleToServoPosition(targetPositionDegrees);
         servo1.set(servoPosition);
         servo2.set(servoPosition);
+    }
+
+    public void updateTelemetry() {
+        telemetry.addData("Turret/Mode", manual ? "MANUAL" : "AUTO");
+        telemetry.addData("Turret/Target", getTargetPositionDegrees());
+        if (!manual && aimPoint != null) {
+            telemetry.addData("Turret/Aim X", aimPoint.x());
+            telemetry.addData("Turret/Aim Y", aimPoint.y());
+            telemetry.addData("Turret/Goal distance", getDistanceToGoal());
+        }
     }
 
     private void aimTowardsTargetPoint() {

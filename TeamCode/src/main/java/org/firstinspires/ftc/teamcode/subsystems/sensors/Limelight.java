@@ -4,12 +4,14 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
 
 @Config
 public class Limelight {
     public static int tipSideDebounceTimeMs = 250;
 
+    private final Telemetry telemetry;
     private final Limelight3A limelight;
     private final BooleanDebouncer tipSideDebouncer = new BooleanDebouncer();
 
@@ -52,7 +54,8 @@ public class Limelight {
         }
     }
 
-    public Limelight(Limelight3A limelight) {
+    public Limelight(Telemetry telemetry, Limelight3A limelight) {
+        this.telemetry = telemetry;
         this.limelight = limelight;
 
         limelight.start();
@@ -81,6 +84,10 @@ public class Limelight {
         } else {
             tipSide = TipSide.NONE;
         }
+    }
+
+    public void updateTelemetry() {
+        telemetry.addData("Limelight/Tip side", getTipSide());
     }
 
     public TipSide getTipSide() {

@@ -5,6 +5,7 @@ import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
 
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class Intake {
     public static double gateOpenPosition = 0.290;
     public static double gateClosedPosition = 0.480;
 
+    private final Telemetry telemetry;
     private final MotorEx topMotor;
     private final MotorEx bottomMotor;
     private final ServoEx gate;
@@ -40,7 +42,8 @@ public class Intake {
     public final BooleanDebouncer topDebouncer = new BooleanDebouncer();
     public final BooleanDebouncer bottomDebouncer = new BooleanDebouncer();
 
-    public Intake(MotorEx topMotor, MotorEx bottomMotor, ServoEx gate) {
+    public Intake(Telemetry telemetry, MotorEx topMotor, MotorEx bottomMotor, ServoEx gate) {
+        this.telemetry = telemetry;
         this.topMotor = topMotor;
         this.bottomMotor = bottomMotor;
         this.gate = gate;
@@ -127,6 +130,13 @@ public class Intake {
                 bottomMotor.set(0);
                 break;
         }
+    }
+
+    public void updateTelemetry() {
+        telemetry.addData("Intake/State", state);
+        telemetry.addData("Intake/Gate", isGateClosed() ? "CLOSED" : "OPEN");
+        telemetry.addData("Intake/Top stalled", isTopStalled());
+        telemetry.addData("Intake/Bottom stalled", isBottomStalled());
     }
 
     public void setRampSensors(RampSensors rampSensors) {

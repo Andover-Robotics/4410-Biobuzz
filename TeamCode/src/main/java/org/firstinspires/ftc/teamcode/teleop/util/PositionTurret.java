@@ -18,6 +18,7 @@ public class PositionTurret extends OpMode {
         Turret.angles = new double[] {0, 1};
         Turret.servoPositions = new double[] {0, 1};
         turret = new Turret(
+                telemetry,
                 null,
                 new ServoEx(hardwareMap, "turret1"),
                 new ServoEx(hardwareMap, "turret2"));
@@ -32,8 +33,8 @@ public class PositionTurret extends OpMode {
         }
         Turret.manualPositionDegrees = Math.max(0, Math.min(Turret.manualPositionDegrees, 1));
         turret.periodic();
+        turret.updateTelemetry();
 
-        telemetry.addData("Position", Turret.manualPositionDegrees);
         telemetry.update();
     }
 

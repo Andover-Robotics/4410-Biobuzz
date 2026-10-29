@@ -33,7 +33,7 @@ public class DisplayTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        display = new Display(List.of(
+        display = new Display(telemetry, List.of(
                 new ServoEx(hardwareMap, "display1"),
                 new ServoEx(hardwareMap, "display2"),
                 new ServoEx(hardwareMap, "display3"),
@@ -44,6 +44,8 @@ public class DisplayTest extends LinearOpMode {
         while (opModeIsActive() && !isStopRequested()) {
             display.setColors(randomColors(4));
             display.periodic();
+            display.updateTelemetry();
+            telemetry.update();
 
             sleep(1000);
         }

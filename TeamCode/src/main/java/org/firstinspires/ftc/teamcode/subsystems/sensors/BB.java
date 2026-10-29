@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems.sensors;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
 
 import java.util.Optional;
@@ -12,6 +13,7 @@ public class BB {
     public static double blockedDebounceMs = 10;
     public static double clearDebounceMs = 10;
 
+    private final Telemetry telemetry;
     private final DigitalChannel bottomChannel;
     private final Optional<DigitalChannel> topChannel;
 
@@ -34,11 +36,13 @@ public class BB {
         void onLeave(Ball size);
     }
 
-    public BB(DigitalChannel bottomChannel, OnLeave onLeave) {
-        this(bottomChannel, Optional.empty(), onLeave);
+    public BB(Telemetry telemetry, DigitalChannel bottomChannel, OnLeave onLeave) {
+        this(telemetry, bottomChannel, Optional.empty(), onLeave);
     }
 
-    public BB(DigitalChannel bottomChannel, Optional<DigitalChannel> topChannel, OnLeave onLeave) {
+    public BB(Telemetry telemetry, DigitalChannel bottomChannel,
+              Optional<DigitalChannel> topChannel, OnLeave onLeave) {
+        this.telemetry = telemetry;
         this.bottomChannel = bottomChannel;
         this.topChannel = topChannel;
         this.bottomChannel.setMode(DigitalChannel.Mode.INPUT);
@@ -86,6 +90,13 @@ public class BB {
             sawBottom = false;
             sawTop = false;
             onLeave.onLeave(size);
+        }
+    }
+
+    public void updateTelemetry() {
+        telemetry.addData("Break beam/Bottom blocked", getBottomState());
+        if (topChannel.isPresent()) {
+            telemetry.addData("Break beam/Top blocked", getTopState());
         }
     }
 

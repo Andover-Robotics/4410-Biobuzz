@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.sensors.BB;
 import org.firstinspires.ftc.teamcode.subsystems.sensors.Color;
 import org.firstinspires.ftc.teamcode.util.ColorUtils;
@@ -35,6 +36,7 @@ public class RampSensors {
     private static final int NECTAR_SIZE = 36;
     public static int maxPushLength = 100;
 
+    private final Telemetry telemetry;
     private final Intake intake;
     private final Color color;
     private final Optional<Display> display;
@@ -96,10 +98,13 @@ public class RampSensors {
         displayDirty = true;
     }
 
-    public RampSensors(RevColorSensorV3 colorSensor, DigitalChannel bottomChannel, DigitalChannel topChannel,
+    public RampSensors(Telemetry telemetry, RevColorSensorV3 colorSensor,
+                       DigitalChannel bottomChannel, DigitalChannel topChannel,
                        Intake intake, Optional<Display> display) {
+        this.telemetry = telemetry;
         this.intake = intake;
         this.color = new Color(
+                telemetry,
                 colorSensor,
                 bottomChannel,
                 topChannel,
@@ -131,6 +136,13 @@ public class RampSensors {
             display.periodic();
             displayDirty = false;
         });
+    }
+
+    public void updateTelemetry() {
+        telemetry.addData("Ramp/Queue (intake to shooter)", queue.isEmpty() ? "EMPTY" : toString());
+        telemetry.addData("Ramp/Ball count", getQueueSize());
+        telemetry.addData("Ramp/Length", length);
+        color.updateTelemetry();
     }
 
     public String toString() {
