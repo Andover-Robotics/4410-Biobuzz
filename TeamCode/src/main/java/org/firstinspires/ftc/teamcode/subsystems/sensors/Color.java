@@ -60,12 +60,14 @@ public class Color {
             case NECTAR:
                 if (color == ColorUtils.Color.NECTAR_RED || color == ColorUtils.Color.NECTAR_BLUE) {
                     return color;
-                } else if (Bot.allianceColor == Bot.AllianceColor.RED) {
-                    return ColorUtils.Color.NECTAR_BLUE;
-                } else if (Bot.allianceColor == Bot.AllianceColor.BLUE) {
-                    return ColorUtils.Color.NECTAR_BLUE;
-                } else {
-                    return ColorUtils.Color.NONE;
+                }
+                switch (Bot.allianceColor) {
+                    case RED:
+                        return ColorUtils.Color.NECTAR_RED;
+                    case BLUE:
+                        return ColorUtils.Color.NECTAR_BLUE;
+                    default:
+                        return ColorUtils.Color.NONE;
                 }
             case BALL:
                 return color;

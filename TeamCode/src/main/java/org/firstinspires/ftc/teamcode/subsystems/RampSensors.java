@@ -32,8 +32,6 @@ public class RampSensors {
             return color;
         }
     }
-    private static final int POLLEN_SIZE = 28;
-    private static final int NECTAR_SIZE = 36;
     public static int maxPushLength = 100;
 
     private final Telemetry telemetry;
@@ -51,50 +49,26 @@ public class RampSensors {
             return;
         }
 
-        queue.push(ballReading);
-
-        if (ballReading.getSize() == BB.Ball.NECTAR) {
-            length += NECTAR_SIZE;
-        } else if (ballReading.getSize() == BB.Ball.POLLEN) {
-            length += POLLEN_SIZE;
-        }
-
+        int diameter = ballReading.getSize().getDiameter();
+        queue.addFirst(ballReading);
+        length += diameter;
         displayDirty = true;
     }
 
     public void removeFromQueueOuttaking() {
-        BallReading ballReading;
-
-        if (!queue.isEmpty()) {
-            ballReading = queue.pollFirst();
-        } else {
-            return;
-        }
-
-        if (ballReading.getSize() == BB.Ball.NECTAR) {
-            length -= NECTAR_SIZE;
-        } else if (ballReading.getSize() == BB.Ball.POLLEN) {
-            length -= POLLEN_SIZE;
-        }
-
-        displayDirty = true;
+        onRemoved(queue.pollFirst());
     }
 
     public void removeFromQueueShooting() {
-        BallReading ballReading;
+        onRemoved(queue.pollLast());
+    }
 
-        if (!queue.isEmpty()) {
-            ballReading = queue.pollLast();
-        } else {
+    private void onRemoved(BallReading ballReading) {
+        if (ballReading == null) {
             return;
         }
 
-        if (ballReading.getSize() == BB.Ball.NECTAR) {
-            length -= NECTAR_SIZE;
-        } else if (ballReading.getSize() == BB.Ball.POLLEN) {
-            length -= POLLEN_SIZE;
-        }
-
+        length -= ballReading.getSize().getDiameter();
         displayDirty = true;
     }
 
@@ -109,11 +83,16 @@ public class RampSensors {
                 bottomChannel,
                 topChannel,
                 (size, color) -> {
-                    if (intake.getState() == Intake.State.OUTTAKE) {
-                        removeFromQueueOuttaking();
-                    } else if (intake.getState() == Intake.State.INTAKE
-                            || intake.getState()  == Intake.State.INTAKE_FULL) {
-                        addToQueueIntaking(new BallReading(size, color));
+                    switch (intake.getState()) {
+                        case OUTTAKE:
+                            removeFromQueueOuttaking();
+                            break;
+                        case INTAKE:
+                        case INTAKE_FULL:
+                            addToQueueIntaking(new BallReading(size, color));
+                            break;
+                        default:
+                            break;
                     }
                 });
 

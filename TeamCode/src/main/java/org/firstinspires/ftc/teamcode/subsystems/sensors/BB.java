@@ -28,7 +28,18 @@ public class BB {
         NECTAR,
         POLLEN,
         BALL,
-        NONE
+        NONE;
+
+        public int getDiameter() {
+            switch (this) {
+                case NECTAR:
+                    return 36;
+                case POLLEN:
+                    return 28;
+                default:
+                    throw new IllegalStateException();
+            }
+        }
     }
 
     @FunctionalInterface

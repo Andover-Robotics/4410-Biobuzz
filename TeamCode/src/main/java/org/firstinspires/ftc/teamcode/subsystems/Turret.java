@@ -102,21 +102,14 @@ public class Turret {
     }
 
     private static Pose getAimPoint(double y) {
-        if (Bot.allianceColor == Bot.AllianceColor.RED) {
-            if (y < HALF_FIELD) {
-                return backTargetPoseRed;
-            } else {
-                return frontTargetPoseRed;
-            }
-        } else if (Bot.allianceColor == Bot.AllianceColor.BLUE) {
-            if (y < HALF_FIELD) {
-                return backTargetPoseBlue;
-            } else {
-                return frontTargetPoseBlue;
-            }
+        switch (Bot.allianceColor) {
+            case RED:
+                return y < HALF_FIELD ? backTargetPoseRed : frontTargetPoseRed;
+            case BLUE:
+                return y < HALF_FIELD ? backTargetPoseBlue : frontTargetPoseBlue;
+            default:
+                throw new IllegalStateException();
         }
-
-        throw new IllegalStateException();
     }
 
     private static Vector2D applyVelocityCompensation(

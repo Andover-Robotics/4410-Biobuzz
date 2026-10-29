@@ -134,13 +134,14 @@ public class Shooter {
             return manualVelocity;
         }
 
-        if (size == Size.NECTAR) {
-            return NECTAR_VELOCITY_LOOKUP_TABLE.get(distanceToGoal);
-        } else if (size == Size.POLLEN) {
-            return POLLEN_VELOCITY_LOOKUP_TABLE.get(distanceToGoal);
+        switch (size) {
+            case NECTAR:
+                return NECTAR_VELOCITY_LOOKUP_TABLE.get(distanceToGoal);
+            case POLLEN:
+                return POLLEN_VELOCITY_LOOKUP_TABLE.get(distanceToGoal);
+            default:
+                throw new IllegalStateException();
         }
-
-        throw new IllegalStateException();
     }
 
     private void updateMotorData() {

@@ -46,10 +46,13 @@ public class MainTeleOp extends BotOpMode {
         }
 
         if (gamepad1.xWasPressed()) {
-            if (Bot.allianceColor == Bot.AllianceColor.RED) {
-                bot.follower.setPose(new Pose(14.0 / 2, 141.5 - 13.75 / 2, Math.toRadians(-90)));
-            } else if (Bot.allianceColor == Bot.AllianceColor.BLUE) {
-                bot.follower.setPose(new Pose(141.5 - 14.0 / 2, 141.5 - 13.75 / 2, Math.toRadians(-90)));
+            switch (Bot.allianceColor) {
+                case RED:
+                    bot.follower.setPose(new Pose(14.0 / 2, 141.5 - 13.75 / 2, Math.toRadians(-90)));
+                    break;
+                case BLUE:
+                    bot.follower.setPose(new Pose(141.5 - 14.0 / 2, 141.5 - 13.75 / 2, Math.toRadians(-90)));
+                    break;
             }
         }
 
