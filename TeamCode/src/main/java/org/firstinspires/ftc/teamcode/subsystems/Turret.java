@@ -47,6 +47,7 @@ public class Turret {
     private double distanceToGoal;
     private double angleToGoal;
     private double targetPositionDegrees;
+    private boolean outOfRange;
     private double adjustableDegrees;
 
     public Turret(Telemetry telemetry, Follower follower, ServoEx servo1, ServoEx servo2) {
@@ -57,7 +58,9 @@ public class Turret {
     }
 
     public void periodic() {
-        aimTowardsTargetPoint();
+        double requestedPositionDegrees = calculateTargetPositionDegrees();
+        targetPositionDegrees = clampToLimits(requestedPositionDegrees);
+        outOfRange = requestedPositionDegrees != targetPositionDegrees;
         double servoPosition = angleToServoPosition(targetPositionDegrees);
         servo1.set(servoPosition);
         servo2.set(servoPosition);
@@ -66,6 +69,7 @@ public class Turret {
     public void updateTelemetry() {
         telemetry.addData("Turret/Mode", manual ? "MANUAL" : "AUTO");
         telemetry.addData("Turret/Target", getTargetPositionDegrees());
+        telemetry.addData("Turret/Out of range", isOutOfRange());
         if (!manual && aimPoint != null) {
             telemetry.addData("Turret/Aim X", aimPoint.x());
             telemetry.addData("Turret/Aim Y", aimPoint.y());
@@ -73,10 +77,9 @@ public class Turret {
         }
     }
 
-    private void aimTowardsTargetPoint() {
+    private double calculateTargetPositionDegrees() {
         if (manual) {
-            targetPositionDegrees = clampToLimits(manualPositionDegrees);
-            return;
+            return manualPositionDegrees;
         }
 
         Pose robotPose = follower.pose();
@@ -98,7 +101,7 @@ public class Turret {
 
         double targetRadians = Angle.normalizeSigned(
                 -angleToGoal + Math.toRadians(adjustableDegrees));
-        targetPositionDegrees = wrapAndClamp(targetRadians);
+        return Math.toDegrees(Angle.normalizeSigned(targetRadians));
     }
 
     private static Pose getAimPoint(double y) {
@@ -129,14 +132,8 @@ public class Turret {
         return timeSquared > 0 ? Math.sqrt(timeSquared) : 0;
     }
 
-    private static double wrapAndClamp(double targetRadians) {
-        return clampToLimits(Math.toDegrees(Angle.normalizeSigned(targetRadians)));
-    }
-
     private static double clampToLimits(double positionDegrees) {
-        double minimumAngle = Math.min(lowLimitDegrees, highLimitDegrees);
-        double maximumAngle = Math.max(lowLimitDegrees, highLimitDegrees);
-        return Math.max(minimumAngle, Math.min(maximumAngle, positionDegrees));
+        return Math.max(lowLimitDegrees, Math.min(highLimitDegrees, positionDegrees));
     }
 
     private static double angleToServoPosition(double angleDegrees) {
@@ -152,6 +149,10 @@ public class Turret {
 
     public double getTargetPositionDegrees() {
         return targetPositionDegrees;
+    }
+
+    public boolean isOutOfRange() {
+        return outOfRange;
     }
 
     public double getServoPosition() {
