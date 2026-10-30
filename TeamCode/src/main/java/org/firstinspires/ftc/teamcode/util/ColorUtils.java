@@ -26,6 +26,7 @@ public class ColorUtils {
         POLLEN(pollenColor, 0.384f),
         NECTAR_RED(nectarRedColor, 0.280f),
         NECTAR_BLUE(nectarBlueColor, 0.611f),
+        ORANGE(new float[] { -999, -999, -999 }, 0.333f),
         NONE(new float[] { -999, -999, -999 }, 1.000f);
 
         private float[] color;
@@ -52,7 +53,7 @@ public class ColorUtils {
 
         public boolean hsvMatches(float[] other) {
             update();
-            return this != NONE && ColorUtils.hsvMatches(color, other);
+            return this != NONE && this != ORANGE && ColorUtils.hsvMatches(color, other);
         }
 
         public static Color match(float[] color) {

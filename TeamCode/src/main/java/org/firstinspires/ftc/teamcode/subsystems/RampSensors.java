@@ -9,10 +9,7 @@ import org.firstinspires.ftc.teamcode.subsystems.sensors.Color;
 import org.firstinspires.ftc.teamcode.util.ColorUtils;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
-import java.util.List;
-import java.util.Optional;
 
 public class RampSensors {
     public static final class BallReading {
@@ -37,12 +34,10 @@ public class RampSensors {
     private final Telemetry telemetry;
     private final Intake intake;
     private final Color color;
-    private final Optional<Display> display;
 
     private final Deque<BallReading> queue = new ArrayDeque<>();
 
     private int length = 0;
-    private boolean displayDirty = true;
 
     public void addToQueueIntaking(BallReading ballReading) {
         if (length >= maxPushLength) {
@@ -52,7 +47,6 @@ public class RampSensors {
         int diameter = ballReading.getSize().getDiameter();
         queue.addFirst(ballReading);
         length += diameter;
-        displayDirty = true;
     }
 
     public void removeFromQueueOuttaking() {
@@ -69,12 +63,11 @@ public class RampSensors {
         }
 
         length -= ballReading.getSize().getDiameter();
-        displayDirty = true;
     }
 
     public RampSensors(Telemetry telemetry, RevColorSensorV3 colorSensor,
                        DigitalChannel bottomChannel, DigitalChannel topChannel,
-                       Intake intake, Optional<Display> display) {
+                       Intake intake) {
         this.telemetry = telemetry;
         this.intake = intake;
         this.color = new Color(
@@ -95,26 +88,10 @@ public class RampSensors {
                             break;
                     }
                 });
-
-        this.display = display;
     }
 
     public void periodic() {
         color.periodic(intake.getState() != Intake.State.OUTTAKE);
-
-        display.ifPresent((display) -> {
-            if (!displayDirty) {
-                return;
-            }
-
-            List<ColorUtils.Color> colors = new ArrayList<>();
-            for (RampSensors.BallReading reading : queue) {
-                colors.add(reading.getColor());
-            }
-            display.setColors(colors);
-            display.periodic();
-            displayDirty = false;
-        });
     }
 
     public void updateTelemetry() {

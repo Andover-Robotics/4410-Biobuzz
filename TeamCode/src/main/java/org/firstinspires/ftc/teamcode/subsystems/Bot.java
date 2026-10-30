@@ -26,7 +26,7 @@ public class Bot {
 
     public final Mecanum drive;
     public final Follower follower;
-    private final VoltageSensor voltageSensor;
+    public final VoltageSensor voltageSensor;
     public final Display display;
     public final Intake intake;
     public final RampSensors rampSensors;
@@ -52,18 +52,12 @@ public class Bot {
                 new ServoEx(hardwareMap, "gate"));
         intake.closeGate();
 
-        display = new Display(telemetry, List.of(
-                new ServoEx(hardwareMap, "display1"),
-                new ServoEx(hardwareMap, "display2"),
-                new ServoEx(hardwareMap, "display3"),
-                new ServoEx(hardwareMap, "display4")));
         rampSensors = new RampSensors(
                 telemetry,
                 hardwareMap.get(RevColorSensorV3.class, "color1"),
                 hardwareMap.get(DigitalChannel.class, "bottomBBBottom"),
                 hardwareMap.get(DigitalChannel.class, "topBBBottom"),
-                intake,
-                Optional.of(display));
+                intake);
         intake.setRampSensors(rampSensors);
 
         drive = new Mecanum(hardwareMap, Constants.driveConfig);
@@ -73,6 +67,13 @@ public class Bot {
         turret = new Turret(telemetry, follower,
                 new ServoEx(hardwareMap, "turret1"),
                 new ServoEx(hardwareMap, "turret2"));
+
+        display = new Display(telemetry, List.of(
+                new ServoEx(hardwareMap, "display1"),
+                new ServoEx(hardwareMap, "display2"),
+                new ServoEx(hardwareMap, "display3"),
+                new ServoEx(hardwareMap, "display4")),
+                Optional.of(turret), Optional.of(rampSensors));
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
         shooter = new Shooter(
@@ -93,7 +94,8 @@ public class Bot {
             intake.periodic();
             turret.periodic();
             shooter.periodic();
-            
+            display.periodic();
+
             updateTelemetry();
             telemetry.update();
         }));

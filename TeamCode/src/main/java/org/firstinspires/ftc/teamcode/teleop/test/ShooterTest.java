@@ -33,6 +33,7 @@ public class ShooterTest extends OpMode {
                 new ServoEx(hardwareMap, "shooterServo"),
                 voltageSensor,
                 null,
+                null,
                 null);
         Shooter.manual = true;
         Shooter.manualVelocity = 0;
