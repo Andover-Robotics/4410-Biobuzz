@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.subsystems.BotOpMode;
 
-@TeleOp(name = "TeleOp", group = "Competition")
+@TeleOp(name = "Main TeleOp", group = "Competition")
 public class MainTeleOp extends BotOpMode {
     @Override
     public void loop() {

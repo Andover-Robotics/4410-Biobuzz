@@ -18,11 +18,11 @@ import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
 
 @Config
 public class Shooter {
-    public static double nectarKP = 0.02;
-    public static double pollenKP = 0.02;
+    public static double nectarKP = 0.01;
+    public static double pollenKP = 0.01;
     public static double kI = 0;
     public static double kD = 0;
-    public static double kF = 0.003;
+    public static double kF = 0.00229;
     public static double windupRange = 0;
 
     public static double velocityTolerance = 100;
@@ -41,7 +41,7 @@ public class Shooter {
 
     public static double shootAllPollenTime = 0.0;
 
-    private Size size = Size.NECTAR;
+    private Size size = Size.POLLEN;
 
     private static final InterpLUT NECTAR_VELOCITY_LOOKUP_TABLE = new InterpLUT()
             .add(0, 0)
@@ -86,6 +86,7 @@ public class Shooter {
         this.turret = turret;
 
         this.motor1.setRunMode(Motor.RunMode.RawPower);
+        this.motor2.setInverted(true);
         this.motor2.setRunMode(Motor.RunMode.RawPower);
 
         controller = new PIDFController(nectarKP, kI, kD, kF);

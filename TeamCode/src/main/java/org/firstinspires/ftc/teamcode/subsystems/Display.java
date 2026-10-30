@@ -13,8 +13,8 @@ import java.util.Optional;
 
 @Config
 public class Display {
-    private static final double FLASH_INTERVAL_MS = 250;
-    public static boolean flash = false;
+    public static double FLASH_INTERVAL_MS = 500;
+    public static boolean flash = true;
 
     private final Telemetry telemetry;
     private final List<ServoEx> lights;
@@ -61,7 +61,7 @@ public class Display {
             ColorUtils.Color color = i < colors.size() ? colors.get(i) : ColorUtils.Color.NONE;
 
             double position = inFlashFrame
-                    ? ColorUtils.Color.ORANGE.getFloodlightColor() : color.getFloodlightColor();
+                    ? ColorUtils.Color.PURPLE.getFloodlightColor() : color.getFloodlightColor();
 
             lights.get(i).set(position);
         }
