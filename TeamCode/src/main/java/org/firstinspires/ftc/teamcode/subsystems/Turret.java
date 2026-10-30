@@ -26,10 +26,10 @@ public class Turret {
     public static double shooterOffsetY = 0;
 
     public static double lowLimitDegrees = -30;
-    public static double highLimitDegrees = 180;
+    public static double highLimitDegrees = 330;
 
-    public static double[] angles = new double[] {0, -90};
-    public static double[] servoPositions = new double[] {0.50, 0.21};
+    public static double[] angles = new double[] {0, 90};
+    public static double[] servoPositions = new double[] {0, 0.29};
 
     public static boolean manual = false;
     public static double manualPositionDegrees = 0;
@@ -59,9 +59,16 @@ public class Turret {
 
     public void periodic() {
         double requestedPositionDegrees = calculateTargetPositionDegrees();
+        if (!manual) {
+            requestedPositionDegrees = targetPositionDegrees + Math.IEEEremainder(
+                    requestedPositionDegrees - targetPositionDegrees, 360.0);
+        }
         targetPositionDegrees = clampToLimits(requestedPositionDegrees);
-        outOfRange = requestedPositionDegrees != targetPositionDegrees;
+        outOfRange = Math.abs(Math.IEEEremainder(requestedPositionDegrees - targetPositionDegrees, 360.0)) > 1e-6;
         double servoPosition = angleToServoPosition(targetPositionDegrees);
+        if (servoPosition < 0 || servoPosition > 1) {
+            outOfRange = true;
+        }
         servo1.set(servoPosition);
         servo2.set(servoPosition);
     }
@@ -133,7 +140,12 @@ public class Turret {
     }
 
     private static double clampToLimits(double positionDegrees) {
-        return Math.max(lowLimitDegrees, Math.min(highLimitDegrees, positionDegrees));
+        if (positionDegrees < lowLimitDegrees) {
+            positionDegrees += 360.0 * Math.ceil((lowLimitDegrees - positionDegrees) / 360.0);
+        } else if (positionDegrees > highLimitDegrees) {
+            positionDegrees -= 360.0 * Math.ceil((positionDegrees - highLimitDegrees) / 360.0);
+        }
+        return positionDegrees;
     }
 
     private static double angleToServoPosition(double angleDegrees) {
