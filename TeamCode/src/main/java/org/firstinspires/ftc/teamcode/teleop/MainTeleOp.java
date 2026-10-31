@@ -19,11 +19,23 @@ public class MainTeleOp extends BotOpMode {
         } else if (gamepad1.right_bumper) {
             bot.intake.intakeFull();
         } else {
-            bot.intake.stop();
+            if (!bot.shooter.isInShootingAction()) {
+                bot.intake.stop();
+            }
         }
 
-        if (gamepad2.aWasPressed()) {
+        if (gamepad1.aWasPressed()) {
             bot.intake.toggleGate();
+        }
+
+        if (gamepad1.bWasPressed()) {
+            bot.intake.toggleWxyz();
+        }
+
+        if (gamepad1.leftStickButtonWasPressed()) {
+            bot.shooter.enable();
+        } else if (gamepad1.rightStickButtonWasPressed()) {
+            bot.shooter.disable();
         }
 
         double driveSpeed = Math.max(0, 1 - 0.75 * gamepad1.right_trigger);
@@ -32,7 +44,7 @@ public class MainTeleOp extends BotOpMode {
                 -gamepad1.left_stick_x * driveSpeed,
                 -gamepad1.right_stick_x * driveSpeed));
 
-        if (gamepad2.dpadDownWasPressed()) {
+        if (gamepad1.dpadDownWasPressed()) {
             Scheduler.schedule(bot.shooter.shootAllPollen());
         }
 

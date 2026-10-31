@@ -17,6 +17,7 @@ public class BotOpMode extends OpMode {
         bot = new Bot(hardwareMap, telemetry);
         bot.intake.stop();
         bot.intake.closeGate();
+        bot.intake.upWxyz();
         bot.schedulePeriodic();
     }
 

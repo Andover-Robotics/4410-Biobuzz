@@ -19,10 +19,14 @@ public class Intake {
     public static double gateOpenPosition = 0.290;
     public static double gateClosedPosition = 0.480;
 
+    public static double wxyzUpPosition = 0.000;
+    public static double wxyzDownPosition = 0.000;
+
     private final Telemetry telemetry;
     private final MotorEx topMotor;
     private final MotorEx bottomMotor;
     private final ServoEx gate;
+    private final ServoEx wxyz;
 
     public enum State {
         INTAKE_FULL,
@@ -37,16 +41,19 @@ public class Intake {
     private State state;
 
     public boolean gateClosed = true;
+    public boolean wxyzUp = true;
 
     public static double inStallTimeMs = 200;
     public final BooleanDebouncer topDebouncer = new BooleanDebouncer();
     public final BooleanDebouncer bottomDebouncer = new BooleanDebouncer();
 
-    public Intake(Telemetry telemetry, MotorEx topMotor, MotorEx bottomMotor, ServoEx gate) {
+    public Intake(Telemetry telemetry, MotorEx topMotor, MotorEx bottomMotor,
+                  ServoEx gate, ServoEx wxyz) {
         this.telemetry = telemetry;
         this.topMotor = topMotor;
         this.bottomMotor = bottomMotor;
         this.gate = gate;
+        this.wxyz = wxyz;
 
         topMotor.setRunMode(Motor.RunMode.RawPower);
         bottomMotor.setRunMode(Motor.RunMode.RawPower);
@@ -84,6 +91,12 @@ public class Intake {
         gate.set(position);
     }
 
+    public void setWxyzPosition(double position) {
+        wxyzUp = Math.abs(wxyzUpPosition - position) < 0.02;
+
+        wxyz.set(position);
+    }
+
     public boolean isGateClosed() {
         return gateClosed;
     }
@@ -96,11 +109,27 @@ public class Intake {
         setGatePosition(gateClosedPosition);
     }
 
+    public void upWxyz() {
+        setWxyzPosition(wxyzUpPosition);
+    }
+
+    public void downWxyz() {
+        setWxyzPosition(wxyzDownPosition);
+    }
+
     public void toggleGate() {
         if (gateClosed) {
             openGate();
         } else {
             closeGate();
+        }
+    }
+
+    public void toggleWxyz() {
+        if (wxyzUp) {
+            downWxyz();
+        } else {
+            upWxyz();
         }
     }
 

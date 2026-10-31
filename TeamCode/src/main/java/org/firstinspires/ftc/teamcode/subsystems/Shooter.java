@@ -39,7 +39,7 @@ public class Shooter {
     public static double nectarServoPosition = 0.00;
     public static double pollenServoPosition = 0.00;
 
-    public static double shootAllPollenTime = 0.0;
+    public static double shootAllPollenTime = 2500;
 
     private Size size = Size.POLLEN;
 
@@ -49,8 +49,8 @@ public class Shooter {
             .createLUT();
 
     private static final InterpLUT POLLEN_VELOCITY_LOOKUP_TABLE = new InterpLUT()
-            .add(0, 0)
-            .add(1, 0)
+            .add(39, 3200)
+            .add(28, 3100)
             .createLUT();
 
     private final Telemetry telemetry;
@@ -72,6 +72,7 @@ public class Shooter {
     private double realVelocity;
     private double currentDrawOne;
     private double currentDrawTwo;
+    private boolean inShootingAction = false;
 
     public Shooter(Telemetry telemetry, MotorEx motor1, MotorEx motor2,
                    ServoEx servo, VoltageSensor voltageSensor,
@@ -232,6 +233,10 @@ public class Shooter {
         return usingPrimaryEncoder;
     }
 
+    public boolean isInShootingAction() {
+        return inShootingAction;
+    }
+
     public Size getSize() {
         return size;
     }
@@ -242,18 +247,20 @@ public class Shooter {
 
     public Command shootAllPollen() {
         return sequential(
+                Commands.instant(() -> inShootingAction = true),
                 Commands.instant(intake::intakeFull),
                 Commands.instant(this::enable),
                 Commands.waitUntil(this::inTolerance),
                 Commands.instant(intake::openGate),
-                Commands.waitMs(shootAllPollenTime).requiring(this),
+                Commands.waitMs(shootAllPollenTime),
                 Commands.instant(this::disable),
                 Commands.instant(intake::stop),
                 Commands.instant(() -> {
                     for (int i = 0; i < rampSensors.getLength(); i++) {
                         rampSensors.removeFromQueueShooting();
                     }
-                })
+                }),
+                Commands.instant(() -> inShootingAction = false)
         );
     }
 }
