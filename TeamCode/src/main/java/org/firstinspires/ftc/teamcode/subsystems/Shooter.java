@@ -39,7 +39,7 @@ public class Shooter {
     public static double nectarServoPosition = 0.00;
     public static double pollenServoPosition = 0.00;
 
-    public static double shootAllPollenTime = 0.0;
+    public static double shootAllPollenTime = 1000.0;
 
     private Size size = Size.NECTAR;
 
@@ -73,6 +73,8 @@ public class Shooter {
     private double currentDrawOne;
     private double currentDrawTwo;
 
+    private boolean inShootingCommand = false;
+
     public Shooter(Telemetry telemetry, MotorEx motor1, MotorEx motor2,
                    ServoEx servo, VoltageSensor voltageSensor,
                    Intake intake, RampSensors rampSensors, Turret turret) {
@@ -87,6 +89,7 @@ public class Shooter {
 
         this.motor1.setRunMode(Motor.RunMode.RawPower);
         this.motor2.setRunMode(Motor.RunMode.RawPower);
+        this.motor1.setInverted(true);
 
         controller = new PIDFController(nectarKP, kI, kD, kF);
         controller.integrationControl.setIntegrationBounds(-windupRange, windupRange);
@@ -231,6 +234,10 @@ public class Shooter {
         return usingPrimaryEncoder;
     }
 
+    public boolean isInShootingCommand() {
+        return inShootingCommand;
+    }
+
     public Size getSize() {
         return size;
     }
@@ -241,18 +248,22 @@ public class Shooter {
 
     public Command shootAllPollen() {
         return sequential(
+                Commands.instant(() -> inShootingCommand = true),
+                Commands.instant(() -> setSize(Size.POLLEN)),
                 Commands.instant(intake::intakeFull),
                 Commands.instant(this::enable),
                 Commands.waitUntil(this::inTolerance),
                 Commands.instant(intake::openGate),
-                Commands.waitMs(shootAllPollenTime).requiring(this),
+                Commands.waitMs(shootAllPollenTime),
                 Commands.instant(this::disable),
                 Commands.instant(intake::stop),
+                Commands.instant(intake::closeGate),
                 Commands.instant(() -> {
-                    for (int i = 0; i < rampSensors.getLength(); i++) {
+                    while (rampSensors.getQueueSize() > 0) {
                         rampSensors.removeFromQueueShooting();
                     }
-                })
+                }),
+                Commands.instant(() -> inShootingCommand = false)
         );
     }
 }

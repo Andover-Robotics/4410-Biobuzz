@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.teleop;
+package org.firstinspires.ftc.teamcode.teleop.util;
 
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.ivy.Scheduler;
@@ -12,18 +12,26 @@ import org.firstinspires.ftc.teamcode.subsystems.BotOpMode;
 public class MainTeleOp extends BotOpMode {
     @Override
     public void loop() {
-        if (gamepad1.left_trigger > 0.2) {
-            bot.intake.intake();
-        } else if (gamepad1.left_bumper) {
-            bot.intake.outtake();
-        } else if (gamepad1.right_bumper) {
-            bot.intake.intakeFull();
-        } else {
-            bot.intake.stop();
+        if (!bot.shooter.isInShootingCommand()) {
+            if (gamepad1.left_trigger > 0.2) {
+                bot.intake.intake();
+            } else if (gamepad1.left_bumper) {
+                bot.intake.outtake();
+            } else if (gamepad1.right_bumper) {
+                bot.intake.intakeFull();
+            } else {
+                bot.intake.stop();
+            }
+
+            if (gamepad2.aWasPressed()) {
+                bot.intake.toggleGate();
+            }
         }
 
-        if (gamepad2.aWasPressed()) {
-            bot.intake.toggleGate();
+        if (gamepad1.leftBumperWasPressed()) {
+            bot.rampSensors.removeFromQueueShooting();
+        } else if (gamepad1.rightBumperWasPressed()) {
+            bot.rampSensors.removeFromQueueOuttaking();
         }
 
         double driveSpeed = Math.max(0, 1 - 0.75 * gamepad1.right_trigger);
