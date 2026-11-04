@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop.util;
 
 import static com.pedropathing.api.Paths.line;
+import static com.pedropathing.ivy.groups.Groups.repeat;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
@@ -16,11 +17,11 @@ public class GoodLineTest extends BotOpMode {
     private boolean scheduled = false;
 
     public Path path1() {
-        return line(Pose.zero(), new Pose(48,0, 0)).constant(0);
+        return line(Pose.zero(), new Pose(56,0, 0)).constant(0);
     }
 
     public Path path2() {
-        return line(new Pose(48,0, 0), Pose.zero()).constant(0);
+        return line(new Pose(56,0, 0), Pose.zero()).constant(0);
     }
 
     @Override
@@ -31,7 +32,7 @@ public class GoodLineTest extends BotOpMode {
     @Override
     public void loop() {
         if (!scheduled) {
-            Scheduler.schedule(sequential(follow(bot.follower, path1()), follow(bot.follower, path2())));
+            Scheduler.schedule(repeat(sequential(follow(bot.follower, path1()), follow(bot.follower, path2())), 5));
             scheduled = true;
         }
 

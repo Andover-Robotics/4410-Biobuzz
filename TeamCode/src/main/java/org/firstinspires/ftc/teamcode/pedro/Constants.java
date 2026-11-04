@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedro;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.algorithm.Foresight;
 import com.pedropathing.algorithm.ForesightConfig;
 import com.pedropathing.controllers.Controller;
@@ -16,6 +17,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+@Config
 public class Constants {
     public static Follower create(HardwareMap hardwareMap) {
         return new Follower(new PinpointLocalizer(hardwareMap, Constants.localizerConfig),
@@ -70,6 +72,9 @@ public class Constants {
                 c.maxAchievableStrafeVelocity.set(61.315078221703004);
                 c.naturalForwardDeceleration.set(27.33240413140022);
                 c.naturalStrafeDeceleration.set(59.42782557393842);
+
+                c.maxDecelerationConstraint.set(170.0);
+              //  c.maxAccelerationConstraint.set(70.0);
             }
     );
 
