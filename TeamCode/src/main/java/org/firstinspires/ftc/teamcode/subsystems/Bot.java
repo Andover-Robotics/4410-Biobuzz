@@ -49,7 +49,8 @@ public class Bot {
         intake = new Intake(
                 telemetry,
                 intakeMotor1, intakeMotor2,
-                new ServoEx(hardwareMap, "gate"));
+                new ServoEx(hardwareMap, "gate"),
+                new ServoEx(hardwareMap, "wxyz"));
         intake.closeGate();
 
         rampSensors = new RampSensors(

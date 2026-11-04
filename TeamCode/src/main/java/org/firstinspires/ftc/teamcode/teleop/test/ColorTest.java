@@ -52,7 +52,8 @@ public class ColorTest extends OpMode {
                 telemetry,
                 intake1,
                 intake2,
-                new ServoEx(hardwareMap, "gate"));
+                new ServoEx(hardwareMap, "gate"),
+                new ServoEx(hardwareMap, "wxyz"));
     }
 
     @Override

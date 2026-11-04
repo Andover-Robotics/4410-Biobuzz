@@ -23,18 +23,21 @@ public class ColorUtils {
 
     public enum Color {
         // https://www.gobilda.com/rgb-indicator-light-pwm-controlled/
-        POLLEN(pollenColor, 0.384f),
-        NECTAR_RED(nectarRedColor, 0.280f),
-        NECTAR_BLUE(nectarBlueColor, 0.611f),
-        ORANGE(new float[] { -999, -999, -999 }, 0.333f),
-        NONE(new float[] { -999, -999, -999 }, 1.000f);
+        POLLEN(pollenColor, 0.384f, true),
+        NECTAR_RED(nectarRedColor, 0.280f, true),
+        NECTAR_BLUE(nectarBlueColor, 0.611f, true),
+        ORANGE(new float[] { -999, -999, -999 }, 0.333f, false),
+        PURPLE(new float[] { -999, -999, -999 }, 0.721f, false),
+        NONE(new float[] { -999, -999, -999 }, 1.000f, false);
 
         private float[] color;
         private final float floodlightColor;
+        private boolean matchable;
 
-        Color(float[] colors, float floodlightColor) {
+        Color(float[] colors, float floodlightColor, boolean matchable) {
             this.color = colors;
             this.floodlightColor = floodlightColor;
+            this.matchable = matchable;
         }
 
         private void update() {
@@ -53,7 +56,7 @@ public class ColorUtils {
 
         public boolean hsvMatches(float[] other) {
             update();
-            return this != NONE && this != ORANGE && ColorUtils.hsvMatches(color, other);
+            return matchable && ColorUtils.hsvMatches(color, other);
         }
 
         public static Color match(float[] color) {

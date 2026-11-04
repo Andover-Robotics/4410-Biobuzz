@@ -35,8 +35,10 @@ public class RampSensorTest extends OpMode {
         intake = new Intake(
                 telemetry,
                 intakeMotor1, intakeMotor2,
-                new ServoEx(hardwareMap, "gate"));
+                new ServoEx(hardwareMap, "gate"),
+                new ServoEx(hardwareMap, "wxyz"));
         intake.closeGate();
+        intake.upWxyz();
         intake.stop();
 
         rampSensors = new RampSensors(
@@ -71,6 +73,10 @@ public class RampSensorTest extends OpMode {
 
         if (gamepad1.aWasPressed()) {
             intake.toggleGate();
+        }
+
+        if (gamepad1.bWasPressed()) {
+            intake.toggleWxyz();
         }
 
         intake.periodic();
