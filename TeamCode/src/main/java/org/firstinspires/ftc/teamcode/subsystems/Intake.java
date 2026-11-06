@@ -3,18 +3,16 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
+import com.seattlesolvers.solverslib.hardware.motors.MotorGroup;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
-
-import java.util.Optional;
 
 @Config
 public class Intake {
     public static double inPower = 1;
     public static double outPower = -0.5;
-    public static double stallPower = 0.3;
+    public static double storePower = 0.5;
 
     public static double gateOpenPosition = 0.290;
     public static double gateClosedPosition = 0.480;
@@ -23,66 +21,48 @@ public class Intake {
     public static double wxyzDownPosition = 0.000;
 
     private final Telemetry telemetry;
-    private final MotorEx topMotor;
-    private final MotorEx bottomMotor;
+    private final MotorGroup motors;
     private final ServoEx gate;
     private final ServoEx wxyz;
-
-    public enum State {
-        INTAKE_FULL,
-        INTAKE,
-        STORE,
-        OUTTAKE,
-        STOP
-    }
-
-    private Optional<RampSensors> rampSensors = Optional.empty();
-
-    private State state;
 
     public boolean gateClosed = true;
     public boolean wxyzUp = true;
 
-    public static double inStallTimeMs = 200;
-    public final BooleanDebouncer topDebouncer = new BooleanDebouncer();
-    public final BooleanDebouncer bottomDebouncer = new BooleanDebouncer();
-
-    public Intake(Telemetry telemetry, MotorEx topMotor, MotorEx bottomMotor,
+    public Intake(Telemetry telemetry, MotorEx motor1, MotorEx motor2,
                   ServoEx gate, ServoEx wxyz) {
         this.telemetry = telemetry;
-        this.topMotor = topMotor;
-        this.bottomMotor = bottomMotor;
+        this.motors = new MotorGroup(motor1, motor2);
         this.gate = gate;
         this.wxyz = wxyz;
 
-        topMotor.setRunMode(Motor.RunMode.RawPower);
-        bottomMotor.setRunMode(Motor.RunMode.RawPower);
+        motor1.setRunMode(Motor.RunMode.RawPower);
+        motor2.setRunMode(Motor.RunMode.RawPower);
 
-        setState(State.STORE);
+        stop();
     }
 
-    public void setState(State state) {
-        this.state = state;
+    public void setPower(double power) {
+        motors.set(power);
     }
 
-    public void intakeFull() {
-        setState(State.INTAKE_FULL);
+    public double getPower() {
+        return motors.get();
     }
 
     public void intake() {
-        setState(State.INTAKE);
+        setPower(inPower);
     }
 
     public void store() {
-        setState(State.STORE);
+        setPower(storePower);
     }
 
     public void outtake() {
-        setState(State.OUTTAKE);
+        setPower(outPower);
     }
 
     public void stop() {
-        setState(State.STOP);
+        setPower(0);
     }
 
     public void setGatePosition(double position) {
@@ -133,64 +113,8 @@ public class Intake {
         }
     }
 
-    public void periodic() {
-        topDebouncer.periodic(isTopFull(), inStallTimeMs, 0);
-        bottomDebouncer.periodic(isBottomFull(), inStallTimeMs, 0);
-
-        switch (state) {
-            case INTAKE_FULL:
-                topMotor.set(inPower);
-                bottomMotor.set(inPower);
-                break;
-            case INTAKE:
-                topMotor.set(isTopStalled() ? stallPower : inPower);
-                bottomMotor.set(isBottomStalled() ? stallPower : inPower);
-                break;
-            case OUTTAKE:
-                topMotor.set(outPower);
-                bottomMotor.set(outPower);
-                break;
-            case STORE:
-                topMotor.set(stallPower);
-                bottomMotor.set(stallPower);
-                break;
-            case STOP:
-                topMotor.set(0);
-                bottomMotor.set(0);
-                break;
-        }
-    }
-
     public void updateTelemetry() {
-        telemetry.addData("Intake/State", state);
+        telemetry.addData("Intake/Power", getPower());
         telemetry.addData("Intake/Gate", gateClosed ? "CLOSED" : "OPEN");
-        telemetry.addData("Intake/Top stalled", isTopStalled());
-        telemetry.addData("Intake/Bottom stalled", isBottomStalled());
-    }
-
-    public void setRampSensors(RampSensors rampSensors) {
-        this.rampSensors = Optional.of(rampSensors);
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    private boolean isTopFull() {
-        return rampSensors.map((rampSensors) -> rampSensors.getQueueSize() >= 2)
-                .orElse(false);
-    }
-
-    private boolean isBottomFull() {
-        return rampSensors.map((rampSensors) -> rampSensors.getQueueSize() == 4)
-                .orElse(false);
-    }
-
-    public boolean isTopStalled() {
-        return topDebouncer.getState();
-    }
-
-    public boolean isBottomStalled() {
-        return bottomDebouncer.getState();
     }
 }

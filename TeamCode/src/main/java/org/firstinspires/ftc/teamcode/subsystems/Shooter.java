@@ -8,7 +8,6 @@ import com.pedropathing.ivy.commands.Commands;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
-import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
@@ -18,8 +17,7 @@ import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
 
 @Config
 public class Shooter {
-    public static double nectarKP = 0.02;
-    public static double pollenKP = 0.02;
+    public static double kP = 0.02;
     public static double kI = 0;
     public static double kD = 0;
     public static double kF = 0.003;
@@ -31,24 +29,9 @@ public class Shooter {
     public static boolean manual = false;
     public static double manualVelocity = 0;
 
-    public enum Size {
-        NECTAR,
-        POLLEN
-    }
-
-    public static double nectarServoPosition = 0.00;
-    public static double pollenServoPosition = 0.00;
-
     public static double shootAllPollenTime = 1000.0;
 
-    private Size size = Size.NECTAR;
-
-    private static final InterpLUT NECTAR_VELOCITY_LOOKUP_TABLE = new InterpLUT()
-            .add(0, 0)
-            .add(1, 0)
-            .createLUT();
-
-    private static final InterpLUT POLLEN_VELOCITY_LOOKUP_TABLE = new InterpLUT()
+    private static final InterpLUT VELOCITY_LOOKUP_TABLE = new InterpLUT()
             .add(0, 0)
             .add(1, 0)
             .createLUT();
@@ -56,11 +39,9 @@ public class Shooter {
     private final Telemetry telemetry;
     private final MotorEx motor1;
     private final MotorEx motor2;
-    private final ServoEx servo;
     private final VoltageSensor voltageSensor;
     private final PIDFController controller;
     private final Intake intake;
-    private final RampSensors rampSensors;
     private final Turret turret;
     private final BooleanDebouncer toleranceDebouncer = new BooleanDebouncer();
 
@@ -76,35 +57,24 @@ public class Shooter {
     private boolean inShootingCommand = false;
 
     public Shooter(Telemetry telemetry, MotorEx motor1, MotorEx motor2,
-                   ServoEx servo, VoltageSensor voltageSensor,
-                   Intake intake, RampSensors rampSensors, Turret turret) {
+                   VoltageSensor voltageSensor,
+                   Intake intake, Turret turret) {
         this.telemetry = telemetry;
         this.motor1 = motor1;
         this.motor2 = motor2;
-        this.servo = servo;
         this.voltageSensor = voltageSensor;
         this.intake = intake;
-        this.rampSensors = rampSensors;
         this.turret = turret;
 
         this.motor1.setRunMode(Motor.RunMode.RawPower);
         this.motor2.setRunMode(Motor.RunMode.RawPower);
         this.motor1.setInverted(true);
 
-        controller = new PIDFController(nectarKP, kI, kD, kF);
+        controller = new PIDFController(kP, kI, kD, kF);
         controller.integrationControl.setIntegrationBounds(-windupRange, windupRange);
-
-        NECTAR_VELOCITY_LOOKUP_TABLE.createLUT();
-        POLLEN_VELOCITY_LOOKUP_TABLE.createLUT();
     }
 
     public void periodic() {
-        if (size == Size.NECTAR) {
-            servo.set(nectarServoPosition);
-        } else if (size == Size.POLLEN) {
-            servo.set(pollenServoPosition);
-        }
-
         targetVelocity = requestedVelocity();
         updateMotorData();
         updateTolerance();
@@ -115,7 +85,7 @@ public class Shooter {
             return;
         }
 
-        controller.setPIDF(size == Size.NECTAR ? nectarKP : pollenKP, kI, kD, kF);
+        controller.setPIDF(kP, kI, kD, kF);
         controller.integrationControl.setIntegrationBounds(-windupRange, windupRange);
         double outputVolts = controller.calculate(realVelocity, targetVelocity);
         setPower(outputVolts / voltageSensor.getVoltage());
@@ -123,7 +93,6 @@ public class Shooter {
 
     public void updateTelemetry() {
         telemetry.addData("Shooter/Enabled", enabled);
-        telemetry.addData("Shooter/Size", size);
         telemetry.addData("Shooter/Target velocity", targetVelocity);
         telemetry.addData("Shooter/Actual velocity", realVelocity);
         telemetry.addData("Shooter/At speed", inTolerance());
@@ -138,16 +107,7 @@ public class Shooter {
             return manualVelocity;
         }
 
-        double distanceToGoal = turret.getDistanceToGoal();
-
-        switch (size) {
-            case NECTAR:
-                return NECTAR_VELOCITY_LOOKUP_TABLE.get(distanceToGoal);
-            case POLLEN:
-                return POLLEN_VELOCITY_LOOKUP_TABLE.get(distanceToGoal);
-            default:
-                throw new IllegalStateException();
-        }
+        return VELOCITY_LOOKUP_TABLE.get(turret.getDistanceToGoal());
     }
 
     private void updateMotorData() {
@@ -238,19 +198,10 @@ public class Shooter {
         return inShootingCommand;
     }
 
-    public Size getSize() {
-        return size;
-    }
-
-    public void setSize(Size size) {
-        this.size = size;
-    }
-
     public Command shootAllPollen() {
         return sequential(
                 Commands.instant(() -> inShootingCommand = true),
-                Commands.instant(() -> setSize(Size.POLLEN)),
-                Commands.instant(intake::intakeFull),
+                Commands.instant(intake::intake),
                 Commands.instant(this::enable),
                 Commands.waitUntil(this::inTolerance),
                 Commands.instant(intake::openGate),
@@ -258,11 +209,6 @@ public class Shooter {
                 Commands.instant(this::disable),
                 Commands.instant(intake::stop),
                 Commands.instant(intake::closeGate),
-                Commands.instant(() -> {
-                    while (rampSensors.getQueueSize() > 0) {
-                        rampSensors.removeFromQueueShooting();
-                    }
-                }),
                 Commands.instant(() -> inShootingCommand = false)
         );
     }

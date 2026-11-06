@@ -5,7 +5,6 @@ import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.ivy.commands.Commands;
 import com.pedropathing.math.Pose;
 import com.pedropathing.revhub.drivetrains.Mecanum;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -55,11 +54,10 @@ public class Bot {
 
         rampSensors = new RampSensors(
                 telemetry,
-                hardwareMap.get(RevColorSensorV3.class, "color1"),
-                hardwareMap.get(DigitalChannel.class, "bottomBBBottom"),
-                hardwareMap.get(DigitalChannel.class, "topBBBottom"),
-                intake);
-        intake.setRampSensors(rampSensors);
+                hardwareMap.get(DigitalChannel.class, "rampBB1"),
+                hardwareMap.get(DigitalChannel.class, "rampBB2"),
+                hardwareMap.get(DigitalChannel.class, "rampBB3"),
+                hardwareMap.get(DigitalChannel.class, "rampBB4"));
 
         drive = new Mecanum(hardwareMap, Constants.driveConfig);
         drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -81,10 +79,8 @@ public class Bot {
                 telemetry,
                 new MotorEx(hardwareMap, "shooter1", Motor.GoBILDA.BARE),
                 new MotorEx(hardwareMap, "shooter2", Motor.GoBILDA.BARE),
-                new ServoEx(hardwareMap, "shooterServo"),
                 voltageSensor,
                 intake,
-                rampSensors,
                 turret);
     }
 
@@ -92,7 +88,6 @@ public class Bot {
         Scheduler.schedule(Commands.infinite(() -> {
             follower.update();
             rampSensors.periodic();
-            intake.periodic();
             turret.periodic();
             shooter.periodic();
             display.periodic();

@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
-import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
@@ -30,9 +29,7 @@ public class ShooterTest extends OpMode {
                 telemetry,
                 new MotorEx(hardwareMap, "shooter1", Motor.GoBILDA.BARE),
                 new MotorEx(hardwareMap, "shooter2", Motor.GoBILDA.BARE),
-                new ServoEx(hardwareMap, "shooterServo"),
                 voltageSensor,
-                null,
                 null,
                 null);
         Shooter.manual = true;
@@ -56,11 +53,6 @@ public class ShooterTest extends OpMode {
             Shooter.manualVelocity -= STEP_RPM;
         }
         Shooter.manualVelocity = Math.max(0, Shooter.manualVelocity);
-
-        if (gamepad1.aWasPressed()) {
-            shooter.setSize(shooter.getSize() == Shooter.Size.NECTAR
-                    ? Shooter.Size.POLLEN : Shooter.Size.NECTAR);
-        }
 
         shooter.periodic();
 

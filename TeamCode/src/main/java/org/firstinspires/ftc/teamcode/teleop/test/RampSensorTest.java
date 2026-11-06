@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.teleop.test;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -43,11 +42,10 @@ public class RampSensorTest extends OpMode {
 
         rampSensors = new RampSensors(
                 telemetry,
-                hardwareMap.get(RevColorSensorV3.class, "color1"),
-                hardwareMap.get(DigitalChannel.class, "bottomBBBottom"),
-                hardwareMap.get(DigitalChannel.class, "topBBBottom"),
-                intake);
-        intake.setRampSensors(rampSensors);
+                hardwareMap.get(DigitalChannel.class, "rampBB1"),
+                hardwareMap.get(DigitalChannel.class, "rampBB2"),
+                hardwareMap.get(DigitalChannel.class, "rampBB3"),
+                hardwareMap.get(DigitalChannel.class, "rampBB4"));
 
         display = new Display(telemetry, List.of(
                 new ServoEx(hardwareMap, "display1"),
@@ -60,11 +58,7 @@ public class RampSensorTest extends OpMode {
     @Override
     public void loop() {
         if (gamepad1.left_bumper) {
-            if (gamepad1.right_bumper) {
-                intake.intakeFull();
-            } else {
-                intake.intake();
-            }
+            intake.intake();
         } else if (gamepad1.right_bumper) {
             intake.outtake();
         } else {
@@ -75,11 +69,6 @@ public class RampSensorTest extends OpMode {
             intake.toggleGate();
         }
 
-        if (gamepad1.bWasPressed()) {
-            intake.toggleWxyz();
-        }
-
-        intake.periodic();
         rampSensors.periodic();
         display.periodic();
 
@@ -92,6 +81,5 @@ public class RampSensorTest extends OpMode {
     @Override
     public void stop() {
         intake.stop();
-        intake.periodic();
     }
 }

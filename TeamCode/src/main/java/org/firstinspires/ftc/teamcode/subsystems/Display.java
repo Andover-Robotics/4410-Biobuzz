@@ -44,8 +44,10 @@ public class Display {
     public void periodic() {
         rampSensors.ifPresent(sensors -> {
             colors.clear();
-            for (RampSensors.BallReading reading : sensors.getQueue()) {
-                colors.add(reading.getColor());
+
+            int length = rampSensors.map(RampSensors::getLength).orElse(0);
+            for (int i = 0; i < length; i++) {
+                colors.add(sensors.hasPollen(i) ? ColorUtils.Color.YELLOW : ColorUtils.Color.NONE);
             }
         });
 

@@ -1,127 +1,76 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.subsystems.sensors.BB;
-import org.firstinspires.ftc.teamcode.subsystems.sensors.Color;
-import org.firstinspires.ftc.teamcode.util.ColorUtils;
+import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-
+@Config
 public class RampSensors {
-    public static final class BallReading {
-        private final BB.Ball size;
-        private final ColorUtils.Color color;
-
-        public BallReading(BB.Ball size, ColorUtils.Color color) {
-            this.size = size;
-            this.color = color;
-        }
-
-        public BB.Ball getSize() {
-            return size;
-        }
-
-        public ColorUtils.Color getColor() {
-            return color;
-        }
-    }
-    public static int maxPushLength = 100;
+    public static double blockedDebounceMs = 10;
+    public static double clearDebounceMs = 10;
 
     private final Telemetry telemetry;
-    private final Intake intake;
-    private final Color color;
+    private final BreakBeam[] breakBeams;
 
-    private final Deque<BallReading> queue = new ArrayDeque<>();
-
-    private int length = 0;
-
-    public void addToQueueIntaking(BallReading ballReading) {
-        if (length >= maxPushLength) {
-            return;
-        }
-
-        int diameter = ballReading.getSize().getDiameter();
-        queue.addFirst(ballReading);
-        length += diameter;
-    }
-
-    public void removeFromQueueOuttaking() {
-        onRemoved(queue.pollFirst());
-    }
-
-    public void removeFromQueueShooting() {
-        onRemoved(queue.pollLast());
-    }
-
-    private void onRemoved(BallReading ballReading) {
-        if (ballReading == null) {
-            return;
-        }
-
-        length -= ballReading.getSize().getDiameter();
-    }
-
-    public RampSensors(Telemetry telemetry, RevColorSensorV3 colorSensor,
-                       DigitalChannel bottomChannel, DigitalChannel topChannel,
-                       Intake intake) {
+    public RampSensors(Telemetry telemetry, DigitalChannel channel1, DigitalChannel channel2,
+                       DigitalChannel channel3, DigitalChannel channel4) {
         this.telemetry = telemetry;
-        this.intake = intake;
-        this.color = new Color(
-                telemetry,
-                colorSensor,
-                bottomChannel,
-                topChannel,
-                (size, color) -> {
-                    switch (intake.getState()) {
-                        case OUTTAKE:
-                            removeFromQueueOuttaking();
-                            break;
-                        case INTAKE:
-                        case INTAKE_FULL:
-                            addToQueueIntaking(new BallReading(size, color));
-                            break;
-                        default:
-                            break;
-                    }
-                });
+        breakBeams = new BreakBeam[] {
+                new BreakBeam(channel1),
+                new BreakBeam(channel2),
+                new BreakBeam(channel3),
+                new BreakBeam(channel4)
+        };
     }
 
     public void periodic() {
-        color.periodic(intake.getState() != Intake.State.OUTTAKE);
+        for (BreakBeam breakBeam : breakBeams) {
+            breakBeam.periodic();
+        }
+    }
+
+    public boolean hasPollen(int position) {
+        return breakBeams[position].hasPollen();
+    }
+
+    public int getPollenCount() {
+        int count = 0;
+        for (BreakBeam breakBeam : breakBeams) {
+            if (breakBeam.hasPollen()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int getLength() {
+        return breakBeams.length;
     }
 
     public void updateTelemetry() {
-        telemetry.addData("Ramp/Queue (intake to shooter)", queue.isEmpty() ? "EMPTY" : toString());
-        telemetry.addData("Ramp/Ball count", queue.size());
-        telemetry.addData("Ramp/Length", length);
-        color.updateTelemetry();
-    }
-
-    public String toString() {
-        StringBuilder displayString = new StringBuilder();
-        for (RampSensors.BallReading reading : queue) {
-            if (displayString.length() > 0) {
-                displayString.append(" -> ");
-            }
-            displayString.append(reading.getSize()).append(" (")
-                    .append(reading.getColor()).append(")");
+        for (int i = 0; i < breakBeams.length; i++) {
+            telemetry.addData("Ramp/Pollen position " + i, hasPollen(i));
         }
-        return displayString.toString();
+        telemetry.addData("Ramp/Pollen count", getPollenCount());
     }
 
-    public Deque<BallReading> getQueue() {
-        return queue;
-    }
+    private static final class BreakBeam {
+        private final DigitalChannel channel;
+        private final BooleanDebouncer debouncer = new BooleanDebouncer();
 
-    public int getQueueSize() {
-        return queue.size();
-    }
+        private BreakBeam(DigitalChannel channel) {
+            this.channel = channel;
+            channel.setMode(DigitalChannel.Mode.INPUT);
+        }
 
-    public double getLength() {
-        return length;
+        private void periodic() {
+            debouncer.periodic(!channel.getState(), blockedDebounceMs, clearDebounceMs);
+        }
+
+        private boolean hasPollen() {
+            return debouncer.getState();
+        }
     }
 }
