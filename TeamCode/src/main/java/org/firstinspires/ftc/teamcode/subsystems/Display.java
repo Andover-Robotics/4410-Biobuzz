@@ -60,12 +60,10 @@ public class Display {
         boolean inFlashFrame = shouldFlash && (long) (flashTimer.milliseconds() / FLASH_INTERVAL_MS) % 2 == 0;
 
         for (int i = 0; i < lights.size(); i++) {
-            ColorUtils.Color color = i < colors.size() ? colors.get(i) : ColorUtils.Color.NONE;
+            ColorUtils.Color color = inFlashFrame ? ColorUtils.Color.PURPLE :
+                    i < colors.size() ? colors.get(i) : ColorUtils.Color.NONE;
 
-            double position = inFlashFrame
-                    ? ColorUtils.Color.PURPLE.getFloodlightColor() : color.getFloodlightColor();
-
-            lights.get(i).set(position);
+            lights.get(i).set(color.getFloodlightColor());
         }
     }
 

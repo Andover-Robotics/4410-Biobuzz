@@ -63,12 +63,13 @@ public class Turret {
             requestedPositionDegrees = targetPositionDegrees + Math.IEEEremainder(
                     requestedPositionDegrees - targetPositionDegrees, 360.0);
         }
+
         targetPositionDegrees = clampToLimits(requestedPositionDegrees);
-        outOfRange = Math.abs(Math.IEEEremainder(requestedPositionDegrees - targetPositionDegrees, 360.0)) > 1e-6;
         double servoPosition = angleToServoPosition(targetPositionDegrees);
-        if (servoPosition < 0 || servoPosition > 1) {
-            outOfRange = true;
-        }
+
+        outOfRange = (Math.abs(Math.IEEEremainder(requestedPositionDegrees - targetPositionDegrees, 360.0)) > 1e-6)
+                || (servoPosition < 0 || servoPosition > 1);
+
         servo1.set(servoPosition);
         servo2.set(servoPosition);
     }
