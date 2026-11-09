@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import androidx.core.view.TintableBackgroundView;
+
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
@@ -11,6 +13,10 @@ import org.firstinspires.ftc.teamcode.subsystems.BotOpMode;
 @TeleOp(name = "TeleOp", group = "Competition")
 public class MainTeleOp extends BotOpMode {
     @Override
+    public void init(){
+        super.init();
+    }
+    @Override
     public void loop() {
         if (!bot.shooter.isInShootingCommand()) {
             if (gamepad1.left_bumper) {
@@ -21,7 +27,7 @@ public class MainTeleOp extends BotOpMode {
                 bot.intake.stop();
             }
 
-            if (gamepad2.aWasPressed()) {
+            if (gamepad1.aWasPressed()) {
                 bot.intake.toggleGate();
             }
         }
@@ -32,8 +38,11 @@ public class MainTeleOp extends BotOpMode {
                 -gamepad1.left_stick_x * driveSpeed,
                 -gamepad1.right_stick_x * driveSpeed));
 
-        if (gamepad2.dpadDownWasPressed()) {
+        if (gamepad1.dpadDownWasPressed()) {
             Scheduler.schedule(bot.shooter.shootAllPollen());
+        }
+        if(gamepad1.dpadLeftWasPressed()){
+            bot.intake.toggleWxyz();
         }
 
         if (gamepad1.rightStickButtonWasPressed()) {
