@@ -141,8 +141,12 @@ public class Turret {
     }
 
     private static double clampToLimits(double positionDegrees) {
-        positionDegrees = positionDegrees
+        double wrappedPosition = positionDegrees
                 + 360.0 * Math.ceil((lowLimitDegrees - positionDegrees) / 360.0);
+
+        if (wrappedPosition <= highLimitDegrees) {
+            return wrappedPosition;
+        }
 
         return Math.max(lowLimitDegrees, Math.min(highLimitDegrees, positionDegrees));
     }
