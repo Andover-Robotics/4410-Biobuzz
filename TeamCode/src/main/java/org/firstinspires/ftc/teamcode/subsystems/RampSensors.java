@@ -40,6 +40,8 @@ public class RampSensors {
         for (BreakBeam breakBeam : breakBeams) {
             if (breakBeam.hasPollen()) {
                 count++;
+            } else {
+                break;
             }
         }
         return count == 0 ? 0 : (count + 1);
