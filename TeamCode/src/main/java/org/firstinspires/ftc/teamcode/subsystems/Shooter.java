@@ -32,8 +32,8 @@ public class Shooter {
     public static double shootAllPollenTime = 1000.0;
 
     private static final InterpLUT VELOCITY_LOOKUP_TABLE = new InterpLUT()
-            .add(0, 2400)
-            .add(50, 2401)
+            .add(0, 2300)
+            .add(50, 2301)
             .createLUT();
 
     private final Telemetry telemetry;
@@ -201,7 +201,7 @@ public class Shooter {
     public Command shootAllPollen() {
         return sequential(
                 Commands.instant(() -> inShootingCommand = true),
-                Commands.instant(intake::intake),
+                Commands.instant(intake::intakeFull),
                 Commands.instant(this::enable),
                 Commands.waitUntil(this::inTolerance),
                 Commands.instant(intake::openGate),

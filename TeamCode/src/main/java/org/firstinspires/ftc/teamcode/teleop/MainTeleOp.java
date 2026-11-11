@@ -52,8 +52,8 @@ public class MainTeleOp extends BotOpMode {
         ManualDrive.driveOrHold(
                 bot.follower,
                 -gamepad1.left_stick_y,
-                gamepad1.left_stick_x,
-                gamepad1.right_stick_x * turningGain);
+                -gamepad1.left_stick_x,
+                gamepad1.right_stick_x * -turningGain);
 
         if (gamepad1.dpadDownWasPressed()) {
             Scheduler.schedule(bot.shooter.shootAllPollen());

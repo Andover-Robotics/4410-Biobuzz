@@ -25,6 +25,7 @@ public class RampSensors {
         };
     }
 
+
     public void periodic() {
         for (BreakBeam breakBeam : breakBeams) {
             breakBeam.periodic();
