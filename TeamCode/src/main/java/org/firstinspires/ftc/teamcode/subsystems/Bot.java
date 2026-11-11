@@ -23,7 +23,6 @@ public class Bot {
     public final HardwareMap hardwareMap;
     public final Telemetry telemetry;
 
-    public final Mecanum drive;
     public final Follower follower;
     public final VoltageSensor voltageSensor;
     public final Display display;
@@ -62,9 +61,6 @@ public class Bot {
                 rampSensors);
         intake.closeGate();
         intake.upWxyz();
-
-        drive = new Mecanum(hardwareMap, Constants.driveConfig);
-        drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         follower = Constants.create(hardwareMap);
         turret = new Turret(telemetry, follower,

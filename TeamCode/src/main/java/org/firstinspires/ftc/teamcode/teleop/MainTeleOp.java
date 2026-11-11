@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.pedropathing.drivetrain.DrivePowers;
+import com.acmerobotics.dashboard.config.Config;
+import com.pedropathing.follower.ManualDrive;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -9,7 +10,10 @@ import org.firstinspires.ftc.teamcode.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.subsystems.BotOpMode;
 
 @TeleOp(name = "TeleOp", group = "Competition")
+@Config
 public class MainTeleOp extends BotOpMode {
+    public static double turningGain = 0.8;
+
     public void resetToCorner() {
         switch (Bot.allianceColor) {
             case RED:
@@ -45,11 +49,11 @@ public class MainTeleOp extends BotOpMode {
             }
         }
 
-        double driveSpeed = Math.max(0, 1 - 0.75 * gamepad1.right_trigger);
-        bot.drive.applyDrive(new DrivePowers(
-                -gamepad1.left_stick_y * driveSpeed,
-                -gamepad1.left_stick_x * driveSpeed,
-                -gamepad1.right_stick_x * driveSpeed));
+        ManualDrive.driveOrHold(
+                bot.follower,
+                -gamepad1.left_stick_y,
+                gamepad1.left_stick_x,
+                gamepad1.right_stick_x * turningGain);
 
         if (gamepad1.dpadDownWasPressed()) {
             Scheduler.schedule(bot.shooter.shootAllPollen());
