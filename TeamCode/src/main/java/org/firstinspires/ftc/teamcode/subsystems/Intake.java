@@ -15,7 +15,7 @@ public class Intake {
     public static double midInPower = 0.5;
     public static double storePower = 0.1;
 
-    public static double gateOpenPosition = 0.610;
+    public static double gateOpenPosition = 0.59;
     public static double gateClosedPosition = 0.720;
 
     public static double wxyzUpPosition = 0.860;
@@ -90,13 +90,12 @@ public class Intake {
     }
 
     public void setGatePosition(double position) {
-        gateClosed = Math.abs(gateClosedPosition - position) < 0.02;
-
+        gateClosed = Math.abs(gateClosedPosition - position) < 0.05;
         gate.set(position);
     }
 
     public void setWxyzPosition(double position) {
-        wxyzUp = Math.abs(wxyzUpPosition - position) < 0.02;
+        wxyzUp = Math.abs(wxyzUpPosition - position) < 0.05;
 
         wxyz.set(position);
     }

@@ -32,8 +32,8 @@ public class Shooter {
     public static double shootAllPollenTime = 1000.0;
 
     private static final InterpLUT VELOCITY_LOOKUP_TABLE = new InterpLUT()
-            .add(0, 0)
-            .add(1, 0)
+            .add(0, 2400)
+            .add(50, 2401)
             .createLUT();
 
     private final Telemetry telemetry;
@@ -110,8 +110,8 @@ public class Shooter {
     }
 
     private void updateMotorData() {
-        double primaryVelocity = motor1.getVelocity() / motor1.getCPR() * 60;
-        double backupVelocity = motor2.getVelocity() / motor2.getCPR() * 60;
+        double primaryVelocity = -motor1.getVelocity() / motor1.getCPR() * 60;
+        double backupVelocity = -motor2.getVelocity() / motor2.getCPR() * 60;
         realVelocity = usingPrimaryEncoder ? primaryVelocity : backupVelocity;
 
         currentDrawOne = motor1.getCurrent(CurrentUnit.AMPS);
@@ -140,8 +140,8 @@ public class Shooter {
     }
 
     private void setPower(double power) {
-        motor1.set(power);
-        motor2.set(power);
+        motor1.set(-power);
+        motor2.set(-power);
     }
 
     public void enable() {

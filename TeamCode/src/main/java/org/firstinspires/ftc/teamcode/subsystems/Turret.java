@@ -115,9 +115,11 @@ public class Turret {
     private static Pose getAimPoint(double y) {
         switch (Bot.allianceColor) {
             case RED:
-                return y < HALF_FIELD ? backTargetPoseRed : frontTargetPoseRed;
+//                return y < HALF_FIELD ? backTargetPoseRed : frontTargetPoseRed;
+                return backTargetPoseRed;
             case BLUE:
-                return y < HALF_FIELD ? backTargetPoseBlue : frontTargetPoseBlue;
+//                return y < HALF_FIELD ? backTargetPoseBlue : frontTargetPoseBlue;
+                return backTargetPoseBlue;
             default:
                 throw new IllegalStateException();
         }

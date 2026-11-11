@@ -30,14 +30,14 @@ public class MainTeleOp extends BotOpMode {
     @Override
     public void loop() {
         if (!bot.shooter.isInShootingCommand()) {
-            if (gamepad1.left_bumper) {
-                bot.intake.intake();
-            } else if (gamepad1.right_bumper) {
-                bot.intake.outtake();
+            if (gamepad1.right_bumper) {
+                bot.intake.intakeFull(); // right bumper = override sensors
+            } else if (gamepad1.left_bumper) {
+                bot.intake.outtake();//left bumper = outtake
             } else if (gamepad1.left_trigger > 0.2) {
-                bot.intake.intakeFull();
+                bot.intake.intake(); //left trigger=sensor intake
             } else {
-                bot.intake.store();
+                bot.intake.store();//slow?                                                                                              11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
             }
 
             if (gamepad1.aWasPressed()) {
@@ -56,6 +56,11 @@ public class MainTeleOp extends BotOpMode {
         }
         if(gamepad1.dpadLeftWasPressed()){
             bot.intake.toggleWxyz();
+        }
+        if (gamepad1.right_trigger > 0.2){
+            bot.shooter.enable();
+        }else{
+            bot.shooter.disable();
         }
 
         if (gamepad1.rightStickButtonWasPressed()) {
