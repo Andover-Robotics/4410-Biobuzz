@@ -42,15 +42,6 @@ public class Bot {
     public Bot(HardwareMap hardwareMap, Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
-        MotorEx intakeMotor1 = new MotorEx(hardwareMap, "intake1", Motor.GoBILDA.RPM_1150);
-        MotorEx intakeMotor2 = new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150);
-        intakeMotor2.setInverted(true);
-        intake = new Intake(
-                telemetry,
-                intakeMotor1, intakeMotor2,
-                new ServoEx(hardwareMap, "gate"),
-                new ServoEx(hardwareMap, "wxyz"));
-        intake.closeGate();
 
         rampSensors = new RampSensors(
                 telemetry,
@@ -58,6 +49,19 @@ public class Bot {
                 hardwareMap.get(DigitalChannel.class, "rampBB2"),
                 hardwareMap.get(DigitalChannel.class, "rampBB3"),
                 hardwareMap.get(DigitalChannel.class, "rampBB4"));
+
+
+        MotorEx intakeMotor1 = new MotorEx(hardwareMap, "intake1", Motor.GoBILDA.RPM_1150);
+        MotorEx intakeMotor2 = new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150);
+        intakeMotor1.setInverted(true);
+        intake = new Intake(
+                telemetry,
+                intakeMotor1, intakeMotor2,
+                new ServoEx(hardwareMap, "gate"),
+                new ServoEx(hardwareMap, "wxyz"),
+                rampSensors);
+        intake.closeGate();
+        intake.upWxyz();
 
         drive = new Mecanum(hardwareMap, Constants.driveConfig);
         drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -88,6 +92,7 @@ public class Bot {
         Scheduler.schedule(Commands.infinite(() -> {
             follower.update();
             rampSensors.periodic();
+            intake.periodic();
             turret.periodic();
             shooter.periodic();
             display.periodic();

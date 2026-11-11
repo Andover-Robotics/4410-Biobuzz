@@ -34,9 +34,6 @@ public class ShooterTest extends OpMode {
                 null);
         Shooter.manual = true;
         Shooter.manualVelocity = 0;
-
-        telemetry.addData("Shooter test/Velocity step", STEP_RPM);
-        telemetry.update();
     }
 
     @Override

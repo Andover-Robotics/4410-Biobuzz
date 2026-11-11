@@ -32,7 +32,7 @@ public class DisplayTest extends LinearOpMode {
     }
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         display = new Display(telemetry, List.of(
                 new ServoEx(hardwareMap, "display1"),
                 new ServoEx(hardwareMap, "display2"),

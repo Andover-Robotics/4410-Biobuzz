@@ -15,6 +15,7 @@ public class PositionTurret extends OpMode {
     @Override
     public void init() {
         Turret.manual = true;
+        Turret.manualPositionDegrees = 0;
         Turret.angles = new double[] {0, 1};
         Turret.servoPositions = new double[] {0, 1};
         turret = new Turret(

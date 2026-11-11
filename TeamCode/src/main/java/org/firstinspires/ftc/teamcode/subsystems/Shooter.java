@@ -81,7 +81,6 @@ public class Shooter {
 
         if (!enabled) {
             setPower(0);
-            controller.reset();
             return;
         }
 
@@ -151,6 +150,7 @@ public class Shooter {
 
     public void disable() {
         enabled = false;
+        controller.reset();
         toleranceDebouncer.periodic(false, 0, 0);
     }
 

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import androidx.core.view.TintableBackgroundView;
-
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
@@ -12,10 +10,23 @@ import org.firstinspires.ftc.teamcode.subsystems.BotOpMode;
 
 @TeleOp(name = "TeleOp", group = "Competition")
 public class MainTeleOp extends BotOpMode {
-    @Override
-    public void init(){
-        super.init();
+    public void resetToCorner() {
+        switch (Bot.allianceColor) {
+            case RED:
+                bot.follower.setPose(new Pose(14.0 / 2, 141.5 - 13.75 / 2, Math.toRadians(-90)));
+                break;
+            case BLUE:
+                bot.follower.setPose(new Pose(141.5 - 14.0 / 2, 141.5 - 13.75 / 2, Math.toRadians(-90)));
+                break;
+        }
     }
+
+    @Override
+    public void init() {
+        super.init();
+        resetToCorner();
+    }
+
     @Override
     public void loop() {
         if (!bot.shooter.isInShootingCommand()) {
@@ -23,8 +34,10 @@ public class MainTeleOp extends BotOpMode {
                 bot.intake.intake();
             } else if (gamepad1.right_bumper) {
                 bot.intake.outtake();
+            } else if (gamepad1.left_trigger > 0.2) {
+                bot.intake.intakeFull();
             } else {
-                bot.intake.stop();
+                bot.intake.store();
             }
 
             if (gamepad1.aWasPressed()) {
@@ -54,14 +67,7 @@ public class MainTeleOp extends BotOpMode {
         }
 
         if (gamepad1.yWasPressed()) {
-            switch (Bot.allianceColor) {
-                case RED:
-                    bot.follower.setPose(new Pose(14.0 / 2, 141.5 - 13.75 / 2, Math.toRadians(-90)));
-                    break;
-                case BLUE:
-                    bot.follower.setPose(new Pose(141.5 - 14.0 / 2, 141.5 - 13.75 / 2, Math.toRadians(-90)));
-                    break;
-            }
+            resetToCorner();
         }
 
         super.loop();

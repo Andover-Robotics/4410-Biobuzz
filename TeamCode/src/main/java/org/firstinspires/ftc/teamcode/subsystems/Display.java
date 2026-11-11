@@ -46,8 +46,9 @@ public class Display {
             colors.clear();
 
             int length = rampSensors.map(RampSensors::getLength).orElse(0);
+            int pollenCount = rampSensors.map(RampSensors::getPollenCount).orElse(0);
             for (int i = 0; i < length; i++) {
-                colors.add(sensors.hasPollen(i) ? ColorUtils.Color.YELLOW : ColorUtils.Color.NONE);
+                colors.add(i < pollenCount ? ColorUtils.Color.YELLOW : ColorUtils.Color.NONE);
             }
         });
 

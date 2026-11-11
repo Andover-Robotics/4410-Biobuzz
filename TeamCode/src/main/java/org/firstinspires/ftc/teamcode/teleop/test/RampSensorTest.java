@@ -28,24 +28,24 @@ public class RampSensorTest extends OpMode {
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry());
 
-        MotorEx intakeMotor1 = new MotorEx(hardwareMap, "intake1", Motor.GoBILDA.RPM_1150);
-        MotorEx intakeMotor2 = new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150);
-        intakeMotor2.setInverted(true);
-        intake = new Intake(
-                telemetry,
-                intakeMotor1, intakeMotor2,
-                new ServoEx(hardwareMap, "gate"),
-                new ServoEx(hardwareMap, "wxyz"));
-        intake.closeGate();
-        intake.upWxyz();
-        intake.stop();
-
         rampSensors = new RampSensors(
                 telemetry,
                 hardwareMap.get(DigitalChannel.class, "rampBB1"),
                 hardwareMap.get(DigitalChannel.class, "rampBB2"),
                 hardwareMap.get(DigitalChannel.class, "rampBB3"),
                 hardwareMap.get(DigitalChannel.class, "rampBB4"));
+
+        MotorEx intakeMotor1 = new MotorEx(hardwareMap, "intake1", Motor.GoBILDA.RPM_1150);
+        MotorEx intakeMotor2 = new MotorEx(hardwareMap, "intake2", Motor.GoBILDA.RPM_1150);
+        intakeMotor1.setInverted(true);
+        intake = new Intake(
+                telemetry,
+                intakeMotor1, intakeMotor2,
+                new ServoEx(hardwareMap, "gate"),
+                new ServoEx(hardwareMap, "wxyz"),
+                rampSensors);
+        intake.closeGate();
+        intake.upWxyz();
 
         display = new Display(telemetry, List.of(
                 new ServoEx(hardwareMap, "display1"),
@@ -61,8 +61,10 @@ public class RampSensorTest extends OpMode {
             intake.intake();
         } else if (gamepad1.right_bumper) {
             intake.outtake();
+        } else if (gamepad1.left_trigger > 0.2) {
+            intake.intakeFull();
         } else {
-            intake.stop();
+            intake.store();
         }
 
         if (gamepad1.aWasPressed()) {
@@ -70,6 +72,7 @@ public class RampSensorTest extends OpMode {
         }
 
         rampSensors.periodic();
+        intake.periodic();
         display.periodic();
 
         rampSensors.updateTelemetry();

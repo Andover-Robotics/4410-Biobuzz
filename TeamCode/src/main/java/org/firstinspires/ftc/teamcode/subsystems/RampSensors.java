@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
 @Config
 public class RampSensors {
     public static double blockedDebounceMs = 10;
-    public static double clearDebounceMs = 10;
+    public static double clearDebounceMs = 50;
 
     private final Telemetry telemetry;
     private final BreakBeam[] breakBeams;
@@ -42,7 +42,7 @@ public class RampSensors {
                 count++;
             }
         }
-        return count;
+        return count == 0 ? 0 : (count + 1);
     }
 
     public int getLength() {
