@@ -33,9 +33,9 @@ public class MainTeleOp extends BotOpMode {
             if (gamepad1.right_bumper) {
                 bot.intake.intakeFull(); // right bumper = override sensors
             } else if (gamepad1.left_bumper) {
-                bot.intake.outtake();//left bumper = outtake
+                bot.intake.outtake(); // left bumper = outtake
             } else if (gamepad1.left_trigger > 0.2) {
-                bot.intake.intake(); //left trigger=sensor intake
+                bot.intake.intake(); // left trigger=sensor intake
             } else {
                 bot.intake.store();//slow?                                                                                              11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
             }
@@ -54,13 +54,17 @@ public class MainTeleOp extends BotOpMode {
         if (gamepad1.dpadDownWasPressed()) {
             Scheduler.schedule(bot.shooter.shootAllPollen());
         }
-        if(gamepad1.dpadLeftWasPressed()){
+
+        if (gamepad1.dpadLeftWasPressed()){
             bot.intake.toggleWxyz();
         }
-        if (gamepad1.right_trigger > 0.2){
-            bot.shooter.enable();
-        }else{
-            bot.shooter.disable();
+
+        if (!bot.shooter.isInShootingCommand()) {
+            if (gamepad1.right_trigger > 0.2) {
+                bot.shooter.enable();
+            } else {
+                bot.shooter.disable();
+            }
         }
 
         if (gamepad1.rightStickButtonWasPressed()) {
