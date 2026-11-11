@@ -12,8 +12,17 @@ import org.firstinspires.ftc.teamcode.subsystems.Turret;
 public class PositionTurret extends OpMode {
     private Turret turret;
 
+    private boolean previousManual;
+    private double previousManualPositionDegrees;
+    private double[] previousAngles;
+    private double[] previousServoPositions;
+
     @Override
     public void init() {
+        previousManual = Turret.manual;
+        previousManualPositionDegrees = Turret.manualPositionDegrees;
+        previousAngles = Turret.angles;
+        previousServoPositions = Turret.servoPositions;
         Turret.manual = true;
         Turret.manualPositionDegrees = 0;
         Turret.angles = new double[] {0, 1};
@@ -41,6 +50,9 @@ public class PositionTurret extends OpMode {
 
     @Override
     public void stop() {
-        Turret.manual = false;
+        Turret.manual = previousManual;
+        Turret.manualPositionDegrees = previousManualPositionDegrees;
+        Turret.angles = previousAngles;
+        Turret.servoPositions = previousServoPositions;
     }
 }

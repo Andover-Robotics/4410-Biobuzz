@@ -115,11 +115,9 @@ public class Turret {
     private static Pose getAimPoint(double y) {
         switch (Bot.allianceColor) {
             case RED:
-//                return y < HALF_FIELD ? backTargetPoseRed : frontTargetPoseRed;
-                return backTargetPoseRed;
+                return y < HALF_FIELD ? backTargetPoseRed : frontTargetPoseRed;
             case BLUE:
-//                return y < HALF_FIELD ? backTargetPoseBlue : frontTargetPoseBlue;
-                return backTargetPoseBlue;
+                return y < HALF_FIELD ? backTargetPoseBlue : frontTargetPoseBlue;
             default:
                 throw new IllegalStateException();
         }
@@ -143,12 +141,10 @@ public class Turret {
     }
 
     private static double clampToLimits(double positionDegrees) {
-        if (positionDegrees < lowLimitDegrees) {
-            positionDegrees += 360.0 * Math.ceil((lowLimitDegrees - positionDegrees) / 360.0);
-        } else if (positionDegrees > highLimitDegrees) {
-            positionDegrees -= 360.0 * Math.ceil((positionDegrees - highLimitDegrees) / 360.0);
-        }
-        return positionDegrees;
+        positionDegrees = positionDegrees
+                + 360.0 * Math.ceil((lowLimitDegrees - positionDegrees) / 360.0);
+
+        return Math.max(lowLimitDegrees, Math.min(highLimitDegrees, positionDegrees));
     }
 
     private static double angleToServoPosition(double angleDegrees) {
