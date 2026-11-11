@@ -35,9 +35,9 @@ public class MainTeleOp extends BotOpMode {
             } else if (gamepad1.left_bumper) {
                 bot.intake.outtake(); // left bumper = outtake
             } else if (gamepad1.left_trigger > 0.2) {
-                bot.intake.intake(); // left trigger=sensor intake
+                bot.intake.intake(); // left trigger = sensor intake
             } else {
-                bot.intake.store();//slow?                                                                                              11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+                bot.intake.store(); // store
             }
 
             if (gamepad1.aWasPressed()) {

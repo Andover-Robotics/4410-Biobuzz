@@ -148,7 +148,14 @@ public class Turret {
             return wrappedPosition;
         }
 
-        return Math.max(lowLimitDegrees, Math.min(highLimitDegrees, positionDegrees));
+        double lowerError = Math.abs(Math.IEEEremainder(positionDegrees - lowLimitDegrees, 360.0));
+        double upperError = Math.abs(Math.IEEEremainder(positionDegrees - highLimitDegrees, 360.0));
+
+        if (Math.abs(lowerError - upperError) <= 1e-9) {
+            return Math.max(lowLimitDegrees, Math.min(highLimitDegrees, positionDegrees));
+        }
+
+        return lowerError < upperError ? lowLimitDegrees : highLimitDegrees;
     }
 
     private static double angleToServoPosition(double angleDegrees) {
