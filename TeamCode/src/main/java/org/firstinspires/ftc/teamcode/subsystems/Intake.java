@@ -18,7 +18,7 @@ public class Intake {
     public static double gateOpenPosition = 0.59;
     public static double gateClosedPosition = 0.720;
 
-    public static double wxyzUpPosition = 0.860;
+    public static double wxyzUpPosition = 0.77;
     public static double wxyzDownPosition = 0.020;
 
     public static double inStallTimeMs = 200;
