@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.subsystems.BotOpMode;
 
-@TeleOp(name = "TeleOp", group = "Competition")
+@TeleOp(name = "Main TeleOp", group = "Competition")
 @Config
 public class MainTeleOp extends BotOpMode {
     public static double turningGain = 0.8;
@@ -17,10 +17,10 @@ public class MainTeleOp extends BotOpMode {
     public void resetToCorner() {
         switch (Bot.allianceColor) {
             case RED:
-                bot.follower.setPose(new Pose(14.0 / 2, 13.75 / 2, Math.toRadians(90)));
+                bot.follower.setPose(new Pose(13.75 / 2, 7, Math.toRadians(90)));
                 break;
             case BLUE:
-                bot.follower.setPose(new Pose(141.5 - 14.0 / 2, 13.75 / 2, Math.toRadians(90)));
+                bot.follower.setPose(new Pose(141.5 - 13.75 / 2, 7, Math.toRadians(90)));
                 break;
         }
     }
@@ -41,7 +41,7 @@ public class MainTeleOp extends BotOpMode {
             } else if (gamepad1.left_trigger > 0.2) {
                 bot.intake.intake(); // left trigger = sensor intake
             } else {
-                bot.intake.store(); // store
+                bot.intake.stop(); // store
             }
 
             if (gamepad1.aWasPressed()) {

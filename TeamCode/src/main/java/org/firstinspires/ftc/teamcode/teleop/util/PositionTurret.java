@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode.teleop.util;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Utility;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 
-@TeleOp(name = "Position Turret", group = "Util")
-@Config
+@Utility(name = "Position Turret")
 public class PositionTurret extends OpMode {
     private Turret turret;
 
@@ -36,9 +34,9 @@ public class PositionTurret extends OpMode {
 
     @Override
     public void loop() {
-        if (gamepad1.dpadLeftWasPressed()) {
+        if (gamepad1.dpadDownWasPressed()) {
             Turret.manualPositionDegrees -= 0.01;
-        } else if (gamepad1.dpadRightWasPressed()) {
+        } else if (gamepad1.dpadUpWasPressed()) {
             Turret.manualPositionDegrees += 0.01;
         }
         Turret.manualPositionDegrees = Math.max(0, Math.min(Turret.manualPositionDegrees, 1));

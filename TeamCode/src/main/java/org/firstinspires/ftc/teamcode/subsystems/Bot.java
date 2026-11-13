@@ -44,10 +44,10 @@ public class Bot {
 
         rampSensors = new RampSensors(
                 telemetry,
-                hardwareMap.get(DigitalChannel.class, "rampBB1"),
-                hardwareMap.get(DigitalChannel.class, "rampBB2"),
+                hardwareMap.get(DigitalChannel.class, "rampBB4"),
                 hardwareMap.get(DigitalChannel.class, "rampBB3"),
-                hardwareMap.get(DigitalChannel.class, "rampBB4"));
+                hardwareMap.get(DigitalChannel.class, "rampBB2"),
+                hardwareMap.get(DigitalChannel.class, "rampBB1"));
 
 
         MotorEx intakeMotor1 = new MotorEx(hardwareMap, "intake1", Motor.GoBILDA.RPM_1150);

@@ -4,12 +4,12 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Utility;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import java.util.Map;
 
-@TeleOp(name = "Simple Servo Test", group = "Util")
+@Utility(name = "Simple Servo Test")
 @Config
 public class SimpleServoTest extends OpMode {
     public static double STEP_POSITION = 0.01;

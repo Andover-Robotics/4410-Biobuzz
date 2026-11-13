@@ -3,14 +3,14 @@ package org.firstinspires.ftc.teamcode.teleop.util;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Utility;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 
 import java.util.Map;
 
-@TeleOp(name = "Simple Motor Test", group = "Util")
+@Utility(name = "Simple Motor Test")
 public class SimpleMotorTest extends OpMode {
     private MotorEx motor;
     private String[] motorNames;

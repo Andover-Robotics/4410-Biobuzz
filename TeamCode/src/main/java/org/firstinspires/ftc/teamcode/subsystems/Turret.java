@@ -6,6 +6,7 @@ import com.pedropathing.math.Pose;
 import com.pedropathing.math.Vector2D;
 import com.pedropathing.math.Velocity;
 import com.pedropathing.utils.Angle;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -29,7 +30,7 @@ public class Turret {
     public static double highLimitDegrees = 320;
 
     public static double[] angles = new double[] {0, 90};
-    public static double[] servoPositions = new double[] {0, 0.29};
+    public static double[] servoPositions = new double[] {0.01, 0.29};
 
     public static boolean manual = false;
     public static double manualPositionDegrees = 0;
@@ -39,14 +40,22 @@ public class Turret {
     public static double hoodAngle = 20;
     public static boolean velocityCompensation = false;
 
+    // Seconds of lead: offset (degrees) = target angular velocity (degrees/sec) * gain.
+    public static double targetVelocityGain = 0;
+
     private final Telemetry telemetry;
     private final Follower follower;
     private final ServoEx servo1;
     private final ServoEx servo2;
+    private final ElapsedTime deltaTimer = new ElapsedTime();
 
     private double distanceToGoal;
     private double angleToGoal;
     private double targetPositionDegrees;
+    private double previousRequestedPositionDegrees;
+    private boolean hasPreviousAutoTarget;
+    private double targetAngularVelocityDegreesPerSecond;
+    private double targetVelocityOffsetDegrees;
     private boolean outOfRange;
     private double adjustableDegrees;
 
@@ -59,6 +68,20 @@ public class Turret {
 
     public void periodic() {
         double requestedPositionDegrees = calculateTargetPositionDegrees();
+        double deltaTime = deltaTimer.seconds();
+        deltaTimer.reset();
+
+        targetAngularVelocityDegreesPerSecond = 0;
+        if (!manual && hasPreviousAutoTarget && deltaTime > 1e-6) {
+            targetAngularVelocityDegreesPerSecond = Math.IEEEremainder(
+                    requestedPositionDegrees - previousRequestedPositionDegrees, 360.0) / deltaTime;
+        }
+
+        previousRequestedPositionDegrees = requestedPositionDegrees;
+        hasPreviousAutoTarget = !manual;
+        targetVelocityOffsetDegrees = targetAngularVelocityDegreesPerSecond * targetVelocityGain;
+        requestedPositionDegrees += targetVelocityOffsetDegrees;
+
         if (!manual) {
             requestedPositionDegrees = targetPositionDegrees + Math.IEEEremainder(
                     requestedPositionDegrees - targetPositionDegrees, 360.0);
@@ -77,6 +100,8 @@ public class Turret {
     public void updateTelemetry() {
         telemetry.addData("Turret/Mode", manual ? "MANUAL" : "AUTO");
         telemetry.addData("Turret/Target", targetPositionDegrees);
+        telemetry.addData("Turret/Target angular velocity (deg/s)", targetAngularVelocityDegreesPerSecond);
+        telemetry.addData("Turret/Velocity offset (deg)", targetVelocityOffsetDegrees);
         telemetry.addData("Turret/Out of range", outOfRange);
         if (!manual && aimPoint != null) {
             telemetry.addData("Turret/Aim X", aimPoint.x());
@@ -148,10 +173,7 @@ public class Turret {
             return wrappedPosition;
         }
 
-        double lowerError = Math.abs(Math.IEEEremainder(positionDegrees - lowLimitDegrees, 360.0));
-        double upperError = Math.abs(Math.IEEEremainder(positionDegrees - highLimitDegrees, 360.0));
-
-        return lowerError < upperError ? lowLimitDegrees : highLimitDegrees;
+        return Math.max(lowLimitDegrees, Math.min(highLimitDegrees, positionDegrees));
     }
 
     private static double angleToServoPosition(double angleDegrees) {

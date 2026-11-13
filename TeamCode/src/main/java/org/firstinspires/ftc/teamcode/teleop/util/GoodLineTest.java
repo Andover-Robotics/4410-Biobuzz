@@ -7,11 +7,11 @@ import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Utility;
 
 import org.firstinspires.ftc.teamcode.subsystems.BotOpMode;
 
-@Autonomous(name = "Good Line Test")
+@Utility(name = "Good Line Test")
 public class GoodLineTest extends BotOpMode {
     private boolean scheduled = false;
 
@@ -31,7 +31,11 @@ public class GoodLineTest extends BotOpMode {
     @Override
     public void loop() {
         if (!scheduled) {
-            Scheduler.schedule(sequential(follow(bot.follower, path1()), follow(bot.follower, path2())));
+            Scheduler.schedule(
+                    sequential(
+                            follow(bot.follower, path1()),
+                            follow(bot.follower, path2())
+                    ));
             scheduled = true;
         }
 
