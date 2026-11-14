@@ -15,11 +15,11 @@ public class Intake {
     public static double midInPower = 0.5;
     public static double storePower = 0.1;
 
-    public static double gateOpenPosition = 0.59;
-    public static double gateClosedPosition = 0.720;
+    public static double gateOpenPosition = 0.9200;
+    public static double gateClosedPosition = 0.7400;
 
-    public static double wxyzUpPosition = 0.77;
-    public static double wxyzDownPosition = 0.020;
+    public static double wxyzUpPosition = 0.7800;
+    public static double wxyzDownPosition = 0.0240;
 
     public static double inStallTimeMs = 200;
 

@@ -13,8 +13,6 @@ import org.firstinspires.ftc.teamcode.subsystems.BotOpMode;
 
 @Utility(name = "Good Line Test")
 public class GoodLineTest extends BotOpMode {
-    private boolean scheduled = false;
-
     public Path path1() {
         return line(Pose.zero(), new Pose(48,0, 0)).constant(0);
     }
@@ -29,16 +27,16 @@ public class GoodLineTest extends BotOpMode {
     }
 
     @Override
-    public void loop() {
-        if (!scheduled) {
-            Scheduler.schedule(
-                    sequential(
-                            follow(bot.follower, path1()),
-                            follow(bot.follower, path2())
-                    ));
-            scheduled = true;
-        }
+    public void start() {
+        Scheduler.schedule(
+                sequential(
+                        follow(bot.follower, path1()),
+                        follow(bot.follower, path2())
+                ));
+    }
 
+    @Override
+    public void loop() {
         super.loop();
     }
 }

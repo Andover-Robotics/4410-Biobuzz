@@ -18,7 +18,7 @@ public class RampSensors {
                        DigitalChannel channel3, DigitalChannel channel4) {
         this.telemetry = telemetry;
         breakBeams = new BreakBeam[] {
-//                new BreakBeam(channel1),
+                new BreakBeam(channel2),
                 new BreakBeam(channel2),
                 new BreakBeam(channel3),
                 new BreakBeam(channel4)
@@ -45,7 +45,8 @@ public class RampSensors {
                 break;
             }
         }
-        return count == 0 ? 0 : (count + 1);
+
+        return count;
     }
 
     public int getLength() {

@@ -35,9 +35,9 @@ public class PositionTurret extends OpMode {
     @Override
     public void loop() {
         if (gamepad1.dpadDownWasPressed()) {
-            Turret.manualPositionDegrees -= 0.01;
+            Turret.manualPositionDegrees -= 0.005;
         } else if (gamepad1.dpadUpWasPressed()) {
-            Turret.manualPositionDegrees += 0.01;
+            Turret.manualPositionDegrees += 0.005;
         }
         Turret.manualPositionDegrees = Math.max(0, Math.min(Turret.manualPositionDegrees, 1));
         turret.periodic();

@@ -17,10 +17,10 @@ import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
 
 @Config
 public class Shooter {
-    public static double kP = 0.025;
+    public static double kP = 0.02;
     public static double kI = 0;
     public static double kD = 0;
-    public static double kF = 0.0035;
+    public static double kF = 0.0025;
     public static double windupRange = 0;
 
     public static double velocityTolerance = 100;
@@ -206,9 +206,8 @@ public class Shooter {
                 Commands.waitUntil(this::inTolerance),
                 Commands.instant(intake::openGate),
                 Commands.waitMs(shootAllPollenTime),
-                Commands.instant(this::disable),
-                Commands.instant(intake::stop),
                 Commands.instant(intake::closeGate),
+                Commands.instant(intake::store),
                 Commands.instant(() -> inShootingCommand = false)
         );
     }

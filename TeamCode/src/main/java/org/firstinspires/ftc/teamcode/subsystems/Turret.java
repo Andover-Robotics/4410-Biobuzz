@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Config
 public class Turret {
-    private static final double HALF_FIELD = 70.5;
+    private static final double HALF_FIELD = 141.5 / 2;
 
     public static Pose frontTargetPoseRed = new Pose(HALF_FIELD - 12, HALF_FIELD + 12);
     public static Pose backTargetPoseRed = new Pose(HALF_FIELD - 12, HALF_FIELD - 12);
@@ -26,11 +26,11 @@ public class Turret {
     public static double shooterOffsetX = -2.5;
     public static double shooterOffsetY = 0;
 
-    public static double lowLimitDegrees = -20;
-    public static double highLimitDegrees = 320;
+    public static double lowLimitDegrees = 0;
+    public static double highLimitDegrees = 310;
 
     public static double[] angles = new double[] {0, 90};
-    public static double[] servoPositions = new double[] {0.01, 0.29};
+    public static double[] servoPositions = new double[] {0.025, 0.305};
 
     public static boolean manual = false;
     public static double manualPositionDegrees = 0;
@@ -40,7 +40,6 @@ public class Turret {
     public static double hoodAngle = 20;
     public static boolean velocityCompensation = false;
 
-    // Seconds of lead: offset (degrees) = target angular velocity (degrees/sec) * gain.
     public static double targetVelocityGain = 0;
 
     private final Telemetry telemetry;

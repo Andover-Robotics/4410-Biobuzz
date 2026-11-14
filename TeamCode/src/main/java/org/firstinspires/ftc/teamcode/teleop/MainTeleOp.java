@@ -17,10 +17,12 @@ public class MainTeleOp extends BotOpMode {
     public void resetToCorner() {
         switch (Bot.allianceColor) {
             case RED:
-                bot.follower.setPose(new Pose(13.75 / 2, 7, Math.toRadians(90)));
+                bot.follower.setPose(new Pose(
+                        13.710 / 2, 13.780 / 2, Math.toRadians(90)));
                 break;
             case BLUE:
-                bot.follower.setPose(new Pose(141.5 - 13.75 / 2, 7, Math.toRadians(90)));
+                bot.follower.setPose(new Pose(
+                        141.5 - 13.710 / 2, 141.5 - 13.780 / 2, Math.toRadians(270)));
                 break;
         }
     }
@@ -35,13 +37,13 @@ public class MainTeleOp extends BotOpMode {
     public void loop() {
         if (!bot.shooter.isInShootingCommand()) {
             if (gamepad1.right_bumper) {
-                bot.intake.intakeFull(); // right bumper = override sensors
+                bot.intake.intakeFull();
             } else if (gamepad1.left_bumper) {
-                bot.intake.outtake(); // left bumper = outtake
+                bot.intake.outtake();
             } else if (gamepad1.left_trigger > 0.2) {
-                bot.intake.intake(); // left trigger = sensor intake
+                bot.intake.intake();
             } else {
-                bot.intake.stop(); // store
+                bot.intake.stop();
             }
 
             if (gamepad1.aWasPressed()) {
@@ -72,11 +74,7 @@ public class MainTeleOp extends BotOpMode {
         }
 
         if (gamepad1.rightStickButtonWasPressed()) {
-            if (Bot.allianceColor == Bot.AllianceColor.RED) {
-                Bot.allianceColor = Bot.AllianceColor.BLUE;
-            } else if (Bot.allianceColor == Bot.AllianceColor.BLUE) {
-                Bot.allianceColor = Bot.AllianceColor.RED;
-            }
+            Bot.switchAlliance();
         }
 
         if (gamepad1.yWasPressed()) {

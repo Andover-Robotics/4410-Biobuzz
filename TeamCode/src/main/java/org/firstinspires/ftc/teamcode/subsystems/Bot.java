@@ -4,8 +4,6 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.ivy.commands.Commands;
 import com.pedropathing.math.Pose;
-import com.pedropathing.revhub.drivetrains.Mecanum;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -37,6 +35,14 @@ public class Bot {
     }
 
     public static AllianceColor allianceColor = AllianceColor.RED;
+
+    public static void switchAlliance() {
+        if (Bot.allianceColor == Bot.AllianceColor.RED) {
+            Bot.allianceColor = Bot.AllianceColor.BLUE;
+        } else if (Bot.allianceColor == Bot.AllianceColor.BLUE) {
+            Bot.allianceColor = Bot.AllianceColor.RED;
+        }
+    }
 
     public Bot(HardwareMap hardwareMap, Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
