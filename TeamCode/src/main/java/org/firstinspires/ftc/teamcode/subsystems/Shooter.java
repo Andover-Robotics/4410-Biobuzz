@@ -29,11 +29,11 @@ public class Shooter {
     public static boolean manual = false;
     public static double manualVelocity = 0;
 
-    public static double shootAllPollenTime = 1000.0;
+    public static double shootAllPollenTime = 500.0;
 
     private static final InterpLUT VELOCITY_LOOKUP_TABLE = new InterpLUT()
-            .add(0, 2300)
-            .add(50, 2301)
+            .add(0, 3700)
+            .add(50, 3701)
             .createLUT();
 
     private final Telemetry telemetry;

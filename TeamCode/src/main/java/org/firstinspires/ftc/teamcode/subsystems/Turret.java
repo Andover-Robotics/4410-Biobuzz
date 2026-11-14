@@ -26,11 +26,11 @@ public class Turret {
     public static double shooterOffsetX = -2.5;
     public static double shooterOffsetY = 0;
 
-    public static double lowLimitDegrees = 0;
+    public static double lowLimitDegrees = 20;
     public static double highLimitDegrees = 310;
 
     public static double[] angles = new double[] {0, 90};
-    public static double[] servoPositions = new double[] {0.025, 0.305};
+    public static double[] servoPositions = new double[] {0.01, 0.29};
 
     public static boolean manual = false;
     public static double manualPositionDegrees = 0;

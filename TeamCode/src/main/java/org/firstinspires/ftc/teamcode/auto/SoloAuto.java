@@ -25,6 +25,9 @@ public class SoloAuto extends BotOpMode {
     @Override
     public void init() {
         super.init();
+        bot.intake.stop();
+        bot.intake.closeGate();
+        bot.intake.upWxyz();
     }
 
     public Pose getStartingPose() {

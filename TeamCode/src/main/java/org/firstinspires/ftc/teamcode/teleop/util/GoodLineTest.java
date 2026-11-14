@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop.util;
 
 import static com.pedropathing.api.Paths.line;
+import static com.pedropathing.ivy.groups.Groups.repeat;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
@@ -29,10 +30,10 @@ public class GoodLineTest extends BotOpMode {
     @Override
     public void start() {
         Scheduler.schedule(
-                sequential(
+                repeat(sequential(
                         follow(bot.follower, path1()),
                         follow(bot.follower, path2())
-                ));
+                ), 100));
     }
 
     @Override

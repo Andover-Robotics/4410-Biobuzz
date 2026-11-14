@@ -15,9 +15,6 @@ public class BotOpMode extends OpMode {
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry());
         bot = new Bot(hardwareMap, telemetry);
-        bot.intake.stop();
-        bot.intake.closeGate();
-        bot.intake.upWxyz();
         bot.schedulePeriodic();
     }
 
