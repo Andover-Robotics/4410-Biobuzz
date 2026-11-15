@@ -10,6 +10,7 @@ import com.pedropathing.api.Paths;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
+import com.pedropathing.ivy.groups.Groups;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.interpolator.Interpolator;
@@ -55,7 +56,7 @@ public class SoloAuto extends BotOpMode {
         return poseFactory.of(16, 48, 180);
     }
     public Pose getParkPose(){
-        return poseFactory.of(10,42,180);
+        return poseFactory.of(11,108,180);
     }
 
     public Path getGardenPath() {
@@ -80,31 +81,35 @@ public class SoloAuto extends BotOpMode {
                 bot.shooter.shootAllPollen(),
                 instant(bot.intake::intake),
 
-                follow(bot.follower, getGardenPath()),
+                Groups.race(follow(bot.follower, getGardenPath()), waitMs(4000)),
 
                 follow(bot.follower, Paths.path(
-                            Paths.line(getPickupGardenPose(), poseFactory.of(24, 96, 0)),
-                            Paths.line(poseFactory.of(24, 96, 0), poseFactory.of(24, 120, 0))
+                            Paths.line(getPickupGardenPose(), poseFactory.of(36, 96, 0)),
+                            Paths.line(poseFactory.of(36, 96, 0), poseFactory.of(36, 120, 0))
                         ).heading(Interpolator.piecewise()
                             .until(0.5, Interpolator.constant(Math.toRadians(270)))
                             .until(1.0, Interpolator.constant(Math.toRadians(90))))),
 
                 instant(bot.intake::downWxyz),
                 instant(bot.intake::intakeFull),
-                follow(bot.follower, Paths.line(poseFactory.of(24, 120, 0), poseFactory.of(42, 120, 0))
+                follow(bot.follower, Paths.line(poseFactory.of(36, 120, 0), poseFactory.of(45, 120, 0))
                         .constant(Math.toRadians(90))),
+                waitMs(100),
                 bot.shooter.shootAllPollen(),
-
-                instant(bot.intake::openGate),
+                waitMs(500),
+               // instant(bot.intake::closeGate),
                 follow(bot.follower,
-                        Paths.line(poseFactory.of(42, 120, 0), poseFactory.of(42, 127, 0)).tangent()),
-                waitMs(1500),
-                follow(bot.follower, Paths.line(getFlowerPose1(), poseFactory.of(46, 120, 0))
+                        Paths.line(poseFactory.of(48, 120, 0), poseFactory.of(48, 127, 0)).tangent()),
+                waitMs(2000),
+                follow(bot.follower, Paths.line(getFlowerPose1(), poseFactory.of(48, 120, 0))
                         .reverseTangent()),
-
-                instant(bot.intake::closeGate),
+                waitMs(100),
+                bot.shooter.shootAllPollen(),
+                waitMs(500),
+                //instant(bot.intake::closeGate),
                 instant(bot.intake::upWxyz),
                 instant(bot.intake::intake),
+
                 follow(bot.follower,Paths.line(poseFactory.of(46, 120, 0),getParkPose()).constant(Math.toRadians(0)))
 //                follow(bot.follower, Paths.line(poseFactory.of(48, 132, 0), getPickupAlliance())
 //                        .tangent()),

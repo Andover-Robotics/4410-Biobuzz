@@ -36,13 +36,13 @@ public class Shooter {
     public static final double MAX_DISTANCE = 54;
 
     private static final InterpLUT VELOCITY_LOOKUP_TABLE = new InterpLUT()
-            .add(MIN_DISTANCE, 3300)
+            .add(MIN_DISTANCE, 3275)
             .add(40, 3300)
-            .add(42.5,3350)
-            .add(45,3350)
-            .add(47.5,3350)
-            .add(50,3350)
-            .add(MAX_DISTANCE,3370)
+            .add(42.5,3335)
+            .add(45,3335)
+            .add(47.5,3335)
+            .add(50,3345)
+            .add(MAX_DISTANCE,3345)
             .createLUT();
 
     private final Telemetry telemetry;
@@ -219,5 +219,17 @@ public class Shooter {
                 Commands.instant(intake::store),
                 Commands.instant(() -> inShootingCommand = false)),
                 Command.NOOP);
+//        return sequential(
+//                        Commands.instant(() -> inShootingCommand = true),
+//                        Commands.instant(intake::intakeFull),
+//                        Commands.instant(this::enable),
+//                        Commands.waitUntil(this::inTolerance),
+//                        Commands.instant(intake::openGate),
+//                        Commands.waitMs(shootAllPollenTime),
+//                        Commands.instant(intake::closeGate),
+//                        Commands.instant(intake::store),
+//                        Commands.instant(() -> inShootingCommand = false),
+//                        Command.NOOP
+//
     }
 }

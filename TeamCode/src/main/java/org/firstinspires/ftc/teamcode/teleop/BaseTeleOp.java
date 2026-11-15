@@ -29,13 +29,24 @@ public class BaseTeleOp extends BotOpMode {
                 break;
         }
     }
+    public void resetToCornerPose(){
+        switch (Bot.allianceColor) {
+            case RED:
+                bot.follower.setPose(new Pose(
+                        13.710 / 2, 13.780 / 2, bot.follower.pose().heading()));
+                break;
+            case BLUE:
+                bot.follower.setPose(new Pose(
+                        141.5 - 13.710 / 2, 141.5 - 13.780 / 2, bot.follower.pose().heading()));
+                break;
+        }
+
+    }
+
 
     @Override
-    public void init() {
-        super.init();
-    }
-    @Override
     public void start(){
+        super.init();
         bot.follower.setPose(Bot.storedPose);
         bot.follower.update();
 
@@ -44,11 +55,11 @@ public class BaseTeleOp extends BotOpMode {
     @Override
     public void loop() {
         if (!bot.shooter.isInShootingCommand()) {
-            if (gamepad1.right_bumper) {
+            if (gamepad1.right_bumper || gamepad2.right_bumper) {
                 bot.intake.intakeFull();
-            } else if (gamepad1.left_bumper) {
+            } else if (gamepad1.left_bumper || gamepad2.left_bumper) {
                 bot.intake.outtake();
-            } else if (gamepad1.left_trigger > 0.2) {
+            } else if (gamepad1.left_trigger > 0.2 || gamepad2.left_trigger > 0.2) {
                 bot.intake.intake();
             } else {
                 bot.intake.stop();
@@ -65,8 +76,7 @@ public class BaseTeleOp extends BotOpMode {
             Scheduler.schedule(bot.shooter.shootAllPollen());
         }
 
-        boolean dpadLeft = isSolo ? gamepad1.dpadLeftWasPressed() : gamepad2.dpadLeftWasPressed();
-        if (dpadLeft){
+        if (gamepad1.dpadLeftWasPressed()){
             bot.intake.toggleWxyz();
         }
 
@@ -86,9 +96,13 @@ public class BaseTeleOp extends BotOpMode {
         if (gamepad1.yWasPressed()) {
             resetToCorner();
         }
+        if (gamepad1.xWasPressed()){
+            resetToCornerPose();
+        }
+        double slowGain = gamepad1.right_trigger >0.2 ? 0.3 : 1;
 
         bot.follower.manual(
-                -gamepad1.left_stick_y,
+                -gamepad1.left_stick_y * slowGain,
                 -gamepad1.left_stick_x,
                 gamepad1.right_stick_x * -turningGain);
 

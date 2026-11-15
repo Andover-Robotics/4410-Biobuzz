@@ -93,8 +93,8 @@ public class Turret {
 
         outOfRange = outOfRange
                 || (Math.abs(Math.IEEEremainder(requestedPositionDegrees - targetPositionDegrees, 360.0)) > 1e-6)
-                || (servoPosition < 0 || servoPosition > 1)
-                || (distanceToGoal < Shooter.MIN_DISTANCE || distanceToGoal > Shooter.MAX_DISTANCE);
+                || (servoPosition < 0 || servoPosition > 1);
+//                || (distanceToGoal < Shooter.MIN_DISTANCE || distanceToGoal > Shooter.MAX_DISTANCE);
 
         servo1.set(servoPosition);
         servo2.set(servoPosition);
