@@ -23,7 +23,7 @@ public class Turret {
 
     private Vector2D aimPoint;
 
-    public static double shooterOffsetX = -2.5;
+    public static double shooterOffsetX = -0.726;
     public static double shooterOffsetY = 0;
 
     public static double lowLimitDegrees = 20;
@@ -66,6 +66,8 @@ public class Turret {
     }
 
     public void periodic() {
+        outOfRange = false;
+
         double requestedPositionDegrees = calculateTargetPositionDegrees();
         double deltaTime = deltaTimer.seconds();
         deltaTimer.reset();
@@ -89,8 +91,10 @@ public class Turret {
         targetPositionDegrees = clampToLimits(requestedPositionDegrees);
         double servoPosition = angleToServoPosition(targetPositionDegrees);
 
-        outOfRange = (Math.abs(Math.IEEEremainder(requestedPositionDegrees - targetPositionDegrees, 360.0)) > 1e-6)
-                || (servoPosition < 0 || servoPosition > 1);
+        outOfRange = outOfRange
+                || (Math.abs(Math.IEEEremainder(requestedPositionDegrees - targetPositionDegrees, 360.0)) > 1e-6)
+                || (servoPosition < 0 || servoPosition > 1)
+                || (distanceToGoal < Shooter.MIN_DISTANCE || distanceToGoal > Shooter.MAX_DISTANCE);
 
         servo1.set(servoPosition);
         servo2.set(servoPosition);
@@ -136,7 +140,11 @@ public class Turret {
         return Math.toDegrees(Angle.normalizeSigned(targetRadians));
     }
 
-    private static Pose getAimPoint(double y) {
+    private Pose getAimPoint(double y) {
+        if (y > HALF_FIELD - 24 && y < HALF_FIELD + 24) {
+            outOfRange = true;
+        }
+
         switch (Bot.allianceColor) {
             case RED:
                 return y < HALF_FIELD ? backTargetPoseRed : frontTargetPoseRed;

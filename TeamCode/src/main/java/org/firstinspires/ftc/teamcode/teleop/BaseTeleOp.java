@@ -10,7 +10,7 @@ public class BaseTeleOp extends BotOpMode {
     private final boolean isSolo;
 
     public BaseTeleOp(boolean solo) {
-        super.init();
+        super();
 
         this.isSolo = solo;
     }
@@ -33,7 +33,12 @@ public class BaseTeleOp extends BotOpMode {
     @Override
     public void init() {
         super.init();
-        resetToCorner();
+    }
+    @Override
+    public void start(){
+        bot.follower.setPose(Bot.storedPose);
+        bot.follower.update();
+
     }
 
     @Override
@@ -86,6 +91,14 @@ public class BaseTeleOp extends BotOpMode {
                 -gamepad1.left_stick_y,
                 -gamepad1.left_stick_x,
                 gamepad1.right_stick_x * -turningGain);
+
+        if (bot.rampSensors.getPollenCount() == 4) {
+            gamepad1.rumble(100);
+        }
+
+        if (!bot.turret.isOutOfRange()) {
+            gamepad2.rumble(100);
+        }
 
         super.loop();
     }

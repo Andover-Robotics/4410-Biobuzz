@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static com.pedropathing.ivy.commands.Commands.conditional;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -24,16 +25,24 @@ public class Shooter {
     public static double windupRange = 0;
 
     public static double velocityTolerance = 100;
-    public static double inToleranceTimeMs = 150;
+    public static double inToleranceTimeMs = 250;
 
     public static boolean manual = false;
     public static double manualVelocity = 0;
 
     public static double shootAllPollenTime = 500.0;
 
+    public static final double MIN_DISTANCE = 37.5;
+    public static final double MAX_DISTANCE = 54;
+
     private static final InterpLUT VELOCITY_LOOKUP_TABLE = new InterpLUT()
-            .add(0, 3700)
-            .add(50, 3701)
+            .add(MIN_DISTANCE, 3300)
+            .add(40, 3300)
+            .add(42.5,3350)
+            .add(45,3350)
+            .add(47.5,3350)
+            .add(50,3350)
+            .add(MAX_DISTANCE,3370)
             .createLUT();
 
     private final Telemetry telemetry;
@@ -199,7 +208,7 @@ public class Shooter {
     }
 
     public Command shootAllPollen() {
-        return sequential(
+        return conditional(() -> !turret.isOutOfRange(), sequential(
                 Commands.instant(() -> inShootingCommand = true),
                 Commands.instant(intake::intakeFull),
                 Commands.instant(this::enable),
@@ -208,7 +217,7 @@ public class Shooter {
                 Commands.waitMs(shootAllPollenTime),
                 Commands.instant(intake::closeGate),
                 Commands.instant(intake::store),
-                Commands.instant(() -> inShootingCommand = false)
-        );
+                Commands.instant(() -> inShootingCommand = false)),
+                Command.NOOP);
     }
 }
