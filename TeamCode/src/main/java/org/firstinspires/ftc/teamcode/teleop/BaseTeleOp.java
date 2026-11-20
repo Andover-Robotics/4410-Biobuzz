@@ -99,7 +99,7 @@ public class BaseTeleOp extends BotOpMode {
 
         boolean dpadDown = isSolo ? gamepad1.dpadDownWasPressed() : gamepad2.dpadDownWasPressed();
         if (dpadDown) {
-            Scheduler.schedule(bot.shooter.shootAllPollen());
+            Scheduler.schedule(bot.shooter.shootPollen(4));
         }
 
         if (gamepad1.dpadLeftWasPressed()){

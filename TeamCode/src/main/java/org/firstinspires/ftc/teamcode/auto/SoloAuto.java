@@ -76,7 +76,7 @@ public class SoloAuto extends BotOpMode {
     public Command autoCommand() {
         return sequential(
                 instant(bot.shooter::enable),
-                bot.shooter.shootAllPollen(),
+                bot.shooter.shootPollen(4),
                 instant(bot.intake::intake),
                 Groups.race(follow(bot.follower, getGardenPath()), waitMs(4000)),
                 follow(bot.follower, Paths.path(
@@ -91,7 +91,7 @@ public class SoloAuto extends BotOpMode {
                 follow(bot.follower, Paths.line(poseFactory.of(36, 120, 0), poseFactory.of(45, 120, 0))
                         .constant(Math.toRadians(90))),
                 waitMs(100),
-                bot.shooter.shootAllPollen(),
+                bot.shooter.shootPollen(4),
                 waitMs(500),
 //                instant(bot.intake::closeGate),
                 follow(bot.follower,
@@ -100,7 +100,7 @@ public class SoloAuto extends BotOpMode {
                 follow(bot.follower, Paths.line(getFlowerPose1(), poseFactory.of(48, 120, 0))
                         .reverseTangent()),
                 waitMs(100),
-                bot.shooter.shootAllPollen(),
+                bot.shooter.shootPollen(4),
                 waitMs(500),
                 //instant(bot.intake::closeGate),
                 instant(bot.intake::upWxyz),

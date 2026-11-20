@@ -31,7 +31,7 @@ public class Shooter {
     public static boolean manual = false;
     public static double manualVelocity = 0;
 
-    public static double shootAllPollenTime = 500.0;
+    public static double[] shootTimes = {0, 0, 0, 500};
 
     public static final double MIN_DISTANCE = 37.5;
     public static final double MAX_DISTANCE = 54;
@@ -213,17 +213,21 @@ public class Shooter {
         return inShootingCommand;
     }
 
-    public Command shootAllPollen() {
+    public Command shootPollen(double shootTime) {
         return conditional(() -> !turret.isOutOfRange(), sequential(
                 Commands.instant(() -> inShootingCommand = true),
                 Commands.instant(intake::intakeFull),
                 Commands.instant(this::enable),
                 Commands.waitUntil(this::inTolerance),
                 Commands.instant(intake::openGate),
-                Commands.waitMs(shootAllPollenTime),
+                Commands.waitMs(shootTime),
                 Commands.instant(intake::closeGate),
                 Commands.instant(intake::store),
                 Commands.instant(() -> inShootingCommand = false)),
                 Command.NOOP);
+    }
+
+    public Command shootPollen(int count) {
+        return shootPollen(shootTimes[count - 1]);
     }
 }
