@@ -18,11 +18,12 @@ import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
 
 @Config
 public class Shooter {
-    public static double kP = 0.02;
+    public static double kP = 0.0035;
     public static double kI = 0;
     public static double kD = 0;
-    public static double kF = 0.0025;
+    public static double kF = 0.00021;
     public static double windupRange = 0;
+    public static boolean voltageCompensation = false;
 
     public static double velocityTolerance = 100;
     public static double inToleranceTimeMs = 250;
@@ -77,7 +78,7 @@ public class Shooter {
 
         this.motor1.setRunMode(Motor.RunMode.RawPower);
         this.motor2.setRunMode(Motor.RunMode.RawPower);
-        this.motor1.setInverted(true);
+        this.motor2.setInverted(true);
 
         controller = new PIDFController(kP, kI, kD, kF);
         controller.integrationControl.setIntegrationBounds(-windupRange, windupRange);
@@ -96,7 +97,12 @@ public class Shooter {
         controller.setPIDF(kP, kI, kD, kF);
         controller.integrationControl.setIntegrationBounds(-windupRange, windupRange);
         double outputVolts = controller.calculate(realVelocity, targetVelocity);
-        setPower(outputVolts / voltageSensor.getVoltage());
+
+        if (voltageCompensation) {
+            setPower(outputVolts / voltageSensor.getVoltage());
+        } else {
+            setPower(outputVolts);
+        }
     }
 
     public void updateTelemetry() {
@@ -119,8 +125,8 @@ public class Shooter {
     }
 
     private void updateMotorData() {
-        double primaryVelocity = -motor1.getVelocity() / motor1.getCPR() * 60;
-        double backupVelocity = -motor2.getVelocity() / motor2.getCPR() * 60;
+        double primaryVelocity = motor1.getVelocity() / motor1.getCPR() * 60;
+        double backupVelocity = motor2.getVelocity() / motor2.getCPR() * 60;
         realVelocity = usingPrimaryEncoder ? primaryVelocity : backupVelocity;
 
         currentDrawOne = motor1.getCurrent(CurrentUnit.AMPS);
@@ -149,8 +155,8 @@ public class Shooter {
     }
 
     private void setPower(double power) {
-        motor1.set(-power);
-        motor2.set(-power);
+        motor1.set(power);
+        motor2.set(power);
     }
 
     public void enable() {
@@ -219,17 +225,5 @@ public class Shooter {
                 Commands.instant(intake::store),
                 Commands.instant(() -> inShootingCommand = false)),
                 Command.NOOP);
-//        return sequential(
-//                        Commands.instant(() -> inShootingCommand = true),
-//                        Commands.instant(intake::intakeFull),
-//                        Commands.instant(this::enable),
-//                        Commands.waitUntil(this::inTolerance),
-//                        Commands.instant(intake::openGate),
-//                        Commands.waitMs(shootAllPollenTime),
-//                        Commands.instant(intake::closeGate),
-//                        Commands.instant(intake::store),
-//                        Commands.instant(() -> inShootingCommand = false),
-//                        Command.NOOP
-//
     }
 }

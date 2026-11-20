@@ -26,7 +26,7 @@ public class Turret {
     public static double shooterOffsetX = -0.726;
     public static double shooterOffsetY = 0;
 
-    public static double lowLimitDegrees = 20;
+    public static double lowLimitDegrees = 5;
     public static double highLimitDegrees = 310;
 
     public static double[] angles = new double[] {0, 90};
@@ -93,8 +93,8 @@ public class Turret {
 
         outOfRange = outOfRange
                 || (Math.abs(Math.IEEEremainder(requestedPositionDegrees - targetPositionDegrees, 360.0)) > 1e-6)
-                || (servoPosition < 0 || servoPosition > 1);
-//                || (distanceToGoal < Shooter.MIN_DISTANCE || distanceToGoal > Shooter.MAX_DISTANCE);
+                || (servoPosition < 0 || servoPosition > 1)
+                || (distanceToGoal < Shooter.MIN_DISTANCE || distanceToGoal > Shooter.MAX_DISTANCE);
 
         servo1.set(servoPosition);
         servo2.set(servoPosition);

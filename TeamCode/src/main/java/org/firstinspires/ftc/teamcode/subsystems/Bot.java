@@ -28,7 +28,7 @@ public class Bot {
     public final RampSensors rampSensors;
     public final Turret turret;
     public final Shooter shooter;
-    public static Pose storedPose = new Pose((14.3/2),141.5-(13.8/2),0);
+    public static Pose storedPose = new Pose(0, 0, 0);
 
     public enum AllianceColor {
         RED,
@@ -70,6 +70,8 @@ public class Bot {
         intake.upWxyz();
 
         follower = Constants.create(hardwareMap);
+        follower.setPose(storedPose);
+
         turret = new Turret(telemetry, follower,
                 new ServoEx(hardwareMap, "turret1"),
                 new ServoEx(hardwareMap, "turret2"));
@@ -111,6 +113,8 @@ public class Bot {
         telemetry.addData("Bot/X", pose.x());
         telemetry.addData("Bot/Y", pose.y());
         telemetry.addData("Bot/Heading", Math.toDegrees(pose.heading()));
+
+        storedPose = pose;
 
         intake.updateTelemetry();
         rampSensors.updateTelemetry();

@@ -16,14 +16,11 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.paths.interpolator.Interpolator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.pedro.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.subsystems.BotOpMode;
-import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 @Autonomous(name = "Solo Auto", group = "Auto")
 public class SoloAuto extends BotOpMode {
-    private PoseFactory poseFactory;
+    public static PoseFactory poseFactory = PoseFactory.degrees();
 
     @Override
     public void init() {
@@ -33,29 +30,30 @@ public class SoloAuto extends BotOpMode {
         bot.intake.upWxyz();
     }
 
-    public Pose getStartingPose() {
+    public static Pose getStartingPose() {
         // starts on the inner edge of the first field tile
         return poseFactory.of(141.5 / 2 - 23.1 + (13.780 / 2), 13.710 / 2, 180);
     }
 
-    public Pose getPickupGardenPose() {
+    public static Pose getPickupGardenPose() {
         // corner of the garden
         return poseFactory.of(13.710 / 2 + 0.75, 2.559 + (13.780 / 2) + 0.75, 0);
     }
 
-    public Pose getFlowerPose1() {
+    public static Pose getFlowerPose1() {
         return poseFactory.of(42, 127 + 1, 90);
     }
 
-    public Pose getPickupAlliance() {
+    public static Pose getPickupAlliance() {
         // alliance pollen
         return poseFactory.of(24, 120, 180);
     }
 
-    public Pose getFlowerPose2() {
+    public static Pose getFlowerPose2() {
         return poseFactory.of(16, 48, 180);
     }
-    public Pose getParkPose(){
+
+    public static Pose getParkPose(){
         return poseFactory.of(11,108,180);
     }
 
@@ -80,9 +78,7 @@ public class SoloAuto extends BotOpMode {
                 instant(bot.shooter::enable),
                 bot.shooter.shootAllPollen(),
                 instant(bot.intake::intake),
-
                 Groups.race(follow(bot.follower, getGardenPath()), waitMs(4000)),
-
                 follow(bot.follower, Paths.path(
                             Paths.line(getPickupGardenPose(), poseFactory.of(36, 96, 0)),
                             Paths.line(poseFactory.of(36, 96, 0), poseFactory.of(36, 120, 0))
@@ -97,7 +93,7 @@ public class SoloAuto extends BotOpMode {
                 waitMs(100),
                 bot.shooter.shootAllPollen(),
                 waitMs(500),
-               // instant(bot.intake::closeGate),
+//                instant(bot.intake::closeGate),
                 follow(bot.follower,
                         Paths.line(poseFactory.of(48, 120, 0), poseFactory.of(48, 127, 0)).tangent()),
                 waitMs(2000),
@@ -136,7 +132,6 @@ public class SoloAuto extends BotOpMode {
 
     @Override
     public void start() {
-        poseFactory = PoseFactory.degrees();
         bot.follower.setPose(getStartingPose());
         Scheduler.schedule(autoCommand());
     }
@@ -144,9 +139,5 @@ public class SoloAuto extends BotOpMode {
     @Override
     public void loop() {
         super.loop();
-    }
-    @Override
-    public void stop(){
-        Bot.storedPose = bot.follower.pose();
     }
 }

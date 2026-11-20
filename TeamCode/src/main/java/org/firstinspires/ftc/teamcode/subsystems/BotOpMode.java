@@ -14,14 +14,10 @@ public class BotOpMode extends OpMode {
         telemetry = new MultipleTelemetry(
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry());
+
         bot = new Bot(hardwareMap, telemetry);
         bot.schedulePeriodic();
     }
-//
-//    @Override
-//    public void init_loop() {
-//        Scheduler.execute();
-//    }
 
     @Override
     public void loop() {
