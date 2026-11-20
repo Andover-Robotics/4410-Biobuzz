@@ -107,10 +107,16 @@ public class BaseTeleOp extends BotOpMode {
         }
 
         if (!bot.shooter.isInShootingCommand()) {
-            double rightTrigger = isSolo ? gamepad1.right_trigger : gamepad2.right_trigger;
-            if (rightTrigger > 0.2) {
+            boolean leftStick = isSolo ? gamepad1.leftStickButtonWasPressed()
+                    : gamepad2.leftStickButtonWasPressed();
+            boolean rightStick = isSolo ? gamepad1.rightStickButtonWasPressed()
+                    : gamepad2.rightStickButtonWasPressed();
+
+            if (leftStick) {
                 bot.shooter.enable();
-            } else {
+            }
+
+            if (rightStick) {
                 bot.shooter.disable();
             }
         }
