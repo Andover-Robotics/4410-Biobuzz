@@ -30,17 +30,17 @@ public class Turret {
     public static double highLimitDegrees = 310;
 
     public static double[] angles = new double[] {0, 90};
-    public static double[] servoPositions = new double[] {0.01, 0.29};
+    public static double[] servoPositions = new double[] {0.01, 0.285};
 
     public static boolean manual = false;
     public static double manualPositionDegrees = 0;
 
     public static double G = 386.09;
-    public static double heightDeltaInches = 0;
-    public static double hoodAngle = 20;
-    public static boolean velocityCompensation = false;
+    public static double heightDeltaInches = 50 - 12;
+    public static double hoodAngle = 11.7;
+    public static boolean velocityCompensation = true;
 
-    public static double targetVelocityGain = 0;
+    public static double targetVelocityGain = 0.01;
 
     private final Telemetry telemetry;
     private final Follower follower;
@@ -86,9 +86,11 @@ public class Turret {
         if (!manual) {
             requestedPositionDegrees = targetPositionDegrees + Math.IEEEremainder(
                     requestedPositionDegrees - targetPositionDegrees, 360.0);
+            targetPositionDegrees = clampToLimits(requestedPositionDegrees);
+        } else {
+            targetPositionDegrees = requestedPositionDegrees;
         }
 
-        targetPositionDegrees = clampToLimits(requestedPositionDegrees);
         double servoPosition = angleToServoPosition(targetPositionDegrees);
 
         outOfRange = outOfRange

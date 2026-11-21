@@ -18,12 +18,12 @@ import org.firstinspires.ftc.teamcode.util.BooleanDebouncer;
 
 @Config
 public class Shooter {
-    public static double kP = 0.0035;
+    public static double kP = 0.025;
     public static double kI = 0;
     public static double kD = 0;
-    public static double kF = 0.00021;
+    public static double kF = 0.00255;
     public static double windupRange = 0;
-    public static boolean voltageCompensation = false;
+    public static boolean voltageCompensation = true;
 
     public static double velocityTolerance = 100;
     public static double inToleranceTimeMs = 250;
@@ -33,17 +33,29 @@ public class Shooter {
 
     public static double[] shootTimes = {0, 0, 0, 500};
 
-    public static final double MIN_DISTANCE = 37.5;
-    public static final double MAX_DISTANCE = 54;
+    public static double MIN_DISTANCE = 32;
+    public static double MAX_DISTANCE = 52;
+
+    /*
+    32 3100
+    34 3100
+    37 3100
+    40 3125
+    43 3125
+    46 3125
+    49 3250
+    52 3250
+     */
 
     private static final InterpLUT VELOCITY_LOOKUP_TABLE = new InterpLUT()
-            .add(MIN_DISTANCE, 3275)
-            .add(40, 3300)
-            .add(42.5,3335)
-            .add(45,3335)
-            .add(47.5,3335)
-            .add(50,3345)
-            .add(MAX_DISTANCE,3345)
+            .add(MIN_DISTANCE, 3100)
+            .add(34, 3100)
+            .add(37,3100)
+            .add(40,3125)
+            .add(43,3125)
+            .add(46,3125)
+            .add(49, 3250)
+            .add(MAX_DISTANCE,3250)
             .createLUT();
 
     private final Telemetry telemetry;
