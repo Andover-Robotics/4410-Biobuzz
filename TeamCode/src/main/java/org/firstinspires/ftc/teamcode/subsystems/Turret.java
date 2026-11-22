@@ -37,10 +37,10 @@ public class Turret {
 
     public static double G = 386.09;
     public static double heightDeltaInches = 50 - 12;
-    public static double hoodAngle = 11.7;
+    public static double hoodAngle = 25.95;
     public static boolean velocityCompensation = true;
 
-    public static double targetVelocityGain = 0.01;
+    public static double targetVelocityGain = 0;
 
     private final Telemetry telemetry;
     private final Follower follower;
