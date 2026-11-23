@@ -2,12 +2,15 @@ package org.firstinspires.ftc.teamcode.teleop.util;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Utility;
+import com.seattlesolvers.solverslib.gamepad.GamepadEx;
+import com.seattlesolvers.solverslib.gamepad.GamepadKeys.Button;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 
 @Utility(name = "Position Turret")
 public class PositionTurret extends OpMode {
+    private GamepadEx gamepad1;
     private Turret turret;
 
     private boolean previousManual;
@@ -17,6 +20,7 @@ public class PositionTurret extends OpMode {
 
     @Override
     public void init() {
+        gamepad1 = new GamepadEx(super.gamepad1);
         previousManual = Turret.manual;
         previousManualPositionDegrees = Turret.manualPositionDegrees;
         previousAngles = Turret.angles;
@@ -34,9 +38,10 @@ public class PositionTurret extends OpMode {
 
     @Override
     public void loop() {
-        if (gamepad1.dpadDownWasPressed()) {
+        gamepad1.readButtons();
+        if (gamepad1.wasJustPressed(Button.DPAD_DOWN)) {
             Turret.manualPositionDegrees -= 0.005;
-        } else if (gamepad1.dpadUpWasPressed()) {
+        } else if (gamepad1.wasJustPressed(Button.DPAD_UP)) {
             Turret.manualPositionDegrees += 0.005;
         }
         Turret.manualPositionDegrees = Math.max(0, Math.min(Turret.manualPositionDegrees, 1));

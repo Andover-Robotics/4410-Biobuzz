@@ -5,6 +5,8 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Utility;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.seattlesolvers.solverslib.gamepad.GamepadEx;
+import com.seattlesolvers.solverslib.gamepad.GamepadKeys.Button;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 
@@ -12,12 +14,14 @@ import java.util.Map;
 
 @Utility(name = "Simple Motor Test")
 public class SimpleMotorTest extends OpMode {
+    private GamepadEx gamepad1;
     private MotorEx motor;
     private String[] motorNames;
     private int selectedMotorIndex;
 
     @Override
     public void init() {
+        gamepad1 = new GamepadEx(super.gamepad1);
         motor = null;
         selectedMotorIndex = 0;
         telemetry = new MultipleTelemetry(
@@ -32,7 +36,8 @@ public class SimpleMotorTest extends OpMode {
 
     @Override
     public void init_loop() {
-        if (motorNames.length > 0 && gamepad1.xWasPressed()) {
+        gamepad1.readButtons();
+        if (motorNames.length > 0 && gamepad1.wasJustPressed(Button.X)) {
             selectedMotorIndex = (selectedMotorIndex + 1) % motorNames.length;
         }
         updateSelectionTelemetry();
@@ -67,7 +72,7 @@ public class SimpleMotorTest extends OpMode {
             return;
         }
 
-        double power = -gamepad1.left_stick_y;
+        double power = gamepad1.getLeftY();
         motor.set(power);
 
         telemetry.addLine("Left stick Y: motor power");

@@ -5,6 +5,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Utility;
+import com.seattlesolvers.solverslib.gamepad.GamepadEx;
+import com.seattlesolvers.solverslib.gamepad.GamepadKeys.Button;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import java.util.Map;
@@ -14,12 +16,14 @@ import java.util.Map;
 public class SimpleServoTest extends OpMode {
     public static double STEP_POSITION = 0.01;
 
+    private GamepadEx gamepad1;
     private ServoEx servo;
     private String[] servoNames;
     private int selectedServoIndex;
 
     @Override
     public void init() {
+        gamepad1 = new GamepadEx(super.gamepad1);
         servo = null;
         selectedServoIndex = 0;
         telemetry = new MultipleTelemetry(
@@ -34,7 +38,8 @@ public class SimpleServoTest extends OpMode {
 
     @Override
     public void init_loop() {
-        if (servoNames.length > 0 && gamepad1.xWasPressed()) {
+        gamepad1.readButtons();
+        if (servoNames.length > 0 && gamepad1.wasJustPressed(Button.X)) {
             selectedServoIndex = (selectedServoIndex + 1) % servoNames.length;
         }
         updateSelectionTelemetry();
@@ -61,14 +66,15 @@ public class SimpleServoTest extends OpMode {
 
     @Override
     public void loop() {
+        gamepad1.readButtons();
         if (servo == null) {
             updateSelectionTelemetry();
             return;
         }
 
         double position = servo.getRawPosition();
-        boolean increasePosition = gamepad1.dpadUpWasPressed();
-        boolean decreasePosition = gamepad1.dpadDownWasPressed();
+        boolean increasePosition = gamepad1.wasJustPressed(Button.DPAD_UP);
+        boolean decreasePosition = gamepad1.wasJustPressed(Button.DPAD_DOWN);
         if (increasePosition) {
             position += STEP_POSITION;
         }
