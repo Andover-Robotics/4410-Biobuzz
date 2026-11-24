@@ -6,7 +6,7 @@ public final class ColorUtils {
     public enum Color {
         // https://www.gobilda.com/rgb-indicator-light-pwm-controlled/
         YELLOW(0.384f),
-        PURPLE(0.721f),
+        RED(0.280f),
         NONE(1.000f);
 
         private final float floodlightColor;

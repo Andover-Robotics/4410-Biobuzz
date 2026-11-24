@@ -123,6 +123,9 @@ public class BaseTeleOp extends BotOpMode {
         if (gamepad1.wasJustPressed(Button.DPAD_LEFT)) {
             bot.intake.toggleWxyz();
         }
+        if (gamepad1.wasJustPressed(Button.B)){
+            bot.shooter.shootPollen(2);
+        }
 
         boolean canControlShooter = !bot.shooter.isInShootingCommand();
         if (!bot.shooter.isInShootingCommand()) {
