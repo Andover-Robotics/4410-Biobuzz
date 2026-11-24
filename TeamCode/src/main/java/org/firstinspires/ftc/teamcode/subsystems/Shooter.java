@@ -36,26 +36,20 @@ public class Shooter {
     public static double MIN_DISTANCE = 32;
     public static double MAX_DISTANCE = 52;
 
-    /*
-    32 3100
-    34 3100
-    37 3100
-    40 3125
-    43 3125
-    46 3125
-    49 3250
-    52 3250
-     */
-
     private static final InterpLUT VELOCITY_LOOKUP_TABLE = new InterpLUT()
             .add(MIN_DISTANCE, 3100)
             .add(34, 3100)
-            .add(37,3100)
-            .add(40,3125)
-            .add(43,3125)
-            .add(46,3125)
+            .add(37, 3100)
+            .add(40, 3125)
+            .add(43, 3125)
+            .add(46, 3125)
             .add(49, 3250)
-            .add(MAX_DISTANCE,3250)
+            .add(MAX_DISTANCE, 3250)
+            .createLUT();
+
+    private static final InterpLUT FLIGHT_TIME_LOOKUP_TABLE = new InterpLUT()
+            .add(MIN_DISTANCE, 0)
+            .add(MAX_DISTANCE, 0)
             .createLUT();
 
     private final Telemetry telemetry;
@@ -241,5 +235,9 @@ public class Shooter {
 
     public Command shootPollen(int count) {
         return shootPollen(shootTimes[count - 1]);
+    }
+
+    public static double getFlightTime(double distanceToGoal) {
+        return FLIGHT_TIME_LOOKUP_TABLE.get(distanceToGoal);
     }
 }

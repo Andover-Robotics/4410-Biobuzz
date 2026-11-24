@@ -6,7 +6,6 @@ import com.pedropathing.math.Pose;
 import com.pedropathing.math.Vector2D;
 import com.pedropathing.math.Velocity;
 import com.pedropathing.utils.Angle;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -35,26 +34,16 @@ public class Turret {
     public static boolean manual = false;
     public static double manualPositionDegrees = 0;
 
-    public static double G = 386.09;
-    public static double heightDeltaInches = 50 - 12;
-    public static double hoodAngle = 25.95;
     public static boolean velocityCompensation = true;
-
-    public static double targetVelocityGain = 0;
 
     private final Telemetry telemetry;
     private final Follower follower;
     private final ServoEx servo1;
     private final ServoEx servo2;
-    private final ElapsedTime deltaTimer = new ElapsedTime();
 
     private double distanceToGoal;
     private double angleToGoal;
     private double targetPositionDegrees;
-    private double previousRequestedPositionDegrees;
-    private boolean hasPreviousAutoTarget;
-    private double targetAngularVelocityDegreesPerSecond;
-    private double targetVelocityOffsetDegrees;
     private boolean outOfRange;
     private double adjustableDegrees;
 
@@ -69,19 +58,6 @@ public class Turret {
         outOfRange = false;
 
         double requestedPositionDegrees = calculateTargetPositionDegrees();
-        double deltaTime = deltaTimer.seconds();
-        deltaTimer.reset();
-
-        targetAngularVelocityDegreesPerSecond = 0;
-        if (!manual && hasPreviousAutoTarget && deltaTime > 1e-6) {
-            targetAngularVelocityDegreesPerSecond = Math.IEEEremainder(
-                    requestedPositionDegrees - previousRequestedPositionDegrees, 360.0) / deltaTime;
-        }
-
-        previousRequestedPositionDegrees = requestedPositionDegrees;
-        hasPreviousAutoTarget = !manual;
-        targetVelocityOffsetDegrees = targetAngularVelocityDegreesPerSecond * targetVelocityGain;
-        requestedPositionDegrees += targetVelocityOffsetDegrees;
 
         if (!manual) {
             requestedPositionDegrees = targetPositionDegrees + Math.IEEEremainder(
@@ -105,8 +81,6 @@ public class Turret {
     public void updateTelemetry() {
         telemetry.addData("Turret/Mode", manual ? "MANUAL" : "AUTO");
         telemetry.addData("Turret/Target", targetPositionDegrees);
-        telemetry.addData("Turret/Target angular velocity (deg/s)", targetAngularVelocityDegreesPerSecond);
-        telemetry.addData("Turret/Velocity offset (deg)", targetVelocityOffsetDegrees);
         telemetry.addData("Turret/Out of range", outOfRange);
         if (!manual && aimPoint != null) {
             telemetry.addData("Turret/Aim X", aimPoint.x());
@@ -162,16 +136,11 @@ public class Turret {
             Vector2D uncompensatedDelta
     ) {
         Vector2D compensatedDelta = uncompensatedDelta;
-        for (int i = 0; i < 3; i++) {
-            double timeToGoal = getTimeToGoal(compensatedDelta.magnitude());
-            compensatedDelta = uncompensatedDelta.minus(fieldVelocity.times(timeToGoal));
+        for (int i = 0; i < 10; i++) {
+            double flightTime = Shooter.getFlightTime(compensatedDelta.magnitude());
+            compensatedDelta = uncompensatedDelta.minus(fieldVelocity.times(flightTime));
         }
         return compensatedDelta;
-    }
-
-    private static double getTimeToGoal(double horizontalDistance) {
-        double timeSquared = 2.0 * (horizontalDistance * Math.tan(Math.toRadians(90 - hoodAngle)) - heightDeltaInches) / G;
-        return timeSquared > 0 ? Math.sqrt(timeSquared) : 0;
     }
 
     private static double clampToLimits(double positionDegrees) {
