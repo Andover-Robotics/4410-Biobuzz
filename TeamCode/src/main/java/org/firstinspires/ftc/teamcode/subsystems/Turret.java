@@ -80,12 +80,8 @@ public class Turret {
     }
 
     public void updateTelemetry() {
-        telemetry.addData("Turret/Mode", manual ? "MANUAL" : "AUTO");
-        telemetry.addData("Turret/Target", targetPositionDegrees);
         telemetry.addData("Turret/Out of range", outOfRange);
         if (!manual && aimPoint != null) {
-            telemetry.addData("Turret/Aim X", aimPoint.x());
-            telemetry.addData("Turret/Aim Y", aimPoint.y());
             telemetry.addData("Turret/Goal distance", distanceToGoal);
             telemetry.addData("Turret/Robot velocity", robotVelocityMagnitude);
         }

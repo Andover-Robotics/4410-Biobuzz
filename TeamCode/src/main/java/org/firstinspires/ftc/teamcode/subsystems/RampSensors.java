@@ -55,7 +55,6 @@ public class RampSensors {
         for (int i = 0; i < breakBeams.length; i++) {
             telemetry.addData("Ramp/Pollen position " + i, hasPollen(i));
         }
-        telemetry.addData("Ramp/Pollen count", getPollenCount());
     }
 
     private static final class BreakBeam {

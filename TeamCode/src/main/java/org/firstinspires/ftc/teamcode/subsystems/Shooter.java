@@ -118,9 +118,7 @@ public class Shooter {
         telemetry.addData("Shooter/Enabled", enabled);
         telemetry.addData("Shooter/Target velocity", targetVelocity);
         telemetry.addData("Shooter/Actual velocity", realVelocity);
-        telemetry.addData("Shooter/At speed", inTolerance());
-        telemetry.addData("Shooter/Motor 1 current", currentDrawOne);
-        telemetry.addData("Shooter/Motor 2 current", currentDrawTwo);
+        telemetry.addData("Shooter/In tolerance", inTolerance());
         telemetry.addData("Shooter/Encoder", usingPrimaryEncoder ? "PRIMARY" : "BACKUP");
         telemetry.addData("Shooter/Motor disconnect detected", shooterMotorDisconnected);
     }

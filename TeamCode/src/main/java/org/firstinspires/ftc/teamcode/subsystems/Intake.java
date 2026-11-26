@@ -166,10 +166,7 @@ public class Intake {
         }
     }
 
-    public void updateTelemetry() {
-        telemetry.addData("Intake/State", state);
-        telemetry.addData("Intake/Gate", gateClosed ? "CLOSED" : "OPEN");
-    }
+    public void updateTelemetry() {}
 
     public State getState() {
         return state;
