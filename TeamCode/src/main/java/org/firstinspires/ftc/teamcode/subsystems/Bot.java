@@ -81,7 +81,7 @@ public class Bot {
                 new ServoEx(hardwareMap, "display2"),
                 new ServoEx(hardwareMap, "display3"),
                 new ServoEx(hardwareMap, "display4")),
-                Optional.of(turret), Optional.of(rampSensors));
+                turret, rampSensors);
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
         shooter = new Shooter(

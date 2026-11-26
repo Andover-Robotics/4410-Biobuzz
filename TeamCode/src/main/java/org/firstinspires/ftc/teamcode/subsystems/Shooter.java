@@ -31,10 +31,13 @@ public class Shooter {
     public static boolean manual = false;
     public static double manualVelocity = 0;
 
-    public static double[] shootTimes = {0, 0, 0, 500};
+    public static double[] shootTimes = {60, 135, 200, 500};
 
     public static double MIN_DISTANCE = 32;
     public static double MAX_DISTANCE = 52;
+
+    public static double SOTM_MAX_VELOCITY = 40;
+    public static double SOTM_VELOCITY_GAIN = 100;
 
     private static final InterpLUT VELOCITY_LOOKUP_TABLE = new InterpLUT()
             .add(MIN_DISTANCE, 3100)
@@ -48,8 +51,8 @@ public class Shooter {
             .createLUT();
 
     private static final InterpLUT FLIGHT_TIME_LOOKUP_TABLE = new InterpLUT()
-            .add(MIN_DISTANCE, 0)
-            .add(MAX_DISTANCE, 0)
+            .add(MIN_DISTANCE, 0.7)
+            .add(MAX_DISTANCE, 0.7)
             .createLUT();
 
     private final Telemetry telemetry;
@@ -127,7 +130,15 @@ public class Shooter {
             return manualVelocity;
         }
 
-        return VELOCITY_LOOKUP_TABLE.get(turret.getDistanceToGoal());
+        double velocity = VELOCITY_LOOKUP_TABLE.get(turret.getDistanceToGoal());
+
+        double robotVelocityMagnitude = turret.getRobotVelocityMagnitude();
+
+        if (robotVelocityMagnitude > 0.1) {
+            velocity += SOTM_VELOCITY_GAIN * Math.min(robotVelocityMagnitude / SOTM_MAX_VELOCITY, 1);
+        }
+
+        return velocity;
     }
 
     private void updateMotorData() {

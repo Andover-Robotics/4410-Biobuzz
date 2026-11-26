@@ -18,7 +18,7 @@ public class RampSensors {
                        DigitalChannel channel3, DigitalChannel channel4) {
         this.telemetry = telemetry;
         breakBeams = new BreakBeam[] {
-                new BreakBeam(channel2),
+                new BreakBeam(channel1),
                 new BreakBeam(channel2),
                 new BreakBeam(channel3),
                 new BreakBeam(channel4)

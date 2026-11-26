@@ -7,7 +7,7 @@ public final class ColorUtils {
         // https://www.gobilda.com/rgb-indicator-light-pwm-controlled/
         YELLOW(0.384f),
         RED(0.280f),
-        NONE(1.000f);
+        NONE(0.000f);
 
         private final float floodlightColor;
 

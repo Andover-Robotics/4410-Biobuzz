@@ -46,6 +46,7 @@ public class Turret {
     private double targetPositionDegrees;
     private boolean outOfRange;
     private double adjustableDegrees;
+    private double robotVelocityMagnitude;
 
     public Turret(Telemetry telemetry, Follower follower, ServoEx servo1, ServoEx servo2) {
         this.telemetry = telemetry;
@@ -86,6 +87,7 @@ public class Turret {
             telemetry.addData("Turret/Aim X", aimPoint.x());
             telemetry.addData("Turret/Aim Y", aimPoint.y());
             telemetry.addData("Turret/Goal distance", distanceToGoal);
+            telemetry.addData("Turret/Robot velocity", robotVelocityMagnitude);
         }
     }
 
@@ -103,7 +105,9 @@ public class Turret {
         aimPoint = getAimPoint(robotPose.y()).toVector2D();
         Vector2D delta = aimPoint.minus(robotPosition.plus(shooterOffset));
 
-        if (velocityCompensation && robotVelocity.toVector2D().magnitude() > 0.1) {
+        robotVelocityMagnitude = robotVelocity.toVector2D().magnitude();
+
+        if (velocityCompensation && robotVelocityMagnitude > 0.1) {
             delta = applyVelocityCompensation(robotVelocity.toVector2D(), delta);
         }
 
@@ -187,6 +191,10 @@ public class Turret {
 
     public double getAdjustable() {
         return adjustableDegrees;
+    }
+
+    public double getRobotVelocityMagnitude() {
+        return robotVelocityMagnitude;
     }
 
     public Vector2D getAimPoint() {

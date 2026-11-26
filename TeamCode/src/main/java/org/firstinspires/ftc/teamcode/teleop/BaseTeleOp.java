@@ -40,7 +40,7 @@ public class BaseTeleOp extends BotOpMode {
         } else {
             bot.follower.setPose(new Pose(
                     13.710 / 2, 141.5 - 13.780 / 2,
-                    heading ? Math.toRadians(90) : bot.follower.pose().heading()));
+                    heading ? Math.toRadians(270) : bot.follower.pose().heading()));
         }
 
         bot.follower.update();
@@ -98,9 +98,8 @@ public class BaseTeleOp extends BotOpMode {
         gamepad2.readButtons();
 
         if (!bot.shooter.isInShootingCommand()) {
-            if (gamepad1.getButton(Button.RIGHT_BUMPER) || gamepad2.getButton(Button.RIGHT_BUMPER)) {
-                bot.intake.intakeFull();
-            } else if (gamepad1.getButton(Button.LEFT_BUMPER) || gamepad2.getButton(Button.LEFT_BUMPER)) {
+            if (gamepad1.getTrigger(Trigger.RIGHT_TRIGGER) > 0.2
+                    || gamepad2.getTrigger(Trigger.RIGHT_TRIGGER) > 0.2) {
                 bot.intake.outtake();
             } else if (gamepad1.getTrigger(Trigger.LEFT_TRIGGER) > 0.2
                     || gamepad2.getTrigger(Trigger.LEFT_TRIGGER) > 0.2) {
@@ -109,34 +108,38 @@ public class BaseTeleOp extends BotOpMode {
                 bot.intake.stop();
             }
 
-            boolean a = (isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.A);
-            if (a) {
+            if (gamepad1.wasJustPressed(Button.DPAD_DOWN)) {
                 bot.intake.toggleGate();
             }
-        }
-
-        boolean dpadDown = (isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.DPAD_DOWN);
-        if (dpadDown) {
-            Scheduler.schedule(bot.shooter.shootPollen(4));
         }
 
         if (gamepad1.wasJustPressed(Button.DPAD_LEFT)) {
             bot.intake.toggleWxyz();
         }
-        if (gamepad1.wasJustPressed(Button.B)){
-            bot.shooter.shootPollen(2);
+
+        if ((isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.X)) {
+            Scheduler.schedule(bot.shooter.shootPollen(1));
+        }
+
+        if ((isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.Y)) {
+            Scheduler.schedule(bot.shooter.shootPollen(2));
+        }
+
+        if ((isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.B)) {
+            Scheduler.schedule(bot.shooter.shootPollen(3));
+        }
+
+        if ((isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.A)) {
+            Scheduler.schedule(bot.shooter.shootPollen(4));
         }
 
         boolean canControlShooter = !bot.shooter.isInShootingCommand();
         if (!bot.shooter.isInShootingCommand()) {
-            boolean leftStick = (isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.LEFT_STICK_BUTTON);
-            boolean rightStick = (isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.RIGHT_STICK_BUTTON);
-
-            if (leftStick) {
+            if ((isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.RIGHT_BUMPER)) {
                 bot.shooter.enable();
             }
 
-            if (rightStick) {
+            if ((isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.LEFT_BUMPER)) {
                 bot.shooter.disable();
             }
         }
@@ -147,17 +150,16 @@ public class BaseTeleOp extends BotOpMode {
 
         Pose pose = bot.follower.pose();
 
-        if (gamepad1.wasJustPressed(Button.Y)) {
+        if (gamepad1.wasJustPressed(Button.DPAD_UP)) {
             resetToCorner(true, pose.y() < 141.5 / 2);
         }
 
-        if (gamepad1.wasJustPressed(Button.X)) {
+        if (gamepad1.wasJustPressed(Button.DPAD_RIGHT)) {
             resetToCorner(false, pose.y() < 141.5 / 2);
         }
 
         bot.follower.manual(
-                gamepad1.getLeftY()
-                        * (gamepad1.getTrigger(Trigger.RIGHT_TRIGGER) > 0.2 ? slowGain : 1),
+                gamepad1.getLeftY(),
                 -gamepad1.getLeftX(),
                 driveCurve(-gamepad1.getRightX()));
 
