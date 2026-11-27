@@ -89,7 +89,10 @@ public class Turret {
 
     private double calculateTargetPositionDegrees() {
         if (manual) {
+            aimPoint = Vector2D.cartesian(0, 0);
             distanceToGoalRate = 0;
+            distanceToGoal = 0;
+            angleToGoal = 0;
             return manualPositionDegrees;
         }
 

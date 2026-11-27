@@ -20,7 +20,6 @@ public class BaseTeleOp extends BotOpMode {
         this.isSolo = solo;
     }
 
-    public static double slowGain = 0.2;
     public static double curveGain = 3;
 
     private int resetState = 0;
