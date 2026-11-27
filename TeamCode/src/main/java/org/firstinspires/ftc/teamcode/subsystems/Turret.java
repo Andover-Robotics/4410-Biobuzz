@@ -28,6 +28,8 @@ public class Turret {
     public static double lowLimitDegrees = 5;
     public static double highLimitDegrees = 310;
 
+    public static double minDistance = 10;
+
     public static double[] angles = new double[] {0, 90};
     public static double[] servoPositions = new double[] {0.01, 0.285};
 
@@ -75,8 +77,10 @@ public class Turret {
                 || (servoPosition < 0 || servoPosition > 1)
                 || (distanceToGoal < Shooter.MIN_DISTANCE || distanceToGoal > Shooter.MAX_DISTANCE);
 
-        servo1.set(servoPosition);
-        servo2.set(servoPosition);
+        if (distanceToGoal > minDistance) {
+            servo1.set(servoPosition);
+            servo2.set(servoPosition);
+        }
     }
 
     public void updateTelemetry() {

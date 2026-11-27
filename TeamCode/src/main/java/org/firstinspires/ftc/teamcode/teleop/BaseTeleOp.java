@@ -23,9 +23,10 @@ public class BaseTeleOp extends BotOpMode {
     }
 
     public static double driveCurveGain = 3.5;
-    public static double maxSotmGoalRate = 10;
+    public static double maxSotmGoalRate = 15;
 
     private boolean sotmEnabled = true;
+    private boolean autoShootEnabled = true;
 
     private int resetState = 0;
 
@@ -39,12 +40,12 @@ public class BaseTeleOp extends BotOpMode {
     public void resetToCorner(boolean heading, boolean right) {
         if (right) {
             bot.follower.setPose(new Pose(
-                    13.710 / 2, 13.780 / 2,
-                    heading ? Math.toRadians(90) : bot.follower.pose().heading()));
+                    13.710 / 2, (13.780 / 2 + 2.559),
+                    heading ? Math.toRadians(270) : bot.follower.pose().heading()));
         } else {
             bot.follower.setPose(new Pose(
-                    13.710 / 2, 141.5 - 13.780 / 2,
-                    heading ? Math.toRadians(270) : bot.follower.pose().heading()));
+                    13.710 / 2, 141.5 - (13.780 / 2 + 2.559),
+                    heading ? Math.toRadians(90) : bot.follower.pose().heading()));
         }
 
         bot.follower.update();
@@ -107,13 +108,20 @@ public class BaseTeleOp extends BotOpMode {
             sotmEnabled = !sotmEnabled;
         }
 
+        if (gamepad1.wasJustPressed(Button.RIGHT_BUMPER)) {
+            autoShootEnabled = !autoShootEnabled;
+        }
+
+        boolean hasBall = bot.rampSensors.getPollenCount() >= 1;
         boolean full = bot.rampSensors.getPollenCount() == 4;
         boolean inRange = !bot.turret.isOutOfRange();
 
         boolean canControlShooter = !bot.shooter.isInShootingCommand();
         if (canControlShooter) {
-            if (gamepad1.getTrigger(Trigger.RIGHT_TRIGGER) > 0.2
-                    || gamepad2.getTrigger(Trigger.RIGHT_TRIGGER) > 0.2) {
+            boolean outtake = isSolo ? gamepad1.isDown(Button.LEFT_BUMPER) :
+                    (gamepad1.getTrigger(Trigger.RIGHT_TRIGGER) > 0.2 || gamepad2.getTrigger(Trigger.RIGHT_TRIGGER) > 0.2);
+
+            if (outtake) {
                 bot.intake.outtake();
             } else if (gamepad1.getTrigger(Trigger.LEFT_TRIGGER) > 0.2
                     || gamepad2.getTrigger(Trigger.LEFT_TRIGGER) > 0.2) {
@@ -132,8 +140,10 @@ public class BaseTeleOp extends BotOpMode {
         }
 
         boolean autoShoot = sotmEnabled
+                && autoShootEnabled
+                && !(gamepad1.getTrigger(Trigger.RIGHT_TRIGGER) > 0.5)
                 && canControlShooter
-                && full
+                && hasBall
                 && inRange
                 && Math.abs(bot.turret.getDistanceToGoalRate()) < maxSotmGoalRate;
 
@@ -148,11 +158,17 @@ public class BaseTeleOp extends BotOpMode {
         }
 
         if (canControlShooter) {
-            if (operator.wasJustPressed(Button.RIGHT_BUMPER)) {
+            boolean rightStick = isSolo ? gamepad1.wasJustPressed(Button.RIGHT_STICK_BUTTON)
+                    : gamepad2.wasJustPressed(Button.RIGHT_BUMPER);
+
+            if (rightStick) {
                 bot.shooter.enable();
             }
 
-            if (operator.wasJustPressed(Button.LEFT_BUMPER)) {
+            boolean leftStick = isSolo ? gamepad1.wasJustPressed(Button.LEFT_STICK_BUTTON)
+                    : gamepad2.wasJustPressed(Button.LEFT_BUMPER);
+
+            if (leftStick) {
                 bot.shooter.disable();
             }
         }

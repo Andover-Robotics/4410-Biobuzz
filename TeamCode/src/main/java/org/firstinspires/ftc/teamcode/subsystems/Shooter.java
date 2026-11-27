@@ -40,18 +40,18 @@ public class Shooter {
 
     private static final InterpLUT VELOCITY_LOOKUP_TABLE = new InterpLUT()
             .add(MIN_DISTANCE, 3100)
-            .add(34, 3100)
-            .add(37, 3100)
-            .add(40, 3125)
-            .add(43, 3125)
-            .add(46, 3125)
-            .add(49, 3250)
-            .add(MAX_DISTANCE, 3250)
+            .add(34, 3130)
+            .add(37, 3130)
+            .add(40, 3145)
+            .add(43, 3145)
+            .add(46, 3145)
+            .add(49, 3260)
+            .add(MAX_DISTANCE, 3270)
             .createLUT();
 
     private static final InterpLUT FLIGHT_TIME_LOOKUP_TABLE = new InterpLUT()
-            .add(MIN_DISTANCE, 0.7)
-            .add(MAX_DISTANCE, 0.7)
+            .add(MIN_DISTANCE, 0.75)
+            .add(MAX_DISTANCE, 0.75)
             .createLUT();
 
     private final Telemetry telemetry;
