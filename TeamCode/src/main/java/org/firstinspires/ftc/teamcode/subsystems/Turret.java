@@ -42,11 +42,11 @@ public class Turret {
     private final ServoEx servo2;
 
     private double distanceToGoal;
+    private double distanceToGoalRate;
     private double angleToGoal;
     private double targetPositionDegrees;
     private boolean outOfRange;
     private double adjustableDegrees;
-    private double robotVelocityMagnitude;
 
     public Turret(Telemetry telemetry, Follower follower, ServoEx servo1, ServoEx servo2) {
         this.telemetry = telemetry;
@@ -83,12 +83,13 @@ public class Turret {
         telemetry.addData("Turret/Out of range", outOfRange);
         if (!manual && aimPoint != null) {
             telemetry.addData("Turret/Goal distance", distanceToGoal);
-            telemetry.addData("Turret/Robot velocity", robotVelocityMagnitude);
+            telemetry.addData("Turret/Goal distance rate", distanceToGoalRate);
         }
     }
 
     private double calculateTargetPositionDegrees() {
         if (manual) {
+            distanceToGoalRate = 0;
             return manualPositionDegrees;
         }
 
@@ -101,10 +102,14 @@ public class Turret {
         aimPoint = getAimPoint(robotPose.y()).toVector2D();
         Vector2D delta = aimPoint.minus(robotPosition.plus(shooterOffset));
 
-        robotVelocityMagnitude = robotVelocity.toVector2D().magnitude();
+        Vector2D fieldVelocity = robotVelocity.toVector2D();
+        Vector2D shooterVelocity = fieldVelocity.plus(shooterOffset.perpendicularLeft().times(robotVelocity.omega));
 
-        if (velocityCompensation && robotVelocityMagnitude > 0.1) {
-            delta = applyVelocityCompensation(robotVelocity.toVector2D(), delta);
+        double range = delta.magnitude();
+        distanceToGoalRate = range > 1e-9 ? -delta.dot(shooterVelocity) / delta.magnitude() : 0;
+
+        if (velocityCompensation && fieldVelocity.magnitude() > 1e-9) {
+            delta = applyVelocityCompensation(fieldVelocity, delta);
         }
 
         distanceToGoal = delta.magnitude();
@@ -181,16 +186,16 @@ public class Turret {
         return distanceToGoal;
     }
 
+    public double getDistanceToGoalRate() {
+        return distanceToGoalRate;
+    }
+
     public double getAngleToGoal() {
         return angleToGoal;
     }
 
     public double getAdjustable() {
         return adjustableDegrees;
-    }
-
-    public double getRobotVelocityMagnitude() {
-        return robotVelocityMagnitude;
     }
 
     public Vector2D getAimPoint() {

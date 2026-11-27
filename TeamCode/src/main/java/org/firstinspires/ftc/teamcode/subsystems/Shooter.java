@@ -36,8 +36,7 @@ public class Shooter {
     public static double MIN_DISTANCE = 32;
     public static double MAX_DISTANCE = 52;
 
-    public static double SOTM_MAX_VELOCITY = 40;
-    public static double SOTM_VELOCITY_GAIN = 100;
+    public static double SOTM_GAIN = 2.5;
 
     private static final InterpLUT VELOCITY_LOOKUP_TABLE = new InterpLUT()
             .add(MIN_DISTANCE, 3100)
@@ -128,15 +127,8 @@ public class Shooter {
             return manualVelocity;
         }
 
-        double velocity = VELOCITY_LOOKUP_TABLE.get(turret.getDistanceToGoal());
-
-        double robotVelocityMagnitude = turret.getRobotVelocityMagnitude();
-
-        if (robotVelocityMagnitude > 0.1) {
-            velocity += SOTM_VELOCITY_GAIN * Math.min(robotVelocityMagnitude / SOTM_MAX_VELOCITY, 1);
-        }
-
-        return velocity;
+        return VELOCITY_LOOKUP_TABLE.get(turret.getDistanceToGoal())
+                + SOTM_GAIN * turret.getDistanceToGoalRate();
     }
 
     private void updateMotorData() {
