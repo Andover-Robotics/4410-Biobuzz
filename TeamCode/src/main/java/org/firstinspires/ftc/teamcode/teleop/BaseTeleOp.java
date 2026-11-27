@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
@@ -9,6 +10,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys.Trigger;
 import org.firstinspires.ftc.teamcode.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.subsystems.BotOpMode;
 
+@Config
 public class BaseTeleOp extends BotOpMode {
     private final boolean isSolo;
     private GamepadEx gamepad1;
@@ -20,7 +22,10 @@ public class BaseTeleOp extends BotOpMode {
         this.isSolo = solo;
     }
 
-    public static double curveGain = 3;
+    public static double driveCurveGain = 3.5;
+    public static double maxSotmGoalRate = 10;
+
+    private boolean sotmEnabled = true;
 
     private int resetState = 0;
 
@@ -46,7 +51,7 @@ public class BaseTeleOp extends BotOpMode {
     }
 
     public static double driveCurve(double input) {
-        return Math.pow(curveGain, Math.abs(input) - 1) * input;
+        return Math.pow(driveCurveGain, Math.abs(input) - 1) * input;
     }
 
     @Override
@@ -59,17 +64,17 @@ public class BaseTeleOp extends BotOpMode {
 
         switch (resetState) {
             case 0:
-                startingSide = "No Reset";
+                startingSide = "NO RESET";
                 break;
             case 1:
-                startingSide = "Left";
+                startingSide = "LEFT";
                 break;
             case 2:
-                startingSide = "Right";
+                startingSide = "RIGHT";
                 break;
         }
 
-        telemetry.addData("Starting Side", startingSide);
+        telemetry.addData("Starting side", startingSide);
 
         if (gamepad1.wasJustPressed(Button.A)) {
             resetState++;
@@ -96,7 +101,17 @@ public class BaseTeleOp extends BotOpMode {
         gamepad1.readButtons();
         gamepad2.readButtons();
 
-        if (!bot.shooter.isInShootingCommand()) {
+        GamepadEx operator = isSolo ? gamepad1 : gamepad2;
+
+        if (operator.wasJustPressed(Button.LEFT_STICK_BUTTON)) {
+            sotmEnabled = !sotmEnabled;
+        }
+
+        boolean full = bot.rampSensors.getPollenCount() == 4;
+        boolean inRange = !bot.turret.isOutOfRange();
+
+        boolean canControlShooter = !bot.shooter.isInShootingCommand();
+        if (canControlShooter) {
             if (gamepad1.getTrigger(Trigger.RIGHT_TRIGGER) > 0.2
                     || gamepad2.getTrigger(Trigger.RIGHT_TRIGGER) > 0.2) {
                 bot.intake.outtake();
@@ -116,29 +131,28 @@ public class BaseTeleOp extends BotOpMode {
             bot.intake.toggleWxyz();
         }
 
-        if ((isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.X)) {
+        boolean autoShoot = sotmEnabled
+                && canControlShooter
+                && full
+                && inRange
+                && Math.abs(bot.turret.getDistanceToGoalRate()) < maxSotmGoalRate;
+
+        if (operator.wasJustPressed(Button.X)) {
             Scheduler.schedule(bot.shooter.shootPollen(1));
-        }
-
-        if ((isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.Y)) {
+        } else if (operator.wasJustPressed(Button.Y)) {
             Scheduler.schedule(bot.shooter.shootPollen(2));
-        }
-
-        if ((isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.B)) {
+        } else if (operator.wasJustPressed(Button.B)) {
             Scheduler.schedule(bot.shooter.shootPollen(3));
-        }
-
-        if ((isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.A)) {
+        } else if (operator.wasJustPressed(Button.A) || autoShoot) {
             Scheduler.schedule(bot.shooter.shootPollen(4));
         }
 
-        boolean canControlShooter = !bot.shooter.isInShootingCommand();
-        if (!bot.shooter.isInShootingCommand()) {
-            if ((isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.RIGHT_BUMPER)) {
+        if (canControlShooter) {
+            if (operator.wasJustPressed(Button.RIGHT_BUMPER)) {
                 bot.shooter.enable();
             }
 
-            if ((isSolo ? gamepad1 : gamepad2).wasJustPressed(Button.LEFT_BUMPER)) {
+            if (operator.wasJustPressed(Button.LEFT_BUMPER)) {
                 bot.shooter.disable();
             }
         }
@@ -162,11 +176,11 @@ public class BaseTeleOp extends BotOpMode {
                 -gamepad1.getLeftX(),
                 driveCurve(-gamepad1.getRightX()));
 
-        if (bot.rampSensors.getPollenCount() == 4) {
+        if (full) {
             gamepad1.gamepad.rumble(100);
         }
 
-        if (!bot.turret.isOutOfRange()) {
+        if (inRange) {
             gamepad2.gamepad.rumble(100);
         }
 
